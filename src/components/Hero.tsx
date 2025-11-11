@@ -43,7 +43,7 @@ function Hero() {
           </p>
 
         <div className='flex flex-row justify-center items-center gap-2'>
-            <Button text={`Get started ${<FontAwesomeIcon icon={faArrowRight} />}`}  bgColor='yellow-50' textColor='blue' backdropColor=''/>
+            <Button text={<>Get started <FontAwesomeIcon icon={faArrowRight} /></>} bgColor='yellow-50' textColor='blue' backdropColor=''/>
             <Button text='Become a Seller' bgColor='transparent' textColor='white' backdropColor=" backdrop-brightness-50"/>
         </div>
 
