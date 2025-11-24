@@ -1,5 +1,5 @@
 import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
-import Button from "./Button.tsx";
+import Button from "../components/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function Hero() {
   return (
@@ -51,7 +51,7 @@ function Hero() {
               }
               bgColor="zinc-50 "
               textColor="blue"
-              backdropColor= ""
+              backdropColor=""
             />
             <Button
               text="Become a Seller"

@@ -1,17 +1,15 @@
 import { NavLink, Link } from "react-router-dom";
-import { useTheme } from "./../context/ThemeContext";
+import { useTheme } from "../context/ThemeContext.tsx";
 import Button from "./Button.tsx";
 import SearchBar from "./SearchBar.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
-import NavLinks from './../utils/NavLinks.tsx';
+import NavLinks from "../utils/NavLinks.tsx";
 import { useCollapse } from "../context/SideBarContextCollapse.tsx";
 
-
 function Navbar() {
-
-    const { toggleTheme, isBgLight } = useTheme();
-    const {toggleCollapse} = useCollapse()
+  const { toggleTheme, isBgLight } = useTheme();
+  const { toggleCollapse } = useCollapse();
 
   return (
     <>
@@ -23,10 +21,13 @@ function Navbar() {
         }`}
       >
         <div className="flex justify-center items-center flex-row gap-1">
-            <span className="lg:hidden md:block" onClick={toggleCollapse}>
-                <FontAwesomeIcon icon={faBars} className="text-2xl cursor-pointer mr-2"/>
-            </span>
-         
+          <span className="lg:hidden md:block" onClick={toggleCollapse}>
+            <FontAwesomeIcon
+              icon={faBars}
+              className="text-2xl cursor-pointer mr-2"
+            />
+          </span>
+
           <Link to="/">
             <p className="flex justify-center items-center h-[30px] w-[30px] bg-blue-700 text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
               K
@@ -48,7 +49,9 @@ function Navbar() {
                   to={link.to}
                   className={({ isActive }) =>
                     `font-medium text-sm p-1.5 transition-all duration-300 transform ${
-                      isActive ? "text-blue-700" : "text-[oklch(0.76_0.02_264)] hover:text-blue-700 hover:scale-110"
+                      isActive
+                        ? "text-blue-700"
+                        : "text-[oklch(0.76_0.02_264)] hover:text-blue-700 hover:scale-110"
                     }`
                   }
                 >
@@ -63,7 +66,11 @@ function Navbar() {
         </div>
         <div className="flex justify-center items-center gap-2 flex-nowrap mx-2">
           <button onClick={toggleTheme} className="cursor-pointer">
-              {isBgLight ? <FontAwesomeIcon icon={faSun} /> : <FontAwesomeIcon icon={faMoon} />}
+            {isBgLight ? (
+              <FontAwesomeIcon icon={faSun} />
+            ) : (
+              <FontAwesomeIcon icon={faMoon} />
+            )}
           </button>
           <Link to="/sign-in">
             <Button
@@ -74,7 +81,6 @@ function Navbar() {
                 isBgLight
                   ? "oklch(0.15 0.05 264)"
                   : "oklch(95.968% 0.01912 263.062)"
-                  
               }
             />
           </Link>

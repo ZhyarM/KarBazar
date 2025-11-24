@@ -1,11 +1,12 @@
-import Hero from './../components/Hero.tsx';
-
+import Hero from "../page_components/Hero.tsx";
+import Features from './../page_components/Features.tsx';
 function Home() {
   return (
     <>
-        <Hero />
+      <Hero />
+      <Features />
     </>
-  )
+  );
 }
 
-export default Home
+export default Home;
