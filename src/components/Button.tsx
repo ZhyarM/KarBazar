@@ -2,7 +2,7 @@ import type { JSX } from "react"
 
 
 type ButtonProps = {
-   text: React.ReactNode;
+  text: React.ReactNode | string;
   bgColor: string;
   textColor: string;
   backdropColor: string;

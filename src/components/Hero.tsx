@@ -1,6 +1,6 @@
-import { faArrowRight } from '@fortawesome/free-solid-svg-icons';
-import Button from './Button.tsx';
-import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { faArrowRight } from "@fortawesome/free-solid-svg-icons";
+import Button from "./Button.tsx";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 function Hero() {
   return (
     <>
@@ -42,11 +42,24 @@ function Hero() {
             quality and speed
           </p>
 
-        <div className='flex flex-row justify-center items-center gap-2'>
-            <Button text={<>Get started <FontAwesomeIcon icon={faArrowRight} /></>} bgColor='yellow-50' textColor='blue' backdropColor=''/>
-            <Button text='Become a Seller' bgColor='transparent' textColor='white' backdropColor=" backdrop-brightness-50"/>
-        </div>
-
+          <div className="flex flex-row justify-center items-center gap-2">
+            <Button
+              text={
+                <>
+                  Get started <FontAwesomeIcon icon={faArrowRight} />
+                </>
+              }
+              bgColor="zinc-50 "
+              textColor="blue"
+              backdropColor= ""
+            />
+            <Button
+              text="Become a Seller"
+              bgColor="transparent"
+              textColor="white"
+              backdropColor=" backdrop-brightness-50"
+            />
+          </div>
         </div>
       </section>
     </>
