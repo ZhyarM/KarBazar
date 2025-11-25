@@ -14,7 +14,7 @@ function Navbar() {
   return (
     <>
       <nav
-        className={`w-full flex justify-between items-center gap-1 py-2.5 px-4 rounded-b-md text-sm transition-all duration-300 ${
+        className={`w-full fixed z-50 flex justify-between items-center gap-1 py-2.5 px-4 rounded-b-md text-sm transition-all duration-300 ${
           isBgLight
             ? "bg-[oklch(0.96_0.025_264)]"
             : "bg-[oklch(0.15_0.025_246)] text-[oklch(0.76_0.02_264)]"

@@ -3,31 +3,29 @@ import type { JSX } from "react"
 type inputProps = {
     icon: string | "";
     label: string;
-    type: "text";
     placeholder: string;
-    size: "sm" | "md" | "lg";
+    size: "1/2" | "1/3" | "full";
 
 
 }
 
 
 export default function Input({
-    icon = "",
     label,
-    type = "text",
     placeholder = "",
-    size= "md"
+    size= "full"
 }: inputProps): JSX.Element{
     return (
-        <div className={`flex flex-row align-baseline gap-1 w-${size}`}>
-            <img src={icon} width={40} height={40} alt="" />
-            <div className="flex flex-col align-baseline">
-                <label>{label}</label>
-                <input type={type} placeholder={placeholder} />
-            </div>
-
-
-        </div>
+      <div
+        className={`flex flex-col align-baseline relative p-2 pl-2 border w-${size} input-text  `}
+      >
+        <label className="bg-transparent absolute -top-6 label ">{label}</label>
+        <input
+          className="focus:outline-none placeholder-(--color-text) "
+          type="text"
+          placeholder={placeholder}
+        />
+      </div>
     );
 }
 
