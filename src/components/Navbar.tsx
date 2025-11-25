@@ -41,6 +41,10 @@ function Navbar() {
           </Link>
         </div>
 
+        <div className="hidden md:block min-w-0">
+          <SearchBar />
+        </div>
+
         {
           <ul className="hidden lg:flex items-center gap-1">
             {NavLinks.map((link) => (
@@ -51,7 +55,7 @@ function Navbar() {
                     `font-medium text-sm p-1.5 transition-all duration-300 transform ${
                       isActive
                         ? "text-(--color-primary-active)"
-                        : "text-[oklch(0.76_0.02_264)] hover:text-(--color-primary-hover) hover:scale-110"
+                        : "text-(--color-text) hover:text-(--color-primary-hover) hover:scale-110"
                     }`
                   }
                 >
@@ -61,9 +65,7 @@ function Navbar() {
             ))}
           </ul>
         }
-        <div className="hidden md:block min-w-0">
-          <SearchBar />
-        </div>
+
         <div className="flex justify-center items-center gap-2 flex-nowrap mx-2">
           <button onClick={toggleTheme} className="cursor-pointer">
             {isBgLight ? (

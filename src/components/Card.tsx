@@ -1,5 +1,5 @@
 import type { ReactElement } from "react";
-import { useTheme } from "../context/ThemeContext";
+
 
 type CardProps = {
   logo: ReactElement;
@@ -7,7 +7,6 @@ type CardProps = {
 };
 
 function Card({ logo, text }: CardProps) {
-  const { isBgLight } = useTheme();
 
   return (
     <>
@@ -16,16 +15,14 @@ function Card({ logo, text }: CardProps) {
     flex flex-col
     gap-6
     py-6
-    border ${
-      isBgLight ? "border-[oklch(0.83_0_0)]" : "border-[oklch(0.30_0_0)]"
-    }
+    border border-(--color-border)
     w-[360px] h-[211px]
     font-inter text-lg leading-6
-    text-[oklch(0.98_0_0)]
-    bg-transparent
+    text-(--color-text)
+    bg-(--color-card)
     rounded-xl
     shadow-lg
-    group transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:border-blue-500
+    group transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:border-(--color-accent-hover)
     cursor-pointer
   `}
       >
@@ -35,25 +32,17 @@ function Card({ logo, text }: CardProps) {
       gap-3.5
       p-6
       text-center
-      text-[oklch(0.98_0_0)]
+      text-(--color-text)
     "
         >
           <span
-            className="text-xl text-center text-[oklch(0.707_0.165_254.624)] rounded-full p-2.5 bg-[oklab(0.379_-0.0113991_-0.145554/0.3)] transition-transform duration-200
-  group-hover:scale-110"
+            className="text-xl text-center text-(--color-secondary) rounded-full p-2.5 bg-(--color-accent) transition-transform duration-200
+  group-hover:scale-120"
           >
             {logo}
           </span>
 
-          <p
-            className={`text-xl font-medium ${
-              isBgLight
-                ? "text-[oklch(0.15_0.05_264)]"
-                : "text-[oklch(0.92_0.025_264)]"
-            }`}
-          >
-            {text}
-          </p>
+          <p className={`text-xl font-medium text-(--color-text)`}>{text}</p>
         </div>
       </div>
     </>
