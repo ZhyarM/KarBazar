@@ -75,7 +75,7 @@ function Navbar() {
           <Link to="/sign-in">
             <Button
               text={"Sign In"}
-              bgColor={"transparent"}
+              bgColor={"btn"}
               backdropColor=""
               textColor={
                 isBgLight
@@ -87,7 +87,7 @@ function Navbar() {
           <Link to="/sign-up">
             <Button
               text={"Sign Up"}
-              bgColor={"blue-700"}
+              bgColor={"btn-primary"}
               textColor="oklch(0.92 0.025 264)"
               backdropColor=""
             />
