@@ -29,13 +29,13 @@ function Navbar() {
           </span>
 
           <Link to="/">
-            <p className="flex justify-center items-center h-[30px] w-[30px] bg-blue-700 text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
+            <p className="flex justify-center items-center h-[30px] w-[30px] bg-(--color-primary) text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
               K
             </p>
           </Link>
           <Link
             to="/"
-            className="text-lg font-bold text-blue-700 whitespace-nowrap"
+            className="text-lg font-bold text-(--color-primary) whitespace-nowrap"
           >
             KarBazar
           </Link>
@@ -50,8 +50,8 @@ function Navbar() {
                   className={({ isActive }) =>
                     `font-medium text-sm p-1.5 transition-all duration-300 transform ${
                       isActive
-                        ? "text-blue-700"
-                        : "text-[oklch(0.76_0.02_264)] hover:text-blue-700 hover:scale-110"
+                        ? "text-(--color-primary-active)"
+                        : "text-[oklch(0.76_0.02_264)] hover:text-(--color-primary-hover) hover:scale-110"
                     }`
                   }
                 >
@@ -75,20 +75,16 @@ function Navbar() {
           <Link to="/sign-in">
             <Button
               text={"Sign In"}
-              bgColor={"btn"}
+              bgColor="bg-[var(--btn-primary)]"
+              textColor="var(--btn-primary-text)"
               backdropColor=""
-              textColor={
-                isBgLight
-                  ? "oklch(0.15 0.05 264)"
-                  : "oklch(95.968% 0.01912 263.062)"
-              }
             />
           </Link>
           <Link to="/sign-up">
             <Button
               text={"Sign Up"}
-              bgColor={"btn-primary"}
-              textColor="oklch(0.92 0.025 264)"
+              bgColor="bg-[var(--btn-primary)]"
+              textColor="var(--btn-primary-text)"
               backdropColor=""
             />
           </Link>

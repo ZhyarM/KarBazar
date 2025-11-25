@@ -1,34 +1,29 @@
 @import "tailwindcss";
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
-
-
-
-
-
-
-body.light {/* Brand Colors */
-  --color-primary: #10B981;      /* Green */
+body.light {
+  /* Brand Colors */
+  --color-primary: #10b981;
   --color-primary-hover: #0EA673;
   --color-primary-active: #0C8B60;
 
-  --color-secondary: #34D399;    
+  --color-secondary: #34D399;
   --color-secondary-hover: #2FB885;
   --color-secondary-active: #299F73;
 
-  --color-accent: #059669;       
-  --color-accent-hover: #047857; 
+  --color-accent: #059669;
+  --color-accent-hover: #047857;
   --color-accent-active: #065F46;
 
   /* Backgrounds */
-  --color-background: #ECFDF5;   /* page bg */
-  --color-card: #FFFFFF;         /* white cards */
+  --color-background: #ECFDF5;
+  --color-card: #FFFFFF;
   --color-card-hover: #F0FFF8;
 
   /* Text */
-  --color-text: #1F2937;         /* main text */
-  --color-text-muted: #6B7280;   /* muted text */
-  --color-text-inverse: #F9FAFB; /* text on dark buttons */
+  --color-text: #1F2937;
+  --color-text-muted: #6B7280;
+  --color-text-inverse: #F9FAFB;
 
   /* Borders */
   --color-border: #D1D5DB;
@@ -54,28 +49,46 @@ body.light {/* Brand Colors */
   --input-placeholder: #9CA3AF;
 
   /* Icons */
-  --icon-color: #059669;       /* main green */
+  --icon-color: #059669;
   --icon-muted: #6B7280;
   --icon-active: #10B981;
 
-  --color:red;
+  --color: red;
 
+  /* 🌈 GRADIENTS — LIGHT MODE */
+  --gradient-primary: linear-gradient(
+    90deg,
+    #10b981,
+    #0EB5A4,
+    #0A9FD1
+  );
+
+  --gradient-secondary: linear-gradient(
+    90deg,
+    #34D399,
+    #3EC6D1,
+    #4B9BEA
+  );
+
+  --gradient-accent: linear-gradient(
+    90deg,
+    #059669,
+    #0A8D8A,
+    #1167C4
+  );
 
   /* Overlay / shadows */
   --overlay: rgba(0, 0, 0, 0.35);
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
 
-
-
-    background-color: var(--color-background);
-    font-family: 'Inter' , sans-serif;
-    color: var(--color-text);
-    
+  background-color: var(--color-background);
+  font-family: 'Inter', sans-serif;
+  color: var(--color-text);
 }
 
-body.dark {
 
-  --color:blue;
+body.dark {
+  --color: blue;
 
   /* Brand Colors */
   --color-primary: #34D399;
@@ -91,7 +104,7 @@ body.dark {
   --color-accent-active: #4FD49F;
 
   /* Backgrounds */
-  --color-background: #0F172A;  /* Dark navy */
+  --color-background: #0F172A;
   --color-card: #1E293B;
   --color-card-hover: #223145;
 
@@ -128,13 +141,36 @@ body.dark {
   --icon-muted: #6B7280;
   --icon-active: #6EE7B7;
 
+  /* 🌈 GRADIENTS — DARK MODE */
+  --gradient-primary: linear-gradient(
+    90deg,
+    #34D399,
+    #26A6A1,
+    #1E88C7
+  );
+
+  --gradient-secondary: linear-gradient(
+    90deg,
+    #10B981,
+    #169FB6,
+    #3C6BC6
+  );
+
+  --gradient-accent: linear-gradient(
+    90deg,
+    #6EE7B7,
+    #4DC9C3,
+    #3A64A8
+  );
+
   /* Overlay / shadows */
   --overlay: rgba(0, 0, 0, 0.5);
   --shadow: 0 4px 12px rgba(0, 0, 0, 0.35);
 
-    color: var(--color-text);
-    background-color: var(--color-background);
+  color: var(--color-text);
+  background-color: var(--color-background);
 }
+
 
 
 /* ----------------------------------------

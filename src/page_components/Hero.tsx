@@ -9,7 +9,7 @@ function Hero() {
          w-full max-w-9xl h-[644px] justify-center
          font-sans text-base font-normal leading-6 text-white text-left
          bg-transparent border-0 rounded-none
-         opacity-100 transition-all overflow-visible bg-linear-to-br from-blue-500 via-indigo-500 to-purple-600"
+         opacity-100 transition-all overflow-visible [background-image:var(--gradient-primary)]"
       >
         <div className="flex justify-start items-center flex-col gap-2">
           <span

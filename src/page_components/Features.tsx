@@ -18,7 +18,7 @@ function Features() {
           >
             Explore by Category
           </p>
-          <p className="text-[oklch(0.65_0_0)] text-xl">
+          <p className="text-[oklch(0.65_0_0)] text-lg text-center">
             Browse through our diverse range of services
           </p>
         </section>
