@@ -49,15 +49,15 @@ function Hero() {
                   Get started <FontAwesomeIcon icon={faArrowRight} />
                 </>
               }
-              bgColor="zinc-50 "
-              textColor="blue"
+              bgColor="bg-(--btn-primary)"
+              textColor="var(--btn-secondary-text)"
               backdropColor=""
             />
             <Button
               text="Become a Seller"
               bgColor="transparent"
               textColor="white"
-              backdropColor=" backdrop-brightness-50"
+              backdropColor="backdrop-brightness-50"
             />
           </div>
         </div>

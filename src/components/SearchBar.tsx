@@ -27,17 +27,21 @@ function SearchBar({ onSearch }: SearchBarProps) {
       </svg>
 
       <input
-        type="search"
-        name="q"
-        placeholder="Search for services..."
-        className="h-9 w-40 sm:w-56 md:w-72 lg:w-80 pl-9 pr-3 text-sm
-                   rounded-md border border-gray-300 dark:border-gray-600
-                   bg-gray-50 dark:bg-gray-800
-                   text-gray-800 dark:text-gray-100
-                   placeholder-gray-400 dark:placeholder-gray-500
-                   focus:outline-none focus:ring-2 focus:ring-blue-500
-                   transition-all duration-300 hover:shadow-md"
-      />
+  type="search"
+  name="q"
+  placeholder="Search for services..."
+  className="
+    h-10
+    w-44 sm:w-64 md:w-80 lg:w-[420px] xl:w-[500px]
+    pl-9 pr-3 text-sm
+    rounded-md border border-gray-300 dark:border-gray-600
+    bg-gray-50 dark:bg-gray-800
+    text-gray-800 dark:text-gray-100
+    placeholder-gray-400 dark:placeholder-gray-500
+    focus:outline-none focus:ring-2 focus:ring-blue-500
+    transition-all duration-300 hover:shadow-md
+  "
+/>
     </form>
   );
 }

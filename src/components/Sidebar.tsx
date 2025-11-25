@@ -27,7 +27,7 @@ export default function Sidebar(): JSX.Element {
     >
       <button
         onClick={toggleCollapse}
-        className="p-2 hover:opacity-80 transition-opacity flex justify-end w-full text-2xl"
+        className="p-2 hover:opacity-80 transition-opacity flex justify-end w-full text-2xl cursor-pointer"
         aria-label="Close sidebar"
       >
         <FontAwesomeIcon icon={faSquareXmark} />
@@ -44,8 +44,8 @@ export default function Sidebar(): JSX.Element {
                 ${isBgLight ? "hover:bg-black/5" : "hover:bg-white/10"}
                 ${
                   isActive
-                    ? "text-blue-600"
-                    : "text-[oklch(0.76_0.02_264)] hover:text-blue-500"
+                    ? "text-(--color-primary-active)"
+                    : "text-(--color-text) hover:text-(--color-primary-hover)"
                 }
               `
               }
