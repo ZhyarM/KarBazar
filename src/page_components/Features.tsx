@@ -25,7 +25,7 @@ function Features() {
 
         <section className="flex flex-row justify-center items-center flex-wrap m-auto gap-4">
           {cardContent.map((el) => (
-            <Cards logo={el.logo} text={el.text} />
+            <Cards key={el.text} logo={el.logo} text={el.text} />
           ))}
         </section>
       </article>

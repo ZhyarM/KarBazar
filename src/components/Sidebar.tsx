@@ -23,7 +23,6 @@ export default function Sidebar(): JSX.Element {
         }
         ${isCollapse ? "translate-x-0" : "-translate-x-full"}
       `}
-      aria-hidden={!isCollapse}
     >
       <button
         onClick={toggleCollapse}
