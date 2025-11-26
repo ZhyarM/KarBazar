@@ -7,7 +7,7 @@ function Features() {
 
   return (
     <>
-      <article className="flex flex-col justify-center items-center py-3.5 gap-6 my-9">
+      <article className="flex flex-col justify-center items-center py-3.5 gap-6 my-9 ">
         <section className="flex flex-col justify-center items-center gap-3">
           <p
             className={`flex justify-center items-center text-4xl font-medium bg-transparent ${
