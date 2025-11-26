@@ -95,6 +95,7 @@ body.light {
   color: var(--color-text);
 
   --blur-shadow:rgba(0, 0, 0, 0.45);
+    --home-image:url('assets/background-home-light.svg');
 
 }
 
@@ -108,6 +109,7 @@ body.dark {
   background-repeat: no-repeat;
   background-attachment: fixed; /* Optional: keeps bg in place while scrolling */
 
+  --home-image:url('assets/background-home.svg');
 
     --blur-shadow:rgba(0, 0, 0, 0.45);
 
@@ -190,6 +192,11 @@ body.dark {
 
   color: var(--color-text);
   background-color: var(--color-background);
+}
+
+
+body::-webkit-scrollbar{
+  scrollbar-width: none;
 }
 
 
@@ -286,12 +293,13 @@ body.dark {
 
 .background-blur{
 
-  backdrop-filter: blur(3px);
-  -webkit-backdrop-filter: blur(1px);
-  background: transparent;
+  backdrop-filter: blur(5px);
+  
+  
   box-shadow: 0 4px 7px var(--blur-shadow);
+  background-color: var(--color-text-inverse);
+ 
 
-  border-radius: 25px;
 ;
   
 
@@ -339,31 +347,15 @@ body.dark {
   position: relative;
 }
 
-/* checkmark */
-.cb input:checked + span {
-  background-color: #3b82f6;
-  border-color: #3b82f6;
-}
-
-.cb input:checked + span::after {
-  content: "";
-  position: absolute;
-  top: 3px;
-  left: 6px;
-  width: 5px;
-  height: 10px;
-  border: solid white;
-  border-width: 0 2px 2px 0;
-  transform: rotate(45deg);
-}
 
 
 .SingUpBtn{
-  padding: 1rem;
+  padding: 0.6rem;
   background-color: var(--btn-primary);
   color: var(--color-text-inverse);
-  border-radius: 15px;
-  font-weight: 600;
+  border-radius: 10px;
+  font-weight: 700;
+  font-size: large;
   width: 100%;
 }
 
@@ -379,4 +371,52 @@ body.dark {
     opacity: 1;
     transform: translateY(0);
   }
+}
+
+
+.move-right{
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 1s ease-in-out forwards;
+}
+
+@keyframes move-right {
+  to{
+    opacity: 0;
+    transform: translateX(5000);
+  }
+  
+}
+
+.move-left{
+  opacity: 1;
+  transform: translateX(0);
+  transition: all 1s ease-in-out forwards;
+}
+
+@keyframes move-left {
+  to{
+    opacity: 0;
+    transform: translateX(-5000);
+  }
+  
+}
+
+
+.home-background{
+
+ background-image: var(--home-image);
+  background-size: cover;
+  background-position: center bottom;
+  background-repeat: no-repeat;
+  background-attachment: fixed; /* Optional: keeps bg in place while scrolling */
+
+}
+
+.nav {
+  border: 2px solid var(--color-border);
+  backdrop-filter: blur(5px);
+  -webkit-backdrop-filter: blur(2px);
+  background: transparent;
+  border-radius: 5px;
 }

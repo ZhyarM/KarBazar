@@ -6,16 +6,16 @@ function Hero() {
     <>
       <section
         className="relative flex flex-row flex-nowrap py-32 px-4 
-         w-full max-w-9xl h-[644px] justify-center
-         font-sans text-base font-normal leading-6 text-white text-left
+         w-full max-w-9xl h-screen justify-center align-middle
+         font-sans text-base font-normal leading-6 text-(--color-text) text-left
          bg-transparent border-0 rounded-none
-         opacity-100 transition-all overflow-visible [background-image:var(--gradient-primary)]"
+         opacity-100 transition-all overflow-visible "
       >
-        <div className="flex justify-start items-center flex-col gap-2">
+        <div className="flex justify-start items-center flex-col gap-10">
           <span
             className="inline-flex items-center justify-center gap-1 py-0.5 px-2 
                      w-[250px] h-[22px] font-inter text-[12px] font-medium leading-4 
-                     text-center text-white bg-[oklab(0.999994_0.0000455678_0.0000200868/_0.3)] 
+                     text-center text-(--color-text) input-text 
                      border border-[oklab(0.999994_0.0000455678_0.0000200868/_0.3)] 
                      rounded-md transition-colors duration-150 ease-in-out overflow-hidden hover:backdrop:backdrop-blur-2xl cursor-default"
           >
@@ -24,7 +24,7 @@ function Hero() {
           <h1
             className="text-center font-inter text-2xl sm:text-5xl md:text-[50px] 
             font-bold leading-normal md:leading-[55px] 
-            w-full max-w-[700px] text-amber-50"
+            w-full max-w-[700px] text-(--color-text)"
           >
             Find the Perfect <br />
             Freelancer for Your <br />

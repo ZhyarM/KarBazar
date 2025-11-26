@@ -3,12 +3,13 @@ import Input from "../../components/input";
 import { useState } from "react";
 import { prefix } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/Button";
+import { Link } from "react-router";
 
 function SignUp() {
   interface SignupForm {
     first_name: string;
     last_name: string;
-    gender: "Male" | "Female" | "";
+    Type: "Client" | "Bussiness" | "";
     email: string;
     password: string;
     confirm_password: string;
@@ -17,14 +18,14 @@ function SignUp() {
   const [form, setForm] = useState<SignupForm>({
     first_name: "",
     last_name: "",
-    gender: "",
+    Type: "",
     email: "",
     password: "",
     confirm_password: "",
   });
 
   const updateForm = (Field: keyof SignupForm, value: string) => {
-    alert(value)
+ 
     setForm((prev) => ({
       ...prev,
       [Field]: value,
@@ -37,7 +38,7 @@ function SignUp() {
         id="fill_up_side"
         className="fade-up   w-2/3 p-16  h-fit m-auto  rounded-2xl "
       >
-        <h1 className="fade-up page-title gradient-text p-3">
+        <h1 className="fade-up page-title gradient-text">
           Start Your Freelance Journey
         </h1>
         <h2 className="fade-up small-title mt-10 w-2/3">
@@ -73,45 +74,50 @@ function SignUp() {
       </div>
       <div
         id="sign_up_side"
-        className="fade-up    w-1/2  m-auto flex flex-col justify-baseline p-8 background-blur"
+        className="fade-up  border-(--color-text) border-l-3  w-1/2  m-auto flex flex-col justify-baseline p-8  "
       >
         <div className="fade-up flex  flex-row gap-1 h-fit">
-          <p className="fade-up flex justify-center items-center h-[30px] w-[30px] bg-(--color-primary) text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
+          <p className="fade-up flex justify-center items-center h-[40px] w-[40px] bg-(--color-primary) text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
             K
           </p>
 
-          <div className="fade-up text-lg font-bold text-(--color-primary) whitespace-nowrap">
+          <div className="fade-up text-2xl font-bold text-(--color-primary) whitespace-nowrap">
             KarBazar
           </div>
         </div>
+        <div className="pt-8">
+          <p className="section-title">Create your First Account</p>
+        </div>
         <div className="fade-up flex mt-8">
           <div
-            onClick={() => updateForm("gender", "Male")}
-            className={`fade-up btn rounded-l-lg border w-1/2 p-2 flex justify-center btn-hover ${
-              form.gender === "Male" ? "selected" : ""
+            onClick={() => updateForm("Type", "Client")}
+            className={`font-bold fade-up text-lg btn rounded-l-lg border w-1/2 p-2 flex justify-center btn-hover ${
+              form.Type === "Client" ? "selected" : ""
             } `}
           >
-            Male
+            Client Account
           </div>
           <div
-            onClick={() => updateForm("gender", "Female")}
-            className={`fade-up btn rounded-r-lg border w-1/2 p-2 flex justify-center btn-hover ${
-              form.gender === "Female" ? "selected" : ""
+            onClick={() => updateForm("Type", "Bussiness")}
+            className={`font-bold text-lg fade-up btn rounded-r-lg border w-1/2 p-2 flex justify-center btn-hover ${
+              form.Type === "Bussiness" ? "selected" : ""
             } `}
           >
-            Female
+            Bussiness Account
           </div>
         </div>
 
         <div className="fade-up flex flex-col gap-10 mt-8">
           <div className="fade-up flex flex-row gap-4">
             <Input
+              onChange={(value) => updateForm("first_name", value)}
               icon=""
               label="First Name"
               placeholder="Zhyar"
               size="1/2"
             ></Input>
             <Input
+              onChange={(value) => updateForm("last_name", value)}
               icon=""
               label="Last Name"
               placeholder="Mohhammad"
@@ -120,40 +126,38 @@ function SignUp() {
           </div>
 
           <Input
+            onChange={(value) => updateForm("email", value)}
             icon=""
             label="Email Address"
             placeholder="Exmaple@gmail.com"
             size="full"
           ></Input>
           <Input
+            onChange={(value) => updateForm("password", value)}
             icon=""
             label="Password"
             placeholder="d$bb*****"
             size="full"
           ></Input>
           <Input
+            onChange={(value) => updateForm("confirm_password", value)}
             icon=""
             label="Confirm Passowrd"
             placeholder="d$bb*****"
             size="full"
           ></Input>
         </div>
-        <div className="fade-up felx flex-row mt-4">
-          <input type="checkbox" />I agree to the
-          <span className="fade-up text-blue-600 font-bold ">
-            Terms of Service{" "}
-          </span>
-          and
-          <span className="fade-up text-blue-600 font-bold ">
-            Privacy Policy
-          </span>
-        </div>
+
         <div className="fade-up flex flex-row items-center justify-center w-full h-fit mt-10">
-          <button className="fade-up SingUpBtn">Sign Up</button>
+          <button className="fade-up 
+           SingUpBtn">Sign Up</button>
         </div>
         <div className="fade-up flex gap-1 items-center justify-center mt-4">
-          already have an{" "}
-          <span className="text-blue-600 font-bold">Account</span>
+          already have an
+          <Link className="text-blue-600 font-bold" to={"/sign-in"}>
+            
+            Account
+          </Link>
         </div>
       </div>
     </div>
