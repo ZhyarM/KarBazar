@@ -32,8 +32,8 @@ function SearchBar({ onSearch }: SearchBarProps) {
   placeholder="Search for services..."
   className="
     h-8
-    w-1/4 sm:w-64 md:w-80 lg:w-[420px] 
-    pl-9 pr-3 text-sm
+    w-1/4 sm:w-64 md:w-80 lg:w-[420px]
+    pl-9 pr-3 text-sm 
     rounded-4xl border border-gray-300 dark:border-gray-600
     bg-gray-50 dark:bg-gray-800
     text-gray-800 dark:text-gray-100

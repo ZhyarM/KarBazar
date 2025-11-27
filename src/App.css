@@ -214,7 +214,7 @@ body::-webkit-scrollbar{
 
 
 /* ----------------------------------------
-   PAGE TITLES & HEADINGS
+  PAGE TITLES & HEADINGS
 ---------------------------------------- */
 
 /* Very large title (landing pages, dashboards) */
@@ -298,11 +298,6 @@ body::-webkit-scrollbar{
   
   box-shadow: 0 4px 7px var(--blur-shadow);
   background-color: var(--color-text-inverse);
- 
-
-;
-  
-
 
 }
 
@@ -311,9 +306,6 @@ body::-webkit-scrollbar{
   color:var(--color-text);
   transition: all linear 0.3s;
   border-radius: 8px;
-
-  
-  
 }
 
 
@@ -322,7 +314,7 @@ body::-webkit-scrollbar{
 
 
   outline: 2px solid var(--color-primary);
- box-shadow: 0 0 0 2px var(--color-primary);
+  box-shadow: 0 0 0 2px var(--color-primary);
 
 }
 
@@ -346,8 +338,6 @@ body::-webkit-scrollbar{
   transition: 0.25s ease;
   position: relative;
 }
-
-
 
 .SingUpBtn{
   padding: 0.6rem;
@@ -405,7 +395,7 @@ body::-webkit-scrollbar{
 
 .home-background{
 
- background-image: var(--home-image);
+  background-image: var(--home-image);
   background-size: cover;
   background-position: center bottom;
   background-repeat: no-repeat;

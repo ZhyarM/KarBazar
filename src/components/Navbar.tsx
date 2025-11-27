@@ -1,4 +1,4 @@
-import { NavLink, Link, useSearchParams } from "react-router-dom";
+import { NavLink, Link } from "react-router-dom";
 import { useTheme } from "../context/ThemeContext.tsx";
 import Button from "./Button.tsx";
 import SearchBar from "./SearchBar.tsx";
@@ -21,12 +21,12 @@ function Navbar() {
     }
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
-  },[])
+  }, [])
 
   return (
     <>
       <nav
-        className={`w-full fixed z-50 flex justify-between items-center gap-1 py-2.5 px-4 text-sm transition-all duration-300 ${
+        className={`w-full fixed z-50 flex justify-between items-center gap-2 py-2.5 px-4 text-sm transition-all duration-300 ${
           isTop ? "bg-transparent":"bg-(--color-background)" 
         }`}
       >
