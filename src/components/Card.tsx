@@ -19,7 +19,7 @@ function Card({ logo, text }: CardProps) {
     w-[360px] h-[211px]
     font-inter text-lg leading-6
     text-(--color-text)
-    bg-(--color-card)
+    bg-(--color-surface)
     rounded-xl
     shadow-lg
     group transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:border-(--color-accent-hover)
@@ -36,8 +36,8 @@ function Card({ logo, text }: CardProps) {
     "
         >
           <span
-            className="text-xl text-center text-(--color-secondary) rounded-full p-2.5 bg-(--color-accent) transition-transform duration-200
-  group-hover:scale-120"
+            className="flex items-center justify-center text-xl text-center text-(--color-secondary) rounded-full h-14 w-14 bg-(--color-primary) transition-transform duration-200
+  group-hover:scale-110"
           >
             {logo}
           </span>

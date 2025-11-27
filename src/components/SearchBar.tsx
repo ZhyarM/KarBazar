@@ -12,7 +12,7 @@ function SearchBar({ onSearch }: SearchBarProps) {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="pointer-events-none absolute left-3 h-4 w-4 text-gray-400 dark:text-gray-300"
+        className="pointer-events-none absolute left-3 h-4 w-4 text-(--color-text)"
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -27,21 +27,22 @@ function SearchBar({ onSearch }: SearchBarProps) {
       </svg>
 
       <input
-  type="search"
-  name="q"
-  placeholder="Search for services..."
-  className="
-    h-8
-    w-1/4 sm:w-64 md:w-80 lg:w-[420px] 
+        type="search"
+        name="q"
+        placeholder="Search for services..."
+        className="
+    h-11
+    w-1/4 sm:w-64 md:w-80 lg:w-[400px] 
     pl-9 pr-3 text-sm
     rounded-4xl border border-gray-300 dark:border-gray-600
-    bg-gray-50 dark:bg-gray-800
-    text-gray-800 dark:text-gray-100
-    placeholder-gray-400 dark:placeholder-gray-500
+    bg-(--color-surface)
+    placeholder-gray-400
+    text-(--color-text)
+   
     focus:outline-none focus:ring-2 focus:ring-(--color-primary)
     transition-all duration-300 hover:shadow-md
   "
-/>
+      />
     </form>
   );
 }

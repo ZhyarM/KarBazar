@@ -7,14 +7,13 @@ function Features() {
 
   return (
     <>
-      <article className="flex flex-col justify-center items-center py-3.5 gap-6 my-9 ">
+      <article className="flex flex-col justify-center items-center py-3.5 gap-6 bg-(--color-bg) ">
         <section className="flex flex-col justify-center items-center gap-3">
           <p
-            className={`flex justify-center items-center text-4xl font-medium bg-transparent ${
-              isBgLight
-                ? "bg-[oklch(0.96_0.025_264)] text-[oklch(0.15_0.05_264)]"
-                : "bg-[oklch(0.15_0.025_246)] text-[oklch(0.92_0.025_264)]"
-            }`}
+            className={`flex justify-center items-center text-4xl font-medium bg-transparent  text-(--color-text)
+              
+              
+              `}
           >
             Explore by Category
           </p>
