@@ -6,16 +6,20 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
 import NavLinks from "../utils/NavLinks.tsx";
 import { useCollapse } from "../context/SideBarContextCollapse.tsx";
-import { useEffect, useState } from "react";
 
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
-  const [isTop, setIsTop] = useState(true);
 
   return (
     <>
-      <nav className="w-full fixed z-50 grid grid-cols-3 items-center border py-2.5 px-4 text-sm bg-(--color-bg)">
+      <nav
+        className=" w-full fixed z-50 
+  grid grid-cols-[auto_1fr_auto] 
+  items-center 
+  border py-2.5 px-4 text-sm 
+  bg-(--color-bg)"
+      >
         {/* LEFT */}
         <div className="flex items-center gap-1">
           <span className="lg:hidden md:block" onClick={toggleCollapse}>
@@ -70,7 +74,12 @@ function Navbar() {
           </button>
 
           <Link to="/sign-in">
-            <Button text="Sign In" bgColor="bg-gray-200" backdropColor="" textColor="black" />
+            <Button
+              text="Sign In"
+              bgColor="bg-gray-200"
+              backdropColor=""
+              textColor="black"
+            />
           </Link>
 
           <Link to="/sign-up">

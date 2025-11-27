@@ -1,8 +1,8 @@
 import CheckMark from "../../components/style_components/checkMark";
 import Input from "../../components/input";
 import { useState } from "react";
-import { faCreditCardAlt, faEye, faEyeDropper, faEyeSlash, faRegistered, fas, faSign, faSignIn, faUserPlus, prefix } from "@fortawesome/free-solid-svg-icons";
-import Button from "../../components/Button";
+import { faEye,  faEyeSlash, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+
 import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

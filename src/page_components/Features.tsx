@@ -1,9 +1,8 @@
-import { useTheme } from "../context/ThemeContext";
 import Cards from "../components/Card.tsx";
 import cardContent from "../utils/FeaturesContentItem.tsx";
 
 function Features() {
-  const { isBgLight } = useTheme();
+ 
 
   return (
     <>

@@ -1,7 +1,7 @@
-import { faArrowRight, faCheck, faMoon } from "@fortawesome/free-solid-svg-icons";
+import { faArrowRight, faCheck } from "@fortawesome/free-solid-svg-icons";
 import Button from "../components/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import image from "../assets/Screenshot 2025-11-27 141029.png"
+
 
 
 
@@ -19,14 +19,14 @@ function Hero() {
           <span
             className=" bg-(--color-accent) text-(--color-text-inverse)
             font-bold text-4xl rounded-2xl p-4 pt-8 pb-8 color-animation 
-            
+            mt-3
             "
           >
             KarBazar
           </span>
           <h1
             className="text-center  font-inter text-2xl sm:text-5xl md:text-7xl
-            tracking-tight font-[700] font-sans
+            tracking-tight font-bold font-sans
              leading-normal md:leading-[90px] 
             w-full  text-(--color-text)"
 

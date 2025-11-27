@@ -5,17 +5,17 @@ import { Link } from "react-router-dom";
 
 function TrendingServices() {
   return (
-    <article className="flex justify-center items-center flex-wrap gap-4">
+    <article className="flex justify-center items-center flex-wrap gap-4 bg-(--color-bg) p-2.5">
       <section className="w-full flex justify-between items-center pl-6 pr-6 mb-6">
         <div className="flex flex-col justify-start items-start gap-2">
-          <p className="section-title">Trending Services</p>
-          <span className="small-title">Most popular gigs this week</span>
+          <p className="section-title text-(--color-text)">Trending Services</p>
+          <span className="small-title text-(--color-text)">Most popular gigs this week</span>
         </div>
         <Link to="/browsegigs">
           <Button
             text="View all >"
-            bgColor="bg-(--btn-primary)"
-            textColor="--btn-primary-text"
+            bgColor="bg-(--color-primary)"
+            textColor="var(--color-text)"
             backdropColor=""
           />
         </Link>

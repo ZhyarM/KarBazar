@@ -38,7 +38,7 @@ function PlatformStats() {
 
   return (
     <>
-      <section className="w-full flex justify-around items-center flex-wrap gap-4 px-2 py-3 mt-3">
+      <section className="w-full flex justify-around items-center flex-wrap gap-4 px-2 py-16 bg-(--color-bg)">
         {stats.map((el) => (
           <div className="flex flex-col items-center justify-center gap-2 p-3">
             <span
@@ -51,8 +51,8 @@ function PlatformStats() {
             >
               {el.icon}
             </span>
-            <p className="subsection-title">{el.numbers}</p>
-            <p className="small-title">{el.text}</p>
+            <p className="subsection-title text-(--color-text)">{el.numbers}</p>
+            <p className="small-title text-(--color-text)">{el.text}</p>
           </div>
         ))}
       </section>

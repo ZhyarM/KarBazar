@@ -25,7 +25,7 @@ function UsersCard({
     font-inter text-base leading-6
     text-left
     text-(--color-text)
-    bg-(-color-card) border-(--color-border)
+    bg-(--color-card) border-(--color-border)
     rounded-xl
     shadow-xl
     overflow-hidden

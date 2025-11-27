@@ -1,28 +1,29 @@
 @import "tailwindcss";
 @import url(assets/svg-light.svg);
 @import url(assets/svg-dark.svg);
+
 /* ============================
    GLOBAL VARIABLES (shared)
 ============================ */
 :root {
   /* Brand Colors */
-  
   --color-primary: #2563EB;
   --color-primary-dark: #1E40AF;
   --color-primary-light: #38BDF8;
 
-  --color-accent:#F97316;
+  --color-accent: #F97316;
 
   /* Feedback */
   --color-success: #22C55E;
   --color-warning: #FACC15;
   --color-danger:  #EF4444;
 
-  /* Radius, Shadows, Spacing */
+  /* Radius */
   --radius-sm: 4px;
   --radius-md: 8px;
   --radius-lg: 12px;
 
+  /* Shadows */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
   --shadow-lg: 0 10px 15px rgba(0,0,0,0.12);
@@ -31,42 +32,75 @@
   --transition-fast: 150ms ease;
   --transition-normal: 250ms ease;
 
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #2563EB, #4338CA, #6D28D9);
+  --gradient-secondary: linear-gradient(135deg, #38BDF8, #0EA5E9, #3B82F6);
+  --gradient-accent: linear-gradient(135deg, #F97316, #F59E0B, #EF4444);
+  --gradient-surface: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  --gradient-glow: radial-gradient(circle at top left, rgba(59,130,246,0.4), rgba(30,58,138,0) 70%);
 
+  /* ======================================
+      TYPOGRAPHY — NEW VARIABLES ADDED
+  ====================================== */
 
+  /* 🌟 Section Title (big section headers) */
+  --section-title-size: 2.25rem;      /* 36px */
+  --section-title-weight: 700;
+
+  /* ✨ Subsection Title */
+  --subsection-title-size: 1.5rem;    /* 24px */
+  --subsection-title-weight: 600;
+
+  /* 📌 Small Title */
+  --small-title-size: 1.25rem;        /* 20px */
+  --small-title-weight: 600;
+
+  /* 📝 Body scales */
+  --body-lg: 1.125rem;                /* 18px */
+  --body-md: 1rem;                    /* 16px */
+  --body-sm: 0.875rem;                /* 14px */
+
+  /* Responsive scaling */
+  --section-title-size-lg: 3rem;      /* 48px */
+  --subsection-title-size-lg: 2rem;   /* 32px */
 }
 
-body::-webkit-scrollbar{
+/* Hide scrollbar */
+body::-webkit-scrollbar {
   scrollbar-width: none;
-
 }
 
 /* ============================
    🌞 LIGHT MODE
 ============================ */
 body.light {
-  --color-bg: #F8FAFC;
-  --color-surface: #FFFFFF;
-  --color-bg-inverse:#0F172A;
-  
-  --color-text-inverse:#F1F5F9;
+  --color-bg: #F2F6FF;          /* soft cool white instead of #F8FAFC */
+  --color-surface: #FFFFFF;     /* you can also change this if needed */
+  --color-bg-inverse: #0F172A;
+
   --color-text: #0F172A;
+  --color-text-inverse: #F1F5F9;
   --color-text-muted: #475569;
 
   --color-border: #E2E8F0;
 
---svg: url('/src/assets/svg-light.svg');
---svg-hero: url('/src/assets/svg-hero-light.svg');
+  --color-card: #F2F6FF;        /* was var(--color-surface) */
+  --color-card-hover: #E4ECFF;  /* subtle hover effect */
+
+  --svg: url('/src/assets/svg-light.svg');
+  --svg-hero: url('/src/assets/svg-hero-light.svg');
 }
 
 /* ============================
    🌙 DARK MODE
-   Add: <html class="dark">
 ============================ */
 body.dark {
   --svg: url('/src/assets/svg-dark.svg');
   --svg-hero: url('/src/assets/svg-hero-dark.svg');
+
   --color-bg: #0F172A;
-    --color-bg-inverse:#F8FAFC;
+  --color-bg-inverse:#F8FAFC;
+
   --color-surface: #1E293B;
 
   --color-text: #F1F5F9;
@@ -75,33 +109,34 @@ body.dark {
 
   --color-border: #334155;
 
-  /* Adjust shadows for dark mode */
+  --color-card: var(--color-surface);
+  --color-card-hover: #111827;
+
+  /* Dark mode shadow adjustments */
   --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
   --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
   --shadow-lg: 0 10px 15px rgba(0,0,0,0.6);
 }
 
-.svg{
-  background:var(--svg);
-    background-repeat: no-repeat;
+/* Background SVG utilities */
+.svg {
+  background: var(--svg);
+  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-
-  /* Smooth animation when switching themes */
   transition: background-image 0.3s ease;
 }
-.svg-hero{
 
-  background:var(--svg-hero);
-    background-repeat: no-repeat;
+.svg-hero {
+  background: var(--svg-hero);
+  background-repeat: no-repeat;
   background-size: cover;
   background-position: center;
-
-  /* Smooth animation when switching themes */
   transition: background-image 0.3s ease;
 }
+
 /* ======================================
-   TYPOGRAPHY
+   TYPOGRAPHY UTILITIES
 ====================================== */
 
 .title {
@@ -110,20 +145,40 @@ body.dark {
   font-weight: 700;
 }
 
-.heading {
-  font-size: var(--heading);
-  line-height: 1.3;
-  font-weight: 600;
+/* New typography classes */
+.section-title {
+  font-size: var(--section-title-size);
+  font-weight: var(--section-title-weight);
+  line-height: 1.2;
 }
 
-.body-text {
-  font-size: var(--body);
-  line-height: 1.5;
+.subsection-title {
+  font-size: var(--subsection-title-size);
+  font-weight: var(--subsection-title-weight);
+  line-height: 1.25;
 }
 
+.small-title {
+  font-size: var(--small-title-size);
+  font-weight: var(--small-title-weight);
+}
+
+.body-lg { font-size: var(--body-lg); }
+.body-md { font-size: var(--body-md); }
+.body-sm { font-size: var(--body-sm); }
+
+/* Responsive scaling */
+@media (min-width: 1024px) {
+  .section-title {
+    font-size: var(--section-title-size-lg);
+  }
+  .subsection-title {
+    font-size: var(--subsection-title-size-lg);
+  }
+}
 
 /* ======================================
-   SPACING (sections / content)
+   SPACING
 ====================================== */
 
 .section-spacing {
@@ -134,45 +189,17 @@ body.dark {
   padding: var(--content-spacing);
 }
 
+/* Utilities */
+.input-padding { padding: var(--input-padding); }
+.button-padding { padding: var(--button-padding); }
+.card-padding { padding: var(--card-padding); }
 
-/* ======================================
-   COMPONENT PADDING
-====================================== */
-
-.input-padding {
-  padding: var(--input-padding);
-}
-
-.button-padding {
-  padding: var(--button-padding);
-}
-
-.card-padding {
-  padding: var(--card-padding);
-}
-
-
-/* ======================================
-   LAYOUT
-====================================== */
-
-.navbar-height {
-  height: var(--navbar-height);
-}
-
-.sidebar-width {
-  width: var(--sidebar-width);
-}
-
+.navbar-height { height: var(--navbar-height); }
+.sidebar-width { width: var(--sidebar-width); }
 .container-width {
   max-width: var(--container-width);
   margin-inline: auto;
 }
-
-
-/* ======================================
-   ICONS & MEDIA
-====================================== */
 
 .icon-size {
   width: var(--icon-size);
@@ -185,60 +212,29 @@ body.dark {
   border-radius: 50%;
 }
 
+.radius { border-radius: var(--radius); }
+.shadow { box-shadow: var(--shadow); }
+.border-default { border: var(--border); }
 
-/* ======================================
-   RADIUS, SHADOW, BORDER
-====================================== */
+/* Utility z-index */
+.z-modal { z-index: var(--z-modal); }
+.z-dropdown { z-index: var(--z-dropdown); }
+.z-overlay { z-index: var(--z-overlay); }
 
-.radius {
-  border-radius: var(--radius);
-}
+.nav-link { font-size: var(--title); }
 
-.shadow {
-  box-shadow: var(--shadow);
-}
-
-.border-default {
-  border: var(--border);
-}
-
-
-/* ======================================
-   Z-INDEX UTILITIES
-====================================== */
-
-.z-modal {
-  z-index: var(--z-modal);
-}
-
-.z-dropdown {
-  z-index: var(--z-dropdown);
-}
-
-.z-overlay {
-  z-index: var(--z-overlay);
-}
-
-
-.nav-link{
-  font-size: var(--title);
-}
-
-.btn{
+.btn {
   background-color: var(--color-primary);
-
 }
 
-.btn-secondary{
+.btn-secondary {
   background-color: var(--color-gray-400);
 }
 
-.selected{
+.selected {
   background-color: var(--color-accent);
 }
 
-
-.input-focus:has(:focus){
+.input-focus:has(:focus) {
   outline: 2px solid var(--color-primary);
 }
-
