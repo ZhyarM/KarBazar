@@ -1,24 +1,31 @@
 import CheckMark from "../../components/style_components/checkMark";
 import Input from "../../components/input";
 import { useState } from "react";
-import { prefix } from "@fortawesome/free-solid-svg-icons";
-import Button from "../../components/Button";
+import {
+  faEye,
+  faEyeSlash,
+  faSignIn,
+} from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 function SignIn() {
   interface SignInForm {
-  
+    first_name: string;
+    last_name: string;
+    Type: "Client" | "Bussiness" | "";
     email: string;
     password: string;
-   
+    confirm_password: string;
   }
 
   const [form, setForm] = useState<SignInForm>({
-   
- 
+    first_name: "",
+    last_name: "",
+    Type: "",
     email: "",
     password: "",
-    
+    confirm_password: "",
   });
 
   const updateForm = (Field: keyof SignInForm, value: string) => {
@@ -28,97 +35,135 @@ function SignIn() {
     }));
   };
 
+  const [IsHidden, setIsHidden] = useState(false);
+
   return (
-    <div className="flex flex-row h-screen m-auto max-w-[1400px] background-image ">
+    <div className="flex flex-row h-screen  w-full background-image ">
       <div
         id="sign_up_side"
-        className="fade-up  border-(--color-text) border-r-3  w-1/2  m-auto flex flex-col justify-baseline p-8  "
+        className="fade-up w-full md:w-1/2 bg-(--color-bg-inverse) flex flex-col justify-center items-center     "
       >
-        <div className="fade-up flex  flex-row gap-1 h-fit">
-          <p className="fade-up flex justify-center items-center h-[40px] w-[40px] bg-(--color-primary) text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
-            K
-          </p>
-
-          <div className="fade-up text-2xl font-bold text-(--color-primary) whitespace-nowrap">
-            KarBazar
-          </div>
-        </div>
-        <div className="pt-8">
-          <p className="section-title">Login To your Account</p>
-        </div>
-
-        <div className="fade-up flex flex-col gap-10 mt-8">
-          <Input
-            onChange={(value) => updateForm("email", value)}
-            icon=""
-            label="Email Address"
-            placeholder="Exmaple@gmail.com"
-            size="full"
-          ></Input>
-          <Input
-            onChange={(value) => updateForm("password", value)}
-            icon=""
-            label="Password"
-            placeholder="d$bb*****"
-            size="full"
-          ></Input>
-        </div>
-
-        <div className="fade-up flex flex-row items-center justify-center w-full h-fit mt-10">
-          <button
-            className="fade-up 
-           SingUpBtn"
+        <div className=" h-fit w-fit  ">
+          <h1
+            className="  font-inter text-2xl sm:text-5xl md:text-5xl
+            tracking-tight font-bold font-sans text-center mb-20
+             leading-normal md:leading-[90px] 
+              text-(--color-text-inverse)"
           >
             Sign In
-          </button>
-        </div>
-        <div>
-          <input type="checkbox" />
-        </div>
-        <div className="fade-up flex gap-1 items-center justify-center mt-4">
-          Don't have an 
-          <Link className="text-blue-600 font-bold" to={"/sign-up"}>
-            Account
-          </Link>
+            <FontAwesomeIcon
+              className="mr-2 text-(--color-accent)"
+              icon={faSignIn}
+            />
+          </h1>
+          <h2
+            className="  font-inter text-2xl sm:text-5xl md:text-xl
+            tracking-tight font-bold font-sans pb-14
+              text-(--color-text-inverse)"
+          >
+            Welcome back we are happy to have you again
+          </h2>
+
+          <div className="fade-up flex flex-col gap-10 mt-8">
+            <Input
+              type="text"
+              onChange={(value) => updateForm("email", value)}
+              icon=""
+              label="Email Address"
+              placeholder="Exmaple@gmail.com"
+              size="full"
+            ></Input>
+
+            <div className="relative">
+              <Input
+                type={IsHidden ? "text" : "password"}
+                onChange={(value) => updateForm("password", value)}
+                icon=""
+                label="Password"
+                placeholder="d$bb*****"
+                size="full"
+              ></Input>
+              <FontAwesomeIcon
+                onClick={() => setIsHidden((prev) => !prev)}
+                className="absolute top-1/3 hover:cursor-pointer right-2 text-(--color-text-inverse)"
+                icon={IsHidden ? faEye : faEyeSlash}
+              />
+            </div>
+          </div>
+
+          <div className="text-white font-bold fade-up flex flex-row items-center justify-center w-full h-10  mt-10 bg-(--color-accent) rounded-xl  ">
+            <button
+              className="fade-up 
+           SingUpBtn"
+            >
+              Sign Up
+            </button>
+          </div>
+          <div className="fade-up flex gap-1 items-center justify-center mt-4 text-(--color-text-inverse)">
+            already have an
+            <Link className="text-blue-600 font-bold" to={"/sign-in"}>
+              Account
+            </Link>
+          </div>
         </div>
       </div>
       <div
         id="fill_up_side"
-        className="fade-up   w-2/3 p-16  h-fit m-auto  rounded-2xl "
+        className="fade-up hidden md:block svg  w-1/2 bg-(--color-bg) flex flex-col justify-center items-center p-24    "
       >
-        <h1 className="fade-up page-title gradient-text">
-          Start Your Freelance Journey
-        </h1>
-        <h2 className="fade-up small-title mt-10 w-2/3">
-          Join KarBazar and connect with clients worldwide. Turn your skills
-          into income.
-        </h2>
-        <ul className="fade-up label-heading mt-10">
-          <li className="fade-up flex  gap-1  ">
-            <CheckMark />
-            <p className="fade-up flex flex-col self-center">
-              Access to 50,000+ verified freelancers
+        <div className=" h-fit w-fit flex flex-col gap-5   ">
+          <div className="fade-up flex  flex-row gap-1 h-fit">
+            <p className="fade-up flex justify-center items-center h-10 w-10 bg-(--color-primary) text-amber-50 rounded-lg font-bold hover:scale-110 transition-transform duration-300">
+              K
             </p>
-          </li>
-          <li className="fade-up flex  gap-1  ">
-            <CheckMark />
-            <p className="fade-up flex flex-col self-center">
-              Secure payment protection
-            </p>
-          </li>
-          <li className="fade-up flex  gap-1  ">
-            <CheckMark />
-            <p className="fade-up flex flex-col self-center">
-              24/7 customer support
-            </p>
-          </li>
-          <li className="fade-up flex  gap-1  ">
-            <CheckMark />
-            <p className="fade-up flex flex-col self-center">
-              Build your reputation
-            </p>
-          </li>
-        </ul>
+
+            <div className="fade-up text-2xl font-bold text-(--color-primary) whitespace-nowrap">
+              KarBazar
+            </div>
+          </div>
+          <h1
+            className="  font-inter text-2xl sm:text-5xl md:text-7xl
+            tracking-tight font-bold font-sans
+             leading-normal md:leading-[90px] 
+              text-(--color-text)"
+          >
+            Start Your Online Service
+          </h1>
+          <h2
+            className="  font-inter text-2xl sm:text-5xl md:text-xl
+            tracking-tight font-bold font-sans
+              text-(--color-text)"
+          >
+            Join KarBazar and connect with clients Nattion-wide. <br /> Turn
+            your skills into income.
+          </h2>
+          <ul className="fade-up label-heading mt-10 flex flex-col gap-5">
+            <li className="fade-up flex  gap-1  ">
+              <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
+              <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
+                create your professional profile
+              </p>
+            </li>
+            <li className="fade-up flex  gap-1  ">
+              <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
+              <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
+                showcase your protfolio
+              </p>
+            </li>
+            <li className="fade-up flex  gap-1  ">
+              <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
+              <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
+                Increae your income
+              </p>
+            </li>
+            <li className="fade-up flex  gap-1  ">
+              <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
+              <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
+                Build your reputation
+              </p>
+            </li>
+          </ul>
+        </div>
       </div>
     </div>
   );

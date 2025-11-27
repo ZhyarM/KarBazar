@@ -1,0 +1,50 @@
+<svg width="100%" height="100%" viewBox="0 0 1440 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Brand gradients -->
+    <linearGradient id="kzHeroDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="var(--color-primary-dark, #1E40AF)" />
+      <stop offset="100%" stop-color="var(--color-primary, #2563EB)" />
+    </linearGradient>
+
+    <linearGradient id="kzHeroStrokeDark" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="var(--color-primary, #2563EB)" stop-opacity="0.65"/>
+      <stop offset="100%" stop-color="var(--color-primary-dark, #1E40AF)" stop-opacity="0.55"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background fill -->
+  <rect width="100%" height="100%" fill="var(--color-bg, #0F172A)"/>
+
+  <!-- Large hero wave -->
+  <path
+    d="M0 300 C320 160 700 100 1020 220 C1320 330 1440 160 1440 120 L1440 600 L0 600 Z"
+    fill="url(#kzHeroDark)"
+    opacity="0.38"
+  />
+
+  <!-- Secondary wave -->
+  <path
+    d="M0 380 C320 450 700 500 1080 420 C1320 360 1440 460 1440 530 L1440 600 L0 600 Z"
+    fill="url(#kzHeroDark)"
+    opacity="0.25"
+  />
+
+  <!-- Pattern -->
+  <g opacity="0.55" stroke="url(#kzHeroStrokeDark)" stroke-width="1.6">
+    <!-- Lines -->
+    <path d="M-200 260 L1600 -200" />
+    <path d="M-200 360 L1600 -100" />
+    <path d="M-200 460 L1600 0" />
+    <path d="M-200 560 L1600 100" />
+
+    <!-- glow dots -->
+    <circle cx="320" cy="200" r="10" fill="url(#kzHeroDark)" opacity="1"/>
+    <circle cx="880" cy="260" r="9" fill="url(#kzHeroDark)" opacity="1"/>
+    <circle cx="1220" cy="340" r="7" fill="url(#kzHeroDark)" opacity="1"/>
+
+    <!-- glowing squares -->
+    <rect x="620" y="240" width="22" height="22" rx="6" fill="url(#kzHeroDark)" opacity="0.9"/>
+    <rect x="1080" y="140" width="18" height="18" rx="5" fill="url(#kzHeroDark)" opacity="0.9"/>
+  </g>
+
+</svg>

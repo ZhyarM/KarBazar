@@ -1,0 +1,50 @@
+<svg width="100%" height="100%" viewBox="0 0 1440 600" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <!-- Brand gradients -->
+    <linearGradient id="kzHeroLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="var(--color-primary-light, #38BDF8)" />
+      <stop offset="100%" stop-color="var(--color-primary, #2563EB)" />
+    </linearGradient>
+
+    <linearGradient id="kzHeroStrokeLight" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="var(--color-primary, #2563EB)" stop-opacity="0.45"/>
+      <stop offset="100%" stop-color="var(--color-primary-light, #38BDF8)" stop-opacity="0.35"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background fill -->
+  <rect width="100%" height="100%" fill="var(--color-bg, #F8FAFC)"/>
+
+  <!-- Large hero wave -->
+  <path
+    d="M0 300 C300 180 600 120 900 220 C1200 320 1440 180 1440 120 L1440 600 L0 600 Z"
+    fill="url(#kzHeroLight)"
+    opacity="0.28"
+  />
+
+  <!-- Smaller wave -->
+  <path
+    d="M0 380 C280 430 620 510 950 420 C1220 360 1440 440 1440 520 L1440 600 L0 600 Z"
+    fill="url(#kzHeroLight)"
+    opacity="0.18"
+  />
+
+  <!-- Pattern overlay -->
+  <g opacity="0.35" stroke="url(#kzHeroStrokeLight)" stroke-width="1.4">
+    <!-- Diagonal lines -->
+    <path d="M-200 250 L1600 -200" />
+    <path d="M-200 350 L1600 -100" />
+    <path d="M-200 450 L1600 0" />
+    <path d="M-200 550 L1600 100" />
+
+    <!-- contrast dots -->
+    <circle cx="300" cy="220" r="8" fill="url(#kzHeroLight)" opacity="0.95"/>
+    <circle cx="900" cy="180" r="10" fill="url(#kzHeroLight)" opacity="0.95"/>
+    <circle cx="1200" cy="340" r="7" fill="url(#kzHeroLight)" opacity="0.95"/>
+
+    <!-- geometric squares -->
+    <rect x="600" y="260" width="20" height="20" rx="5" fill="url(#kzHeroLight)" opacity="0.8"/>
+    <rect x="1050" y="150" width="16" height="16" rx="4" fill="url(#kzHeroLight)" opacity="0.8"/>
+  </g>
+
+</svg>
