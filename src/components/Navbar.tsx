@@ -14,7 +14,7 @@ function Navbar() {
   return (
     <>
       <nav
-        className=" w-full fixed z-50 
+        className=" w-full sticky top-0 z-50
   grid grid-cols-[auto_1fr_auto] 
   items-center 
   border py-2.5 px-4 text-sm 

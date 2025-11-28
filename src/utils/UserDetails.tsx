@@ -63,19 +63,7 @@ const users: User[] = [
     charge: "1800$",
     user_background_img: "",
     user_profile_img: "",
-  },
-
-  {
-    user_id: "5",
-    username: "soundwave",
-    description: "Audio engineer • Mixing & Mastering • Podcast cleanup",
-    rating: "4.6",
-    star_icon: <FontAwesomeIcon icon={faStar} />,
-    rating_number: "42",
-    charge: "900$",
-    user_background_img: "",
-    user_profile_img: "",
-  },
+  }
 ];
 
 export default users

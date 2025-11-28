@@ -109,7 +109,7 @@ function SignIn() {
       </div>
       <div
         id="fill_up_side"
-        className="fade-up hidden md:block svg  w-1/2 bg-(--color-bg) flex flex-col justify-center items-center p-24    "
+        className="fade-up hidden md:block svg  w-1/2 bg-(--color-bg) flex-col justify-center items-center p-24    "
       >
         <div className=" h-fit w-fit flex flex-col gap-5   ">
           <div className="fade-up flex  flex-row gap-1 h-fit">
