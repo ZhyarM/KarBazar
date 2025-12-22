@@ -1,4 +1,4 @@
-import { handleSearchSubmit } from "./../utils/HandleFormSearch";
+import { handleSearchSubmit } from "../../utils/HandleFormSearch";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;

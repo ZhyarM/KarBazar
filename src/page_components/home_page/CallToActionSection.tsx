@@ -1,4 +1,4 @@
-import SubscribtionCard from "./../components/SubscribtionCard.tsx";
+import SubscribtionCard from "../../components/cards/SubscribtionCard.tsx";
 
 function CallToActionSection() {
   return (

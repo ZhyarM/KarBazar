@@ -1,11 +1,11 @@
 import { NavLink, Link } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext.tsx";
-import Button from "./Button.tsx";
+import { useTheme } from "../../context/ThemeContext.tsx";
+import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faBars, faMoon, faSun } from "@fortawesome/free-solid-svg-icons";
-import NavLinks from "../utils/NavLinks.tsx";
-import { useCollapse } from "../context/SideBarContextCollapse.tsx";
+import NavLinks from "../../utils/NavLinks.tsx";
+import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
 
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
@@ -14,14 +14,13 @@ function Navbar() {
   return (
     <>
       <nav
-        className=" w-full sticky top-0 z-50
-  grid grid-cols-[auto_1fr_auto] 
-  items-center 
-  border py-2.5 px-4 text-sm 
-  bg-(--color-bg)"
+        className="  w-full sticky top-0 z-50
+    border py-2.5 px-4 text-sm
+    bg-(--color-bg)
+    flex items-center justify-between gap-3 "
       >
         {/* LEFT */}
-        <div className="flex items-center gap-1">
+        <div className="flex items-center gap-2 shrink-0">
           <span className="lg:hidden md:block" onClick={toggleCollapse}>
             <FontAwesomeIcon
               icon={faBars}
@@ -35,7 +34,7 @@ function Navbar() {
             </p>
           </Link>
 
-          <ul className="hidden lg:flex items-center gap-2">
+          <ul className="hidden lg:flex justify-center items-center gap-2">
             {NavLinks.map((link) => (
               <li key={link.to}>
                 <NavLink
@@ -56,12 +55,12 @@ function Navbar() {
         </div>
 
         {/* CENTER - SEARCH BAR */}
-        <div className="hidden md:flex justify-center lg:justify-around">
+        <div className="hidden lg:flex flex-1 justify-center">
           <SearchBar />
         </div>
 
         {/* RIGHT */}
-        <div className="flex justify-end items-center gap-2">
+        <div className="flex items-center gap-2 shrink-0">
           <button
             onClick={toggleTheme}
             className="cursor-pointer nav p-1 text-(--color-text)"
@@ -76,9 +75,9 @@ function Navbar() {
           <Link to="/sign-in">
             <Button
               text="Sign In"
-              bgColor="bg-gray-200"
+              bgColor="bg-[var(--color-bg-inverse)]"
               backdropColor=""
-              textColor="black"
+              textColor="text-[var(--color-text-inverse)]"
             />
           </Link>
 
@@ -87,7 +86,7 @@ function Navbar() {
               text="Sign Up"
               backdropColor=""
               bgColor="bg-(--color-primary)"
-              textColor="white"
+              textColor="text-[var(--color-text)]"
             />
           </Link>
         </div>

@@ -1,11 +1,7 @@
 import CheckMark from "../../components/style_components/checkMark";
-import Input from "../../components/input";
+import Input from "../../components/navbar_components/input";
 import { useState } from "react";
-import {
-  faEye,
-  faEyeSlash,
-  faSignIn,
-} from "@fortawesome/free-solid-svg-icons";
+import { faEye, faEyeSlash, faSignIn } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 

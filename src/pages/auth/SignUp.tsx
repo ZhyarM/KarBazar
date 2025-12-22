@@ -1,7 +1,11 @@
 import CheckMark from "../../components/style_components/checkMark";
-import Input from "../../components/input";
+import Input from "../../components/navbar_components/input";
 import { useState } from "react";
-import { faEye,  faEyeSlash, faUserPlus } from "@fortawesome/free-solid-svg-icons";
+import {
+  faEye,
+  faEyeSlash,
+  faUserPlus,
+} from "@fortawesome/free-solid-svg-icons";
 
 import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -26,19 +30,13 @@ function SignUp() {
   });
 
   const updateForm = (Field: keyof SignupForm, value: string) => {
- 
     setForm((prev) => ({
       ...prev,
       [Field]: value,
     }));
   };
 
-  
-
   const [IsHidden, setIsHidden] = useState(false);
-
-
-
 
   return (
     <div className="flex flex-row h-screen  w-full background-image ">

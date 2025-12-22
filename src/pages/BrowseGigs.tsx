@@ -1,5 +1,3 @@
-
-
 function BrowseGigs() {
   return (
     <div>BrowseGigs</div>

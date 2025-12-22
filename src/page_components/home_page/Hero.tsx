@@ -1,9 +1,6 @@
 import { faArrowRight, faCheck } from "@fortawesome/free-solid-svg-icons";
-import Button from "../components/Button.tsx";
+import Button from "../../components/btns/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-
-
-
 
 function Hero() {
   return (
@@ -29,7 +26,6 @@ function Hero() {
             tracking-tight font-bold font-sans
              leading-normal md:leading-[90px] 
             w-full  text-(--color-text)"
-
           >
             Discover nation-wide <br /> services
           </h1>
@@ -49,8 +45,8 @@ function Hero() {
             <div className="border-2 p-1 rounded-4xl bg-(--color-bg-inverse) text-(--color-text-inverse) font-">
               <Button
                 text="join for free"
-                bgColor="bg-(--btn-primary)"
-                textColor="var(--btn-secondary-text)"
+                bgColor="bg-transparent"
+                textColor="text-[var(--btn-secondary-text)]"
                 backdropColor=""
               />
             </div>
@@ -68,7 +64,7 @@ function Hero() {
                   </>
                 }
                 bgColor="transparent"
-                textColor="var(--color-text)"
+                textColor="text-[var(--color-text)]"
                 backdropColor=""
               />
             </div>

@@ -1,6 +1,6 @@
-import Button from "../components/Button";
-import UserCard from "./../components/UsersCard.tsx";
-import users from "../utils/UserDetails.tsx";
+import Button from "../../components/btns/Button.tsx";
+import UserCard from "../../components/cards/UsersCard.tsx";
+import users from "../../utils/UserDetails.tsx";
 import { Link } from "react-router-dom";
 
 function TrendingServices() {
@@ -9,13 +9,15 @@ function TrendingServices() {
       <section className="w-full flex justify-between items-center pl-6 pr-6 mb-6">
         <div className="flex flex-col justify-start items-start gap-2">
           <p className="section-title text-(--color-text)">Trending Services</p>
-          <span className="small-title text-(--color-text)">Most popular gigs this week</span>
+          <span className="small-title text-(--color-text)">
+            Most popular gigs this week
+          </span>
         </div>
         <Link to="/browsegigs">
           <Button
             text="View all >"
             bgColor="bg-(--color-primary)"
-            textColor="var(--color-text)"
+            textColor="text-[var(--color-text)]"
             backdropColor=""
           />
         </Link>

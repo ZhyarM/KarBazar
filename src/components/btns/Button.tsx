@@ -21,11 +21,9 @@ function Button({
         px-3.5 py-2 rounded-lg text-sm
         transition-all duration-300
         active:scale-95 select-none
-        hover:brightness-110
-        ${bgColor} ${backdropColor}
-        shadow-sm hover:shadow
+        hover:scale-110
+        ${bgColor} ${backdropColor} ${textColor}
       `}
-      style={{ color: textColor }}
     >
       {text}
     </button>

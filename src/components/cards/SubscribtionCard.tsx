@@ -1,6 +1,6 @@
 import type { JSX } from "react";
-import { plans } from './../utils/SubscribtionPlans.tsx';
-import Button from './Button.tsx';
+import { plans } from "../../utils/SubscribtionPlans.tsx";
+import Button from "../btns/Button.tsx";
 
 function SubscriptionSection(): JSX.Element {
   return (
@@ -26,11 +26,7 @@ function SubscriptionSection(): JSX.Element {
                 shadow-sm transition-all duration-200
                 hover:-translate-y-1 hover:shadow-md
                 hover:border-(--color-primary)/80
-                ${
-                  plan.highlight
-                    ? "ring-1 ring-(--color-primary)"
-                    : ""
-                }
+                ${plan.highlight ? "ring-1 ring-(--color-primary)" : ""}
               `}
             >
               {plan.badge && (
@@ -40,9 +36,7 @@ function SubscriptionSection(): JSX.Element {
               )}
 
               <div className="flex flex-col items-center gap-1">
-                <h3 className="small-title text-(--color-text)">
-                  {plan.name}
-                </h3>
+                <h3 className="small-title text-(--color-text)">{plan.name}</h3>
 
                 <div className="flex items-baseline gap-1">
                   <span className="text-3xl font-bold text-(--color-text)">

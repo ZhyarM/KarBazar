@@ -1,4 +1,4 @@
-import type { CategoryType } from "./../utils/CategoriesData";
+import type { CategoryType } from "../../utils/CategoriesData";
 
 function CategoryCard({ logo, name, services, description, bg }: CategoryType) {
   return (
@@ -47,11 +47,11 @@ function CategoryCard({ logo, name, services, description, bg }: CategoryType) {
 
           <span
             className="
-              inline-flex items-center justify-center
+              flex items-center justify-center
               px-2.5 py-0.5
               rounded-md
               bg-black/70
-              text-[11px] font-semibold
+              text-[12px] font-semibold
               text-white
             "
           >
@@ -60,9 +60,7 @@ function CategoryCard({ logo, name, services, description, bg }: CategoryType) {
         </div>
       </div>
 
-      <p className="small-title text-(--color-text-muted)">
-        {description}
-      </p>
+      <p className="small-title text-(--color-text-muted)">{description}</p>
     </article>
   );
 }

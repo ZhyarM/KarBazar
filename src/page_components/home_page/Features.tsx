@@ -1,5 +1,5 @@
-import Cards from "../components/Card.tsx";
-import cardContent from "../utils/FeaturesContentItem.tsx";
+import Cards from "../../components/cards/CategoryCard.tsx";
+import cardContent from "../../utils/FeaturesContentItem.tsx";
 
 function Features() {
  

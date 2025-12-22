@@ -1,8 +1,8 @@
 import { NavLink } from "react-router-dom";
-import { useTheme } from "../context/ThemeContext.tsx";
-import { useCollapse } from "../context/SideBarContextCollapse.tsx";
+import { useTheme } from "../../context/ThemeContext.tsx";
+import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
 import type { JSX } from "react";
-import NavLinks from "../utils/NavLinks.tsx";
+import NavLinks from "../../utils/NavLinks.tsx";
 import { faSquareXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
