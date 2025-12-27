@@ -7,7 +7,7 @@
 ============================ */
 :root {
   /* Brand Colors */
-  --color-primary: #2563EB;
+  --color-primary: #315bb5;
   --color-primary-dark: #1E40AF;
   --color-primary-light: #38BDF8;
 
@@ -77,6 +77,7 @@ body.light {
   --color-bg: #F2F6FF;          /* soft cool white instead of #F8FAFC */
   --color-surface: #FFFFFF;     /* you can also change this if needed */
   --color-bg-inverse: #0F172A;
+  --color-bg-muted: #E8EEFF;
 
   --color-text: #0F172A;
   --color-text-inverse: #f1f5f9;
@@ -100,6 +101,7 @@ body.dark {
 
   --color-bg: #0F172A;
   --color-bg-inverse:#F8FAFC;
+  --color-bg-muted: #1E293B;
 
   --color-surface: #1E293B;
 

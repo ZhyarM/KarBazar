@@ -14,17 +14,6 @@ export default function Root() {
     <>
       {!hideNavBar && <Navbar />}
       <Sidebar />
-      <Snowfall
-        color="#82c3d9"
-        snowflakeCount={150}
-        style={{
-          position: "fixed",
-          width: "100vw",
-          height: "100vh",
-          zIndex: "1000",
-          pointerEvents: "none",
-        }}
-      />
       <Outlet />
       {!hideFooter && <Footer />}
     </>

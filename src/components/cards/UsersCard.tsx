@@ -1,5 +1,5 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import type { User } from "../utils/UserDetails";
+import type { User } from "../../utils/UserData";
 import { faCode } from "@fortawesome/free-solid-svg-icons";
 
 function UsersCard({
@@ -53,7 +53,8 @@ function UsersCard({
         w-8 h-8
         rounded-full
         object-cover object-center
-      "/>
+      "
+            />
           ) : (
             <span
               className="
