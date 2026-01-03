@@ -1,5 +1,5 @@
 import CategoryHeader from "./../page_components/category_components/CategoryHeader";
-import { categoriesData } from "../utils/CategoriesData";
+import { categoriesData } from "../utils/CategoriesData.tsx";
 import CategoryCard from './../page_components/category_components/CategoryCard.tsx';
 function Categories() {
   return (

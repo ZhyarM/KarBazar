@@ -2,6 +2,7 @@ import { useParams } from "react-router-dom";
 import users from "../../utils/UserData";
 import { Link } from "react-router-dom";
 import { Outlet } from "react-router-dom";
+import PricingCard from "./../../components/cards/PricingCard.tsx";
 
 function UserDetails() {
   const { userId } = useParams<{ userId: string }>();
@@ -9,14 +10,14 @@ function UserDetails() {
 
   return (
     <>
-      <article className="w-full h-full flex gap-3 bg-(--color-bg) py-3 px-10">
+      <article className="w-full flex flex-col justify-around gap-3 bg-(--color-bg) py-3 px-6 lg:flex-row">
         <section className="flex flex-col gap-2.5">
           <h1 className="section-title text-(--color-text)">
             {user?.description}
           </h1>
 
           <div className="flex justify-start items-center gap-2">
-            <span className="text-xs text-(--color-text) bg-(--color-primary) px-1.5 py-2 rounded-md">
+            <span className="text-xs text-(--color-text-inverse) bg-(--color-primary) px-1.5 py-2 rounded-md">
               {user?.category}
             </span>
             <span className="text-xs text-(--color-text) bg-(--color-bg-muted) px-1.5 py-2 rounded-md">
@@ -30,23 +31,10 @@ function UserDetails() {
                 <img
                   src={user?.user_profile_img}
                   alt={user?.username}
-                  className="
-        w-8 h-8
-        rounded-full
-        object-cover object-center
-      "
+                  className="w-8 h-8 rounded-full object-cover object-center"
                 />
               ) : (
-                <span
-                  className="
-        flex items-center justify-center
-        w-8 h-8
-        font-inter text-sm font-semibold leading-5
-        text-(--color-text)
-        rounded-full
-        bg-(image:--gradient-secondary)
-      "
-                >
+                <span className="flex items-center justify-center w-8 h-8 font-inter text-sm font-semibold leading-5 text-(--color-text) rounded-full bg-(image:--gradient-secondary)">
                   {user?.username.charAt(0).toUpperCase()}
                 </span>
               )}
@@ -96,6 +84,7 @@ function UserDetails() {
             </div>
           </div>
         </section>
+        <PricingCard pricing={user?.pricing} />
       </article>
     </>
   );

@@ -2,6 +2,8 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ReactNode } from "react";
 import codingIMG from "./../assets/codingIMG.jpg";
+import type { PrcingPlanTypes } from "./PricingPlans";
+import { pricingPlans } from "./PricingPlans";
 
 export type User = {
   user_id: string;
@@ -17,6 +19,7 @@ export type User = {
   category: string;
   subcategory: string;
   tabs?: Array<"Description" | "Reviews" | "FAQ">;
+  pricing: PrcingPlanTypes[];
   about?: {
     title?: string;
     intro?: string;
@@ -41,6 +44,7 @@ const users: User[] = [
     category: "Graphics & Design",
     subcategory: "UI/UX",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Professional UI/UX designer with 5+ years of experience.",
@@ -68,6 +72,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Frontend Development",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Frontend developer specializing in React.",
@@ -95,6 +100,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Backend Development",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Backend engineer focused on scalability.",
@@ -122,6 +128,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Full Stack Development",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Full-stack developer delivering production-ready apps.",
@@ -149,6 +156,7 @@ const users: User[] = [
     category: "Graphics & Design",
     subcategory: "Mobile App Design",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Mobile UI designer focused on usability.",
@@ -176,6 +184,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Flutter Development",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Flutter developer for cross-platform apps.",
@@ -203,6 +212,7 @@ const users: User[] = [
     category: "Data",
     subcategory: "Data Analysis",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Data analyst helping businesses make decisions.",
@@ -230,6 +240,7 @@ const users: User[] = [
     category: "Digital Marketing",
     subcategory: "SEO",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "SEO specialist improving organic traffic.",
@@ -257,6 +268,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Backend Systems",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Senior backend engineer.",
@@ -284,6 +296,7 @@ const users: User[] = [
     category: "Graphics & Design",
     subcategory: "Website Redesign",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "UI designer improving visual clarity.",
@@ -311,6 +324,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Quality Assurance",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "QA engineer ensuring quality.",
@@ -338,6 +352,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "WordPress Development",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "WordPress developer with custom themes.",
@@ -365,6 +380,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "DevOps",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "DevOps engineer automating deployments.",
@@ -392,6 +408,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "API Integration",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "API integration specialist.",
@@ -419,6 +436,7 @@ const users: User[] = [
     category: "Graphics & Design",
     subcategory: "Brand Identity",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Brand designer helping businesses stand out.",
@@ -446,6 +464,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "React Optimization",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "React specialist improving code quality.",
@@ -473,6 +492,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Web Security",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Security engineer protecting applications.",
@@ -500,6 +520,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "CMS Development",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "CMS developer building flexible systems.",
@@ -527,6 +548,7 @@ const users: User[] = [
     category: "Programming & Tech",
     subcategory: "Performance Optimization",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "Performance engineer improving load times.",
@@ -554,6 +576,7 @@ const users: User[] = [
     category: "Graphics & Design",
     subcategory: "UI Animation",
     tabs: ["Description", "Reviews", "FAQ"],
+    pricing: pricingPlans,
     about: {
       title: "About This Gig",
       intro: "UI animator creating delightful interactions.",

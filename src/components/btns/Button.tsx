@@ -1,11 +1,12 @@
-import type { JSX } from "react";
+import type { JSX, ReactNode } from "react";
 
 type ButtonProps = {
-  text: React.ReactNode | string;
-  bgColor: string;
-  textColor: string;
-  backdropColor: string;
+  text?: React.ReactNode | string;
+  bgColor?: string;
+  textColor?: string;
+  backdropColor?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
+  icon?: ReactNode;
 };
 
 function Button({
@@ -13,6 +14,7 @@ function Button({
   bgColor,
   textColor,
   backdropColor,
+  icon,
   onClick,
 }: ButtonProps): JSX.Element {
   return (
@@ -20,7 +22,7 @@ function Button({
       onClick={onClick}
       className={`
         flex items-center justify-center
-        gap-1 font-semibold cursor-pointer
+        gap-1 flex-1 font-semibold cursor-pointer
         px-3.5 py-2 rounded-lg text-sm
         transition-all duration-300
         active:scale-95 select-none
@@ -28,7 +30,7 @@ function Button({
         ${bgColor} ${backdropColor} ${textColor}
       `}
     >
-      {text}
+      {icon}{text}
     </button>
   );
 }
