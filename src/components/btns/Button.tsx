@@ -5,6 +5,7 @@ type ButtonProps = {
   bgColor: string;
   textColor: string;
   backdropColor: string;
+  onClick?: React.MouseEventHandler<HTMLButtonElement>;
 };
 
 function Button({
@@ -12,9 +13,11 @@ function Button({
   bgColor,
   textColor,
   backdropColor,
+  onClick,
 }: ButtonProps): JSX.Element {
   return (
     <button
+      onClick={onClick}
       className={`
         flex items-center justify-center
         gap-1 font-semibold cursor-pointer

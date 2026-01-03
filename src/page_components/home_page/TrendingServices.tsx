@@ -1,6 +1,6 @@
 import Button from "../../components/btns/Button.tsx";
 import UserCard from "../../components/cards/UsersCard.tsx";
-import users from "../../utils/UserDetails.tsx";
+import users from "../../utils/UserData.tsx";
 import { Link } from "react-router-dom";
 
 function TrendingServices() {
@@ -22,9 +22,9 @@ function TrendingServices() {
           />
         </Link>
       </section>
-      {users.map((user) => (
+      {users.slice(0, 4).map((user) => (
+        <Link to={`/user/${user.user_id}`} key={user.user_id}>
         <UserCard
-          key={user.user_id}
           username={user.username}
           description={user.description}
           rating={user.rating}
@@ -35,6 +35,7 @@ function TrendingServices() {
           user_profile_img={user.user_profile_img}
           user_id={""}
         />
+        </Link>
       ))}
     </article>
   );
