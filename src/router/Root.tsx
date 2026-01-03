@@ -14,6 +14,7 @@ export default function Root() {
     <>
       {!hideNavBar && <Navbar />}
       <Sidebar />
+     
       <Outlet />
       {!hideFooter && <Footer />}
     </>
