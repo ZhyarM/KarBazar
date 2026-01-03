@@ -1,12 +1,35 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 import users from "../../utils/UserData";
-import { Link } from "react-router-dom";
-import { Outlet } from "react-router-dom";
 import PricingCard from "./../../components/cards/PricingCard.tsx";
+import Reviews from "./ReviewsComponent.tsx";
+import FAQ from "./FAQComponent.tsx";
+import Description from "./DescriptionComponent.tsx";
+import Button from "../../components/btns/Button.tsx";
+import type { JSX } from "react/jsx-runtime";
 
 function UserDetails() {
   const { userId } = useParams<{ userId: string }>();
   const user = users.find((u) => u.user_id === userId);
+  const [activeTab, setActiveTab] = useState<string>("description");
+
+  const renderContent = (): JSX.Element | undefined => {
+    switch (activeTab) {
+      case "reviews":
+        return <Reviews />;
+      case "faq":
+        return <FAQ />;
+      default:
+        return (
+          <Description
+            username={user?.username}
+            intro={user?.about?.intro}
+            whatYoullGet={user?.about?.whatYoullGet}
+            technologies={user?.about?.technologies}
+          />
+        );
+    }
+  };
 
   return (
     <>
@@ -55,32 +78,25 @@ function UserDetails() {
             </div>
           </div>
           <div className="w-full min-w-0 max-w-full md:max-w-3xl lg:max-w-4xl flex flex-col justify-start gap-2 py-3">
-            <div className="flex justify-start gap-2 p-2">
-              <Link to={"."} className="group">
-                <span className="text-(--color-text) bg-(--color-bg-muted) px-2 py-1 rounded-md transition-all duration-200 group-hover:bg-(--color-primary) group-hover:text-(--color-text-inverse) group-hover:shadow-(--shadow-sm)">
-                  Dispcription
-                </span>
-              </Link>
-              <Link to={"reviews"} className="group">
-                <span className="text-(--color-text) bg-(--color-bg-muted) px-2 py-1 rounded-md transition-all duration-200 group-hover:bg-(--color-primary) group-hover:text-(--color-text-inverse) group-hover:shadow-(--shadow-sm)">
-                  Reviews
-                </span>
-              </Link>
-              <Link to={"faq"} className="group">
-                <span className="text-(--color-text) bg-(--color-bg-muted) px-2 py-1 rounded-md transition-all duration-200 group-hover:bg-(--color-primary) group-hover:text-(--color-text-inverse) group-hover:shadow-(--shadow-sm)">
-                  FAQ
-                </span>
-              </Link>
-            </div>
-            <div className=" flex flex-col gap-3 border border-(--color-border) rounded-md px-6 py-4 shadow-(--shadow-md)">
-              <Outlet
-                context={{
-                  username: user?.username,
-                  intro: user?.about?.intro,
-                  whatYoullGet: user?.about?.whatYoullGet,
-                  technologies: user?.about?.technologies,
-                }}
+            <div className="flex justify-start max-w-xs bg-(--color-bg-muted) rounded-md">
+              <Button
+                text="Desicription"
+                textColor={activeTab === "description" ? "text-(--color-accent)":"text-(--color-text)"}
+                onClick={() => setActiveTab("description")}
               />
+              <Button
+                text="Reviews"
+                textColor={activeTab === "reviews" ? "text-(--color-accent)":"text-(--color-text)"}
+                onClick={() => setActiveTab("reviews")}
+              />
+              <Button
+                text="FAQ"
+                textColor={activeTab === "faq" ? "text-(--color-accent)" : "text-(--color-text)"}
+                onClick={() => setActiveTab("faq")}
+              />
+            </div>
+            <div className="flex flex-col gap-3 border border-(--color-border) rounded-md px-6 py-4 shadow-(--shadow-md)">
+              {renderContent()}
             </div>
           </div>
         </section>
