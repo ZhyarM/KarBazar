@@ -1,17 +1,19 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCircleCheck } from "@fortawesome/free-solid-svg-icons";
-import { useOutletContext } from "react-router-dom";
 
-type OutletContextType = {
-  intro: string;
-  username: string;
+type PropsTypes = {
+  intro: string | undefined;
+  username: string | undefined;
   whatYoullGet?: string[];
   technologies?: string[];
 };
 
-function AboutThisUser() {
-  const { username, intro, whatYoullGet, technologies } = useOutletContext<OutletContextType>();
-
+function AboutThisUser({
+  username,
+  intro,
+  whatYoullGet,
+  technologies,
+}: PropsTypes) {
   return (
     <>
       <div className="flex flex-col gap-2">
@@ -31,7 +33,7 @@ function AboutThisUser() {
               <FontAwesomeIcon
                 className="text-(--color-success) text-xl pr-1 duration-200 hover:scale-110 "
                 icon={faCircleCheck}
-              />{" "}
+              />
               {services}
             </li>
           ))}
@@ -40,7 +42,7 @@ function AboutThisUser() {
 
       <div className="flex flex-col gap-2">
         <span className="small-title text-(--color-text)">
-          Technologies I use:{" "}
+          Technologies I use:
         </span>
         <ul className="flex gap-2 text-(--color-text) text-xs font-semibold">
           {technologies?.map((tech) => (
