@@ -6,6 +6,7 @@ import {
   faEyeSlash,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import {registerUser} from "../../API/registerAPI.tsx";
 
 import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
@@ -14,7 +15,7 @@ function SignUp() {
   interface SignupForm {
     first_name: string;
     last_name: string;
-    Type: "Client" | "Bussiness" | "";
+    Type: "client" | "freelancer" | "";
     email: string;
     password: string;
     confirm_password: string;
@@ -37,6 +38,50 @@ function SignUp() {
   };
 
   const [IsHidden, setIsHidden] = useState(false);
+
+  //API call
+  const [loading, setLoading] = useState(false); // show saving spinner
+  const [success, setSuccess] = useState<boolean | null>(null); // track success/error
+
+
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    console.log("creating user");
+    e.preventDefault();
+    setLoading(true);
+
+    console.log(
+      form
+    )
+
+    const res = await registerUser({
+      name: form.first_name+" "+form.last_name,
+      email: form.email,
+      password: form.password,
+      password_confirmation: form.confirm_password,
+      role: form.Type,
+    });
+
+    if(res.success){
+      setSuccess(true);
+     
+    }else{
+      setSuccess(false);
+    }
+
+    console.log(res);
+
+    setLoading(false);
+
+
+
+
+
+
+
+
+  }
+
+
 
   return (
     <div className="flex flex-row h-screen  w-full background-image ">
@@ -102,7 +147,7 @@ function SignUp() {
         id="sign_up_side"
         className="fade-up w-full md:w-1/2 bg-(--color-bg-inverse) flex flex-col justify-center items-center     "
       >
-        <div className=" h-fit w-fit ">
+        <form onSubmit={handleSubmit} className=" h-fit w-fit ">
           <h1
             className="  font-inter text-2xl sm:text-5xl md:text-4xl
             tracking-tight font-bold font-sans
@@ -117,17 +162,17 @@ function SignUp() {
           </h1>
           <div className="fade-up flex mt-8">
             <div
-              onClick={() => updateForm("Type", "Client")}
+              onClick={() => updateForm("Type", "client")}
               className={`font-bold text-lg fade-up bg-(--color-surface) rounded-l-lg border w-1/2 p-2 flex justify-center text-(--color-text)   ${
-                form.Type === "Client" ? "selected" : ""
+                form.Type === "client" ? "selected" : ""
               } `}
             >
               Client Account
             </div>
             <div
-              onClick={() => updateForm("Type", "Bussiness")}
+              onClick={() => updateForm("Type", "freelancer")}
               className={`font-bold text-lg fade-up bg-(--color-surface) rounded-r-lg border w-1/2 p-2 flex justify-center text-(--color-text)   ${
-                form.Type === "Bussiness" ? "selected" : ""
+                form.Type === "freelancer" ? "selected" : ""
               } `}
             >
               Bussiness Account
@@ -198,6 +243,9 @@ function SignUp() {
 
           <div className="fade-up flex flex-row items-center justify-center w-full h-10  mt-10 bg-(--color-accent) rounded-xl  ">
             <button
+              type="submit"
+              disabled={loading}
+              
               className="fade-up 
            SingUpBtn"
             >
@@ -210,7 +258,7 @@ function SignUp() {
               Account
             </Link>
           </div>
-        </div>
+        </form>
       </div>
     </div>
   );
