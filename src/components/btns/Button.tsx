@@ -7,6 +7,7 @@ type ButtonProps = {
   backdropColor?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   icon?: ReactNode;
+  hover?: string
 };
 
 function Button({
@@ -15,6 +16,7 @@ function Button({
   textColor,
   backdropColor,
   icon,
+  hover,
   onClick,
 }: ButtonProps): JSX.Element {
   return (
@@ -27,7 +29,8 @@ function Button({
         transition-all duration-300
         active:scale-95 select-none
         hover:scale-110
-        ${bgColor} ${backdropColor} ${textColor}
+
+       ${hover} ${bgColor} ${backdropColor} ${textColor}
       `}
     >
       {icon}{text}
