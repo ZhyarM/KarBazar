@@ -2,23 +2,45 @@ import { useState } from "react";
 import { useParams } from "react-router-dom";
 import users from "../../utils/UserData";
 import PricingCard from "./../../components/cards/PricingCard.tsx";
-import Reviews from "./ReviewsComponent.tsx";
-import FAQ from "./FAQComponent.tsx";
 import Description from "./DescriptionComponent.tsx";
 import Button from "../../components/btns/Button.tsx";
 import type { JSX } from "react/jsx-runtime";
+import { lazy, Suspense } from "react";
 
 function UserDetails() {
   const { userId } = useParams<{ userId: string }>();
   const user = users.find((u) => u.user_id === userId);
   const [activeTab, setActiveTab] = useState<string>("description");
 
+  const Reviews = lazy(() => import("./ReviewsComponent"));
+  const FAQ = lazy(() => import("./FAQComponent"));
+
   const renderContent = (): JSX.Element | undefined => {
     switch (activeTab) {
       case "reviews":
-        return <Reviews />;
+        return (
+          <Suspense
+            fallback={
+              <div className="flex justify-center text-(--color-text)">
+                Loading reviews...
+              </div>
+            }
+          >
+            <Reviews />
+          </Suspense>
+        );
       case "faq":
-        return <FAQ />;
+        return (
+          <Suspense
+            fallback={
+              <div className="flex justify-center text-(--color-text)">
+                Loading FAQs...
+              </div>
+            }
+          >
+            <FAQ />
+          </Suspense>
+        );
       default:
         return (
           <Description
@@ -81,17 +103,29 @@ function UserDetails() {
             <div className="flex justify-start max-w-xs bg-(--color-bg-muted) rounded-md">
               <Button
                 text="Desicription"
-                textColor={activeTab === "description" ? "text-(--color-accent)":"text-(--color-text)"}
+                textColor={
+                  activeTab === "description"
+                    ? "text-(--color-accent)"
+                    : "text-(--color-text)"
+                }
                 onClick={() => setActiveTab("description")}
               />
               <Button
                 text="Reviews"
-                textColor={activeTab === "reviews" ? "text-(--color-accent)":"text-(--color-text)"}
+                textColor={
+                  activeTab === "reviews"
+                    ? "text-(--color-accent)"
+                    : "text-(--color-text)"
+                }
                 onClick={() => setActiveTab("reviews")}
               />
               <Button
                 text="FAQ"
-                textColor={activeTab === "faq" ? "text-(--color-accent)" : "text-(--color-text)"}
+                textColor={
+                  activeTab === "faq"
+                    ? "text-(--color-accent)"
+                    : "text-(--color-text)"
+                }
                 onClick={() => setActiveTab("faq")}
               />
             </div>

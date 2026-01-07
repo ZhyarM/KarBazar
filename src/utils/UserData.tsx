@@ -16,10 +16,10 @@ export type User = {
   user_background_img?: string;
   user_profile_img?: string;
   seller_level?: string;
-  category: string;
-  subcategory: string;
+  category?: string;
+  subcategory?: string;
   tabs?: Array<"Description" | "Reviews" | "FAQ">;
-  pricing: PrcingPlanTypes[];
+  pricing?: PrcingPlanTypes[];
   about?: {
     title?: string;
     intro?: string;

@@ -14,7 +14,9 @@ function Reviews() {
         <h2 className="text-xl font-bold text-(--color-text)">Reviews</h2>
 
         <div className="flex items-center gap-2">
-          <span className="text-(--color-warning) text-lg"><FontAwesomeIcon icon={faStar} /></span>
+          <span className="text-(--color-warning) text-lg">
+            <FontAwesomeIcon icon={faStar} />
+          </span>
           <span className="text-lg font-semibold text-(--color-text)">
             {reviewsData.summary.averageRating}
           </span>

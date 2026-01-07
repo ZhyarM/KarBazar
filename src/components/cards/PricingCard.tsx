@@ -85,7 +85,7 @@ function PricingCard({ pricing }: { pricing?: PrcingPlanTypes[] }) {
           />
           <div className="flex gap-2.5">
             <Button
-              text="Add to wishlist"
+              text="Save"
               icon={<FontAwesomeIcon icon={faHeart} />}
               textColor="text-(--color-text-inverse)"
               bgColor="bg-(--color-bg-inverse)"
