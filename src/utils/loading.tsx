@@ -19,7 +19,6 @@ const LoadingCircle = ({
         text-(--color-bg-inverse)
         w-${size}
         h-${size}
-        
       `}
       />
     </div>

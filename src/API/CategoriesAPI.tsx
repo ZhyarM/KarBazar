@@ -21,7 +21,7 @@ const fetchCategories = async (): Promise<responseData> => {
 
         const data: responseData = await response.json();                      
     
-        console.log('Fetched categories:', data.data);
+       
         return data;    
 
     } catch (error) {

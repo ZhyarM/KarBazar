@@ -72,8 +72,9 @@ const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {
         
         }
 
-        const data: AuthResponse = await response.json();
-        return data;
+      const data: AuthResponse = await response.json();
+      
+      return data;
     } catch (error) {
         console.error("Error registering user:", error);
         return { success: false, message: "Error registering user", data: null };

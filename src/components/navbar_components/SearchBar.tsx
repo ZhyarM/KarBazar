@@ -34,10 +34,11 @@ function SearchBar({ onSearch }: SearchBarProps) {
     h-11
     w-1/4 sm:w-64 md:w-80 lg:w-[400px] 
     pl-9 pr-3 text-sm
-    rounded-4xl border border-gray-300 dark:border-gray-600
+    rounded-4xl 
     bg-(--color-surface)
     placeholder-gray-400
     text-(--color-text)
+    shadow-md
    
     focus:outline-none focus:ring-2 focus:ring-(--color-primary)
     transition-all duration-300 hover:shadow-md

@@ -1,6 +1,18 @@
 import type { CategoryType } from "../../utils/CategoriesData";
 
-function CategoryCard({ logo, name, services, description, bg }: CategoryType) {
+ interface CategoryData {
+   id: number;
+   name: string;
+   slug: string;
+   description: string;
+   icon: string;
+   gig_count: number;
+   bg: string;
+
+ }
+
+
+function CategoryCard({id,name,slug,description,icon , bg="bg-(--color-primary)" , gig_count}: CategoryData) {
   return (
     <article
       className="
@@ -28,8 +40,8 @@ function CategoryCard({ logo, name, services, description, bg }: CategoryType) {
             ${bg}
           `}
         >
-          <span className="text-2xl transition-transform duration-300 group-hover:scale-110">
-            {logo}
+          <span className="text-6xl   transition-transform duration-300 group-hover:scale-110">
+            {icon}
           </span>
         </div>
 
@@ -55,7 +67,7 @@ function CategoryCard({ logo, name, services, description, bg }: CategoryType) {
               text-white
             "
           >
-            {services}
+            {gig_count}
           </span>
         </div>
       </div>
