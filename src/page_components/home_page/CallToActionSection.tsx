@@ -4,7 +4,7 @@ function CallToActionSection() {
   return (
     <>
       <article className="flex justify-center items-center bg-(--color-surface)">
-        <SubscribtionCard />
+        {/* <SubscribtionCard /> */}
       </article>
     </>
   );
