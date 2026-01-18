@@ -39,7 +39,7 @@ function Categories() {
     console.log("State updated:", categories);
   }, [loading]);
 
-  if (loading) {
+  if (loading || categories.length === 0) {
     return <LoadingCircle size={14} />;
   }
 
