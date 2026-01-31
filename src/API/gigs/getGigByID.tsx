@@ -1,32 +1,25 @@
-import { cache } from "react";
-
-// 1. In Vite, use VITE_ prefix and 'import.meta.env.VITE_...'
-// import.meta.env.BASE_URL is actually a Vite internal for the project root path
 const BASE_API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
-/** * TYPES
- */
-export interface GigResponse {
+export interface GigresponseByID {
   success: boolean;
-  data: Gig[];
-  meta: PaginationMeta;
+  data: data;
 }
 
-export interface Gig {
+interface data {
   id: number;
   seller_id: number;
-  category_id: number;
+  catergory_id: number;
   title: string;
   description: string;
   price: number;
   delivery_time: number;
   image_url: string | null;
   gallery: string[] | null;
-  tags: string[];
-  packages: any | null;
-  requirements: string | null;
-  faq: any | null;
+  tags: tags;
+  packages: null;
+  requirements: null;
+  faq: null;
   rating: string;
   review_count: number;
   order_count: number;
@@ -35,23 +28,30 @@ export interface Gig {
   is_trending: boolean;
   created_at: string;
   updated_at: string;
-  seller: Seller;
-  category: Category;
+  seller: seller;
+  category: category;
+  reviews: [];
 }
 
-export interface Seller {
+interface tags {
+  id: number;
+  gig_id: number;
+  tag: string;
+}
+
+interface seller {
   id: number;
   name: string;
   email: string;
   image: string | null;
   role: string;
   is_active: boolean;
-  email_verified_at: string | null;
+  email_verified_at: boolean;
   created_at: string;
-  profile: SellerProfile;
+  profile: profile;
 }
 
-export interface SellerProfile {
+interface profile {
   id: number;
   user_id: number;
   username: string;
@@ -62,8 +62,8 @@ export interface SellerProfile {
   location: string | null;
   website: string | null;
   hourly_rate: number | null;
-  skills: any | null;
-  languages: any | null;
+  skills: string[] | null;
+  languages: string[] | null;
   rating: string;
   total_reviews: number;
   total_jobs: number;
@@ -72,7 +72,7 @@ export interface SellerProfile {
   created_at: string;
 }
 
-export interface Category {
+interface category {
   id: number;
   name: string;
   slug: string;
@@ -82,37 +82,29 @@ export interface Category {
   created_at: string;
 }
 
-export interface PaginationMeta {
-  current_page: number;
-  last_page: number;
-  per_page: number;
-  total: number;
+interface payload {
+  id: number;
 }
 
-/**
- * API FUNCTIONS
- */
+export const fetchGigByID = async (payload: payload): Promise<GigresponseByID> => {
+  try {
+    const response = await fetch(`${BASE_API_URL}/gigs/${payload.id}`, {
+      method: "GET",
+      headers: {
+        "content-type": "application/json",
+      },
+    });
 
-// We use React 'cache' for Server Components to prevent duplicate requests
-export const fetchGigs = cache(
-  async (page: number): Promise<GigResponse> => {
-    try {
-      // Adding the page parameter to the URL
-      const response = await fetch(`${BASE_API_URL}/gigs?page=${page}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
-
-      if (!response.ok) {
+    if (!response.ok) {
         throw new Error(`Error: ${response.status} - Failed to fetch gigs`);
-      }
+    }
+    
+      return await response.json();  
 
-      return await response.json();
-    } catch (error) {
+  } catch(error) {
       console.error("FetchGigs error:", error);
       throw new Error("An error occurred while fetching gigs");
-    }
-  },
-);
+ 
+      
+  }
+};

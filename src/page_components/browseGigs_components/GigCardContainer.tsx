@@ -2,22 +2,24 @@ import { useState, useEffect } from "react";
 import Button from "../../components/btns/Button.tsx";
 import UserCard from "../../components/cards/UsersCard.tsx";
 import { Link } from "react-router-dom";
-import { type Gig } from "../../API/gigs/getGigs.tsx";
+import { type Gig , type GigResponse} from "../../API/gigs/getGigs.tsx";
 import { faStar } from "@fortawesome/free-solid-svg-icons";
 
+
 interface GigCardProps {
-  users: Gig[];
+  response:GigResponse
   activeFilters: Record<string, any>;
+  pageNumber: number;
+  onPageChange?: (newPage: number) => void;
 }
 
-function GigCard({ users, activeFilters }: GigCardProps) {
-  const [currentPage, setCurrentPage] = useState<number>(1);
-  const userCardPerPage = 8;
-  const totalPages = Math.ceil(users.length / userCardPerPage);
+function GigCard({ response, activeFilters, pageNumber, onPageChange}: GigCardProps) {
+  
+  const userCardPerPage = response.meta.per_page;
+  const users = response.data;
+  const totalPages = response.meta.total;
 
-  useEffect(() => {
-    setCurrentPage(1);
-  }, [users]);
+  
 
   const getAppliedFilters = () => {
     const applied = [];
@@ -43,22 +45,17 @@ function GigCard({ users, activeFilters }: GigCardProps) {
   const appliedList = getAppliedFilters();
 
   const prevPageHandler = () => {
-    if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    if (pageNumber > 1 && onPageChange) {
+      onPageChange(pageNumber - 1);
+    }
   };
 
-  const nextPageHandler = (activePage?: number) => {
-    if (activePage !== undefined) {
-      if (
-        activePage >= 1 &&
-        activePage <= totalPages &&
-        activePage !== currentPage
-      ) {
-        setCurrentPage(activePage);
-      }
-      return;
-    }
-    if (currentPage < totalPages) {
-      setCurrentPage((prev) => prev + 1);
+  const nextPageHandler = (targetPage?:number) => {
+    if (!onPageChange) return;
+    if(targetPage!== undefined){
+      onPageChange(targetPage);
+    }else{
+      onPageChange(pageNumber + 1); 
     }
   };
 
@@ -67,63 +64,83 @@ function GigCard({ users, activeFilters }: GigCardProps) {
       {users.length > 0 ? (
         <>
           <section className="w-full flex flex-wrap justify-center gap-4">
-            {users
-              .slice(
-                currentPage * userCardPerPage - userCardPerPage,
-                currentPage * userCardPerPage
-              )
-              .map((user) => (
-                <Link to={`/user/${user.seller_id}`} key={user.id}>
-                  <UserCard
-                    username={user.seller.profile.username}
-                    description={user.description}
-                    rating={user.rating}
-                    rating_number={user.seller.profile.rating}
-                    charge={user.price.toString()}
-                    user_background_img={user.image_url || ""}
-                    user_profile_img={user.image_url || ""}
-                    user_id={user.seller_id.toString()}
-                  /> 
-                </Link>
-              ))}
+            {users.map((user) => (
+              <Link to={`/user/${user.seller_id}`} key={user.id}>
+                <UserCard
+                  username={user.seller.profile.username}
+                  description={user.description}
+                  rating={user.rating}
+                  rating_number={user.seller.profile.rating}
+                  charge={user.price.toString()}
+                  user_background_img={user.image_url || ""}
+                  user_profile_img={user.image_url || ""}
+                  user_id={user.seller_id.toString()}
+                />
+              </Link>
+            ))}
           </section>
 
           {totalPages > 1 && (
-            <div className="flex justify-center items-center gap-2.5 mt-4">
-              {currentPage > 1 && (
-                <Button
-                  onClick={prevPageHandler}
-                  text="Prev"
-                  bgColor="bg-(--color-bg-inverse)"
-                  textColor="text-(--color-text-inverse)"
-                  backdropColor=""
-                />
+            <div className="flex items-center justify-center gap-4 mt-4">
+              {pageNumber > 1 && (
+                <Button onClick={prevPageHandler} text="Previous" bgColor="bg-(--color-accent)" />
               )}
 
-              {[...Array(totalPages)].map((_, i) => (
-                <Button
-                  key={`page-btn-${i}`}
-                  onClick={() => nextPageHandler(i + 1)}
-                  text={`${i + 1}`}
-                  bgColor={
-                    currentPage === i + 1
-                      ? "bg-(--color-primary)"
-                      : "bg-(--color-bg-inverse)"
+              {(() => {
+                const buttons = [];
+                const maxVisible = pageNumber + 3; 
+                const startpage = Math.max(1, pageNumber - 2);
+                
+                  for (let i = startpage; i <= Math.min(maxVisible, totalPages); i++) {
+                    
+                    buttons.push(
+                      <Button
+                        key={i}
+                        onClick={() => nextPageHandler(i)}
+                        text={`${i}`}
+                        bgColor={
+                          pageNumber === i
+                            ? "bg-(--color-primary)"
+                            : "bg-(--color-bg-inverse)"
+                        }
+                        textColor="text-(--color-text-inverse)"
+                      />,
+                    );
                   }
-                  textColor="text-(--color-text-inverse)"
-                  backdropColor=""
-                />
-              ))}
 
-              {currentPage < totalPages && (
-                <Button
-                  onClick={() => nextPageHandler()}
-                  text="Next"
-                  bgColor="bg-(--color-bg-inverse)"
-                  textColor="text-(--color-text-inverse)"
-                  backdropColor=""
-                />
-              )}
+                if (totalPages > maxVisible) {
+                  if (totalPages > maxVisible + 1) {
+                    buttons.push(
+                      <Button onClick={()=>nextPageHandler(pageNumber+1)} text="bext" bgColor="bg-(--color-accent)" />,
+                    );
+                  }
+
+                  buttons.push(
+                    <Button
+                      key={totalPages}
+                      onClick={() => nextPageHandler(totalPages)}
+                      text={`${totalPages}`}
+                      bgColor={
+                        pageNumber === totalPages
+                          ? "bg-(--color-primary)"
+                          : "bg-(--color-bg-inverse)"
+                      }
+                      textColor="text-(--color-text-inverse)"
+                    />,
+                  );
+                }
+
+                {
+                  pageNumber < totalPages && (
+                    <Button onClick={()=>nextPageHandler()} text="Next" />
+                  )
+                }
+
+
+
+
+                return buttons;
+              })()}
             </div>
           )}
         </>

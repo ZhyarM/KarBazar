@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
 import users from "../../utils/UserData";
 import PricingCard from "./../../components/cards/PricingCard.tsx";
@@ -6,11 +6,17 @@ import Description from "./DescriptionComponent.tsx";
 import Button from "../../components/btns/Button.tsx";
 import type { JSX } from "react/jsx-runtime";
 import { lazy, Suspense } from "react";
+import { fetchGigByID } from "../../API/gigs/getGigByID.tsx";
+import LoadingCircle from "../../utils/loading.tsx";
+import type { GigresponseByID } from "../../API/gigs/getGigByID.tsx";
+
 
 function UserDetails() {
   const { userId } = useParams<{ userId: string }>();
   const user = users.find((u) => u.user_id === userId);
   const [activeTab, setActiveTab] = useState<string>("description");
+  const [loading, setLoading] = useState(false);
+  const [gig, setGig] = useState<GigresponseByID>();
 
   const Reviews = lazy(() => import("./ReviewsComponent"));
   const FAQ = lazy(() => import("./FAQComponent"));
@@ -53,50 +59,67 @@ function UserDetails() {
     }
   };
 
-  return (
+  useEffect(() => {
+    const loadGig = async () => {
+      if (!userId) return;
+      setLoading(true);
+      const response = await fetchGigByID({ id: Number(userId) });
+      if (response.success && response) {
+        setLoading(false);
+        setGig(response);
+      } else {
+        setLoading(false);
+      }
+    };
+    loadGig();
+  }, [userId]);
+
+  return loading || !gig ? (
+    <LoadingCircle size={14} />
+  ) : (
     <>
       <article className="w-full flex flex-col justify-around gap-3 bg-(--color-bg) py-3 px-6 lg:flex-row">
         <section className="flex flex-col gap-2.5">
           <h1 className="section-title text-(--color-text)">
-            {user?.description}
+            {gig.data.description}
           </h1>
 
           <div className="flex justify-start items-center gap-2">
             <span className="text-xs text-(--color-text-inverse) bg-(--color-primary) px-1.5 py-2 rounded-md">
-              {user?.category}
+              {gig.data.category.name}
             </span>
             <span className="text-xs text-(--color-text) bg-(--color-bg-muted) px-1.5 py-2 rounded-md">
-              {user?.subcategory}
+              {gig.data.category.name}
             </span>
           </div>
 
           <div className="flex justify-start items-center gap-6">
             <div className="flex items-center gap-2">
-              {user?.user_profile_img ? (
+              {gig.data.image_url ? (
                 <img
-                  src={user?.user_profile_img}
-                  alt={user?.username}
+                  src={gig.data.image_url}
+                  alt={gig.data.seller.name}
                   className="w-8 h-8 rounded-full object-cover object-center"
                 />
               ) : (
                 <span className="flex items-center justify-center w-8 h-8 font-inter text-sm font-semibold leading-5 text-(--color-text) rounded-full bg-(image:--gradient-secondary)">
-                  {user?.username.charAt(0).toUpperCase()}
+                  {gig.data.seller.name.charAt(0).toUpperCase()}
                 </span>
               )}
               <div className="flex flex-col ml-1">
                 <p className="text-md font-bold text-(--color-text)">
-                  {user?.username}
+                  {gig.data.seller.name}
                 </p>
                 <p className="text-sm text-(--color-text-muted)">
-                  {user?.seller_level}
+                  {gig.data.seller.profile.rating}
                 </p>
               </div>
             </div>
 
             <div className="flex items-center gap-1">
               <span className="text-amber-300 text-lg">{user?.star_icon}</span>
-              <span className="text-(--color-text)">{user?.rating}</span>
-              <span className="text-(--color-text-muted)">{`(${user?.rating_number} reviews)`}</span>
+              <span className="text-(--color-text)">{gig.data.rating}</span>
+              <span className="text-(--color-text-muted)">{`(${gig.data.review_count} reviews)`}</span>
             </div>
           </div>
           <div className="w-full min-w-0 max-w-full md:max-w-3xl lg:max-w-4xl flex flex-col justify-start gap-2 py-3">

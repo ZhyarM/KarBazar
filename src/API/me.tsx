@@ -56,7 +56,7 @@ const getAuthCookie = (name:String) => {
 
 }
 
- const me = async (): Promise<AuthResponse> => { 
+const me = async (): Promise<AuthResponse> => { 
 
   const token = getAuthCookie('Authorization');
   const response = await fetch("http://127.0.0.1:8000/api/auth/me ", {

@@ -3,6 +3,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { reviewsData } from "../../utils/Comments";
 import Button from "./../../components/btns/Button.tsx";
 
+
+
 function Reviews() {
   const handleHelpful = (reviewId: string) => {
     console.log("Helpful clicked for review:", reviewId);
