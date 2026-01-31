@@ -2,10 +2,18 @@ import Filters from "./../page_components/browseGigs_components/Filters.tsx";
 import Header from "./../page_components/browseGigs_components/GigsHeader.tsx";
 import GigCard from "../page_components/browseGigs_components/GigCardContainer.tsx";
 import { filtersConfig } from "../config/filters.config.ts";
-import { useState } from "react";
-import { filterUser } from "../services/filterUsers.ts";
-import users from "../utils/UserData.tsx";
-import type { User } from "../utils/UserData.tsx";
+import { useState, useEffect} from "react";
+// import { filterUser } from "../services/filterUsers.ts";
+
+import { fetchGigs } from "../API/gigs/getGigs.tsx";
+import type { Gig } from "../API/gigs/getGigs.tsx";
+import LoadingCircle from "../utils/loading.tsx";
+
+
+
+
+
+
 
 function BrowseGigs() {
   const createInitialFiltersState = () => {
@@ -16,12 +24,40 @@ function BrowseGigs() {
   };
 
   const [filters, setFilters] = useState(createInitialFiltersState);
-  const [filteredUsers, setFilteredUsers] = useState<User[]>(users);
+  const [filteredUsers, setFilteredUsers] = useState<Gig[]>([]);
 
   const applyFilters = () => {
-    const result = filterUser(users, filters);
-    setFilteredUsers(result);
+    // const result = filterUser(users, filters);
+    // setFilteredUsers(result);
   };
+
+const [loading, setLoading] = useState(false);
+const [Gigs, setGigs] = useState<Gig[]>([]); 
+
+useEffect(() => {
+  const loadGigs = async () => {
+    setLoading(true);
+    console.log("Fetching gigs...");
+    const response = await fetchGigs();
+
+    if (response.success) {
+      setGigs(response.data);
+    }
+    setLoading(false);
+  };
+  loadGigs();
+}, []);
+
+useEffect(() => {
+  console.log("State updated:", Gigs);
+}, [Gigs]);
+
+  
+  if (loading || Gigs.length === 0) {
+    return <LoadingCircle size={14} />;
+  }
+
+
 
   return (
     <>
@@ -37,7 +73,7 @@ function BrowseGigs() {
             onReset={() => setFilters(createInitialFiltersState())}
             onApply={applyFilters}
           />
-          <GigCard users={filteredUsers} activeFilters={filters}/>
+          <GigCard users={Gigs} activeFilters={filters}/>
         </div>
       </section>
     </>

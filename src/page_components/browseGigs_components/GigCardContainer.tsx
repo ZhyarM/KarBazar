@@ -1,11 +1,12 @@
 import { useState, useEffect } from "react";
 import Button from "../../components/btns/Button.tsx";
 import UserCard from "../../components/cards/UsersCard.tsx";
-import type { User } from "../../utils/UserData.tsx";
 import { Link } from "react-router-dom";
+import { type Gig } from "../../API/gigs/getGigs.tsx";
+import { faStar } from "@fortawesome/free-solid-svg-icons";
 
 interface GigCardProps {
-  users: User[];
+  users: Gig[];
   activeFilters: Record<string, any>;
 }
 
@@ -72,18 +73,17 @@ function GigCard({ users, activeFilters }: GigCardProps) {
                 currentPage * userCardPerPage
               )
               .map((user) => (
-                <Link to={`/user/${user.user_id}`} key={user.user_id}>
+                <Link to={`/user/${user.seller_id}`} key={user.id}>
                   <UserCard
-                    username={user.username}
+                    username={user.seller.profile.username}
                     description={user.description}
                     rating={user.rating}
-                    star_icon={user.star_icon}
-                    rating_number={user.rating_number}
-                    charge={user.charge}
-                    user_background_img={user.user_background_img}
-                    user_profile_img={user.user_profile_img}
-                    user_id={user.user_id}
-                  />
+                    rating_number={user.seller.profile.rating}
+                    charge={user.price.toString()}
+                    user_background_img={user.image_url || ""}
+                    user_profile_img={user.image_url || ""}
+                    user_id={user.seller_id.toString()}
+                  /> 
                 </Link>
               ))}
           </section>

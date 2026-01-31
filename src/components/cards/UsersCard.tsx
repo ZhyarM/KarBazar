@@ -83,7 +83,7 @@ function UsersCard({
             <span>({rating_number})</span>
           </div>
 
-          <p className="text-(--color-text)">{charge}</p>
+          <p className="text-(--color-text)">{charge}$</p>
         </div>
       </div>
     </>
