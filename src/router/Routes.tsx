@@ -8,8 +8,8 @@ import SignUp from "./../pages/auth/SignUp.tsx";
 import ErrorPage from "./../pages/ErrorPages/ErrorPage.tsx";
 import Root from "./Root.tsx";
 import UserDetails from "./../page_components/user_profile/UserDetails";
-import UserProfilesample from "../page_components/user/sample.tsx";
 import UserProfile from "../page_components/user/userProfile.tsx";
+import FreelancerProfile from "../page_components/user/sample.tsx";
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
@@ -24,7 +24,8 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { path: "about", element: <About /> },
       { path: "sign-in", element: <SignIn /> },
       { path: "sign-up", element: <SignUp /> },
-      {path : "profile", element: <UserProfile />}
+      {path : "sampleProfile", element: <FreelancerProfile />},
+      {path : "Profile", element: <UserProfile />}
     ],
   },  
 ]);

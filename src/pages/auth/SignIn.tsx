@@ -64,8 +64,13 @@ function SignIn() {
 
       if (res.success && res.data) {
         
-        cookieStore.set("Authorization", res.data.token);
-        localStorage.setItem("User", JSON.stringify(res.data.user));
+        const expire = new Date();
+        expire.setDate(expire.getDate() + 7);
+        document.cookie = `Authorization=${res.data.token}; expires=${expire.toUTCString()}`
+
+
+        // cookieStore.set("Authorization", res.data.token);
+        // localStorage.setItem("User", JSON.stringify(res.data.user));
 
         console.log(res.data);
         setSuccess(true);

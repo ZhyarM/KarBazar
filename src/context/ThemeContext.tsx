@@ -1,30 +1,46 @@
 import React, { createContext, useContext, useState } from "react";
 import type { ReactNode } from "react";
 
+type Theme = "light" | "dark";
+
 interface ThemeContextType {
-  theme: string;
+  theme: Theme;
   toggleTheme: () => void;
   isBgLight: boolean;
 }
 
-type Theme = 'light' | 'dark';
-
 const ThemeContext = createContext<ThemeContextType | undefined>(undefined);
 
-export const ThemeProvider: React.FC<{children: ReactNode}> = ({children}) => {
-    const [theme, setTheme] = useState<Theme>('dark');
-    const toggleTheme = () => {
-        setTheme(prev => (prev === 'light' ? 'dark' : 'light'));
-    }
+const getInitialTheme = (): Theme => {
+  const stored = localStorage.getItem("theme");
+  return stored === "dark" || stored === "light" ? stored : "light";
+};
 
-    const isBgLight:boolean = theme === "light";
+export const ThemeProvider: React.FC<{ children: ReactNode }> = ({
+  children,
+}) => {
+  const [theme, setTheme] = useState<Theme>(getInitialTheme);
 
-    return (
-        <ThemeContext.Provider value={{theme, toggleTheme, isBgLight}}>
-            {children}
-        </ThemeContext.Provider>
-    )
-}
+  const toggleTheme = () => {
+    setTheme((prev) => {
+      const next = prev === "light" ? "dark" : "light";
+      localStorage.setItem("theme", next);
+      return next;
+    });
+  };
+
+  return (
+    <ThemeContext.Provider
+      value={{
+        theme,
+        toggleTheme,
+        isBgLight: theme === "light",
+      }}
+    >
+      {children}
+    </ThemeContext.Provider>
+  );
+};
 
 export const useTheme = (): ThemeContextType => {
   const ctx = useContext(ThemeContext);

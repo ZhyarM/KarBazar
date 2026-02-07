@@ -8,6 +8,7 @@ type ButtonProps = {
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   icon?: ReactNode;
   hover?: string
+  bold ?: string;
 };
 
 function Button({
@@ -18,22 +19,25 @@ function Button({
   icon,
   hover,
   onClick,
+  bold ,
 }: ButtonProps): JSX.Element {
   return (
     <button
       onClick={onClick}
       className={`
+        ${bold ? bold : "font-semibold"}
         flex items-center justify-center
-        gap-1 flex-1 font-semibold cursor-pointer
+        gap-1 flex-1  cursor-pointer
         px-3.5 py-2 rounded-lg text-sm
         transition-all duration-300
         active:scale-95 select-none
-        hover:scale-110
+        hover:scale-105
 
        ${hover} ${bgColor} ${backdropColor} ${textColor}
       `}
     >
-      {icon}{text}
+      {icon}
+      {text}
     </button>
   );
 }
