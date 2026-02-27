@@ -11,7 +11,7 @@ function Home() {
       <Features />
       <TrendingServices />
       <PlatformStats />
-      <CallToActionSection />
+      {/* <CallToActionSection /> */}
     </div>
   );
 }

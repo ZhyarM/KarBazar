@@ -1,12 +1,16 @@
 import type { ReactElement } from "react";
+import { useNavigate } from "react-router";
 
 
 type CardProps = {
   logo: ReactElement;
   text: string;
+  category: string;
 };
 
-function Card({ logo, text }: CardProps) {
+function Card({ logo, text, category }: CardProps) {
+
+  const navigate = useNavigate()
 
   return (
     <>
@@ -25,6 +29,7 @@ function Card({ logo, text }: CardProps) {
     group transition-transform duration-200 ease-in-out hover:-translate-y-1 hover:border-(--color-accent-hover)
     cursor-pointer
   `}
+  onClick={() => navigate(`/categories?category=${category}`)}
       >
         <div
           className="

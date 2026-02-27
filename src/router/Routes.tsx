@@ -8,20 +8,26 @@ import SignUp from "./../pages/auth/SignUp.tsx";
 import ErrorPage from "./../pages/ErrorPages/ErrorPage.tsx";
 import Root from "./Root.tsx";
 import UserDetails from "./../page_components/user_profile/UserDetails";
+import { adminRoutes } from "./admin.routes.tsx";
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
-    path: "/",
-    element: <Root />,
     errorElement: <ErrorPage />,
     children: [
-      { index: true, element: <Home /> },
-      { path: "browseGigs", element: <BrowseGigs /> },
-      { path: "/user/:userId", element: <UserDetails /> },
-      { path: "categories", element: <Categories /> },
-      { path: "about", element: <About /> },
-      { path: "sign-in", element: <SignIn /> },
-      { path: "sign-up", element: <SignUp /> },
+      {
+        path: "/",
+        element: <Root />,
+        children: [
+          { index: true, element: <Home /> },
+          { path: "browseGigs", element: <BrowseGigs /> },
+          { path: "user/:userId", element: <UserDetails /> },
+          { path: "categories", element: <Categories /> },
+          { path: "about", element: <About /> },
+          { path: "sign-in", element: <SignIn /> },
+          { path: "sign-up", element: <SignUp /> },
+        ],
+      },
+      adminRoutes,
     ],
   },
 ]);

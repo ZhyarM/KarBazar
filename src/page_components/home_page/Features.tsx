@@ -3,7 +3,6 @@ import cardContent from "../../utils/FeaturesContentItem.tsx";
 
 function Features() {
  
-
   return (
     <>
       <article className="flex flex-col justify-center items-center py-3.5 gap-6 bg-(--color-bg) ">
@@ -23,7 +22,12 @@ function Features() {
 
         <section className="flex flex-row justify-center items-center flex-wrap m-auto gap-4">
           {cardContent.map((el) => (
-            <Cards key={el.text} logo={el.logo} text={el.text} />
+            <Cards
+    key={el.text}
+    logo={el.logo}
+    text={el.text}
+    category={el.category}
+  />
           ))}
         </section>
       </article>
