@@ -7,7 +7,6 @@ import {
   Briefcase,
   DollarSign,
   Clock,
-  User as UserIcon,
   Mail,
   Camera,
   Edit3,
@@ -20,9 +19,7 @@ import {
   TrendingUp,
   Eye,
   Heart,
-  MessageSquare,
   Share2,
-  MoreVertical,
   Check,
   X,
   Upload,
@@ -32,6 +29,7 @@ import {
 
 import type { AuthResponse } from "../../API/me";
 import me from "../../API/me";
+import { getImageUrl } from "../../utils/imageUrl";
 
 // --- INTERFACES FOR TYPE SAFETY ---
 interface StatCardProps {
@@ -90,6 +88,19 @@ const FreelancerProfile = () => {
           .toUpperCase()
           .substring(0, 2)
       : "U";
+  };
+
+  const parseLanguages = (languages: string | null | undefined): string[] => {
+    if (!languages) return [];
+    try {
+      const parsed = JSON.parse(languages);
+      return Array.isArray(parsed) ? parsed : [languages];
+    } catch {
+      return languages
+        .split(",")
+        .map((l) => l.trim())
+        .filter(Boolean);
+    }
   };
   // --- END OF YOUR LOGIC ---
 
@@ -197,7 +208,7 @@ const FreelancerProfile = () => {
               <div className="relative h-72 bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 overflow-hidden">
                 {profile?.cover_url && (
                   <img
-                    src={profile.cover_url}
+                    src={getImageUrl(profile.cover_url)}
                     alt="Cover"
                     className="w-full h-full object-cover mix-blend-overlay"
                   />
@@ -239,7 +250,7 @@ const FreelancerProfile = () => {
                     <div className="w-36 h-36 rounded-3xl border-4 border-white bg-gradient-to-br from-gray-100 to-gray-50 shadow-2xl overflow-hidden">
                       {user?.image || profile?.avatar_url ? (
                         <img
-                          src={user?.image || profile?.avatar_url || null}
+                          src={getImageUrl(user?.image || profile?.avatar_url)}
                           alt={user?.name || "User Avatar"}
                           className="w-full h-full object-cover"
                         />
@@ -555,22 +566,26 @@ const FreelancerProfile = () => {
                 </button>
               </div>
               <div className="space-y-3">
-                {profile?.languages?.map((lang: string, idx: number) => (
-                  <div
-                    key={idx}
-                    className="group flex justify-between items-center text-sm bg-gradient-to-r from-gray-50 to-indigo-50/30 hover:from-indigo-50 hover:to-purple-50 px-4 py-3 rounded-xl border border-gray-100 transition-all"
-                  >
-                    <span className="font-semibold text-gray-900">{lang}</span>
-                    <div className="flex items-center gap-2">
-                      <span className="text-[10px] font-black text-indigo-600 uppercase bg-indigo-100 px-2 py-1 rounded-lg">
-                        Native
+                {parseLanguages(profile?.languages).map(
+                  (lang: string, idx: number) => (
+                    <div
+                      key={idx}
+                      className="group flex justify-between items-center text-sm bg-gradient-to-r from-gray-50 to-indigo-50/30 hover:from-indigo-50 hover:to-purple-50 px-4 py-3 rounded-xl border border-gray-100 transition-all"
+                    >
+                      <span className="font-semibold text-gray-900">
+                        {lang}
                       </span>
-                      <button className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500">
-                        <X className="w-4 h-4" />
-                      </button>
+                      <div className="flex items-center gap-2">
+                        <span className="text-[10px] font-black text-indigo-600 uppercase bg-indigo-100 px-2 py-1 rounded-lg">
+                          Native
+                        </span>
+                        <button className="opacity-0 group-hover:opacity-100 transition-opacity text-gray-400 hover:text-red-500">
+                          <X className="w-4 h-4" />
+                        </button>
+                      </div>
                     </div>
-                  </div>
-                ))}
+                  ),
+                )}
               </div>
             </div>
 

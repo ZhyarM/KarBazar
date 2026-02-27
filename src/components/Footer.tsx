@@ -170,7 +170,7 @@ function Footer(): JSX.Element {
 
       <div className="border-t border-(--color-border)">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 text-xs text-(--color-primary-muted) md:flex-row md:items-center md:justify-between md:px-6">
-          <p>© 2024 KarBazar. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} KarBazar. All rights reserved.</p>
           <div className="flex flex-wrap gap-5">
             <a href="#" className="transition hover:text-(--color-primary)">
               Terms

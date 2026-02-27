@@ -3,43 +3,49 @@ const BASE_API_URL =
 
 export interface GigresponseByID {
   success: boolean;
-  data: data;
+  data: GigDetailData;
 }
 
-interface data {
+export interface GigDetailData {
   id: number;
   seller_id: number;
-  catergory_id: number;
+  category_id: number;
   title: string;
   description: string;
   price: number;
   delivery_time: number;
   image_url: string | null;
   gallery: string[] | null;
-  tags: tags;
-  packages: null;
-  requirements: null;
-  faq: null;
+  tags: string[] | null;
+  packages: {
+    basic?: PackageTier;
+    standard?: PackageTier;
+    premium?: PackageTier;
+  } | null;
+  requirements: string | null;
+  faq: Array<{ question: string; answer: string }> | null;
   rating: string;
   review_count: number;
   order_count: number;
+  view_count: number;
   is_active: boolean;
   is_featured: boolean;
   is_trending: boolean;
   created_at: string;
   updated_at: string;
-  seller: seller;
-  category: category;
-  reviews: [];
+  seller: GigSeller;
+  category: GigCategory;
+  reviews: any[];
 }
 
-interface tags {
-  id: number;
-  gig_id: number;
-  tag: string;
+export interface PackageTier {
+  price: number;
+  description: string;
+  delivery_time: number;
+  features: string[];
 }
 
-interface seller {
+export interface GigSeller {
   id: number;
   name: string;
   email: string;
@@ -48,10 +54,10 @@ interface seller {
   is_active: boolean;
   email_verified_at: boolean;
   created_at: string;
-  profile: profile;
+  profile: GigSellerProfile;
 }
 
-interface profile {
+export interface GigSellerProfile {
   id: number;
   user_id: number;
   username: string;
@@ -72,7 +78,7 @@ interface profile {
   created_at: string;
 }
 
-interface category {
+export interface GigCategory {
   id: number;
   name: string;
   slug: string;
@@ -86,25 +92,31 @@ interface payload {
   id: number;
 }
 
-export const fetchGigByID = async (payload: payload): Promise<GigresponseByID> => {
+export const fetchGigByID = async (
+  payload: payload,
+): Promise<GigresponseByID> => {
   try {
+    // Include auth token if available for view tracking
+    const token = localStorage.getItem("auth_token");
+    const headers: Record<string, string> = {
+      "content-type": "application/json",
+    };
+    if (token) {
+      headers["Authorization"] = `Bearer ${token}`;
+    }
+
     const response = await fetch(`${BASE_API_URL}/gigs/${payload.id}`, {
       method: "GET",
-      headers: {
-        "content-type": "application/json",
-      },
+      headers,
     });
 
     if (!response.ok) {
-        throw new Error(`Error: ${response.status} - Failed to fetch gigs`);
+      throw new Error(`Error: ${response.status} - Failed to fetch gig`);
     }
-    
-      return await response.json();  
 
-  } catch(error) {
-      console.error("FetchGigs error:", error);
-      throw new Error("An error occurred while fetching gigs");
- 
-      
+    return await response.json();
+  } catch (error) {
+    console.error("FetchGig error:", error);
+    throw new Error("An error occurred while fetching gig");
   }
 };

@@ -1,4 +1,4 @@
-import SubscribtionCard from "../../components/cards/SubscribtionCard.tsx";
+// SubscribtionCard import removed - component not currently used
 
 function CallToActionSection() {
   return (

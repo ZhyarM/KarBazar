@@ -31,59 +31,35 @@ interface User {
   profile: UserProfile;
 }
 
-interface AuthData {
-  user: User;
-  token: string;
-}
-
 export interface AuthResponse {
   success: boolean;
   message: string;
   data: User | null;
 }
 
-interface RequestPayload {
-  email: string;
-  password: string;
-}
+const me = async (): Promise<AuthResponse> => {
+  const token = localStorage.getItem("auth_token");
 
-const getAuthCookie = (name:String) => {
-  const match = document.cookie
-    .split('; ')
-  .find((row) => row.startsWith(name + '='));
-  
-  return match ? match.split('=')[1] : null;
+  if (!token) {
+    throw new Error("No authentication token found");
+  }
 
-}
-
-const me = async (): Promise<AuthResponse> => { 
-
-  const token = getAuthCookie('Authorization');
-  const response = await fetch("http://127.0.0.1:8000/api/auth/me ", {
+  const response = await fetch("http://127.0.0.1:8000/api/auth/me", {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
       Accept: "application/json",
       Authorization: `Bearer ${token}`,
-
     },
-    
   });
 
   const data: AuthResponse = await response.json();
 
   if (!response.ok) {
-    throw new Error(data.message || "Login failed");
+    throw new Error(data.message || "Failed to get user data");
   }
 
-  
-
   return data;
-
-  
-
-
-
-}
+};
 
 export default me;

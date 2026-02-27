@@ -26,8 +26,8 @@ function PlatformStats() {
     },
     {
       icon: <FontAwesomeIcon icon={faDollarSign} />,
-      numbers: "$100M+",
-      text: "Total Earnings",
+      numbers: "100%",
+      text: "Free for Clients",
     },
     {
       icon: <FontAwesomeIcon icon={faStar} />,
@@ -40,7 +40,10 @@ function PlatformStats() {
     <>
       <section className="w-full flex justify-around items-center flex-wrap gap-4 px-2 py-16 bg-(--color-bg)">
         {stats.map((el) => (
-          <div key={el.text} className="flex flex-col items-center justify-center gap-2 p-3">
+          <div
+            key={el.text}
+            className="flex flex-col items-center justify-center gap-2 p-3"
+          >
             <span
               className="
                         w-15 h-15

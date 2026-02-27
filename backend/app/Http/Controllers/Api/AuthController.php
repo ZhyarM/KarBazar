@@ -22,7 +22,7 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:client,freelancer,admin',
+            'role' => 'required|in:client,freelancer,business,admin',
         ]);
 
         $user = User::create([
@@ -106,6 +106,78 @@ class AuthController extends Controller
         return response()->json([
             'success' => true,
             'data' => new UserResource($request->user()->load('profile')),
+        ]);
+    }
+
+    // Change password
+    public function changePassword(Request $request)
+    {
+        $request->validate([
+            'current_password' => 'required|string',
+            'password' => 'required|string|min:8|confirmed',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->current_password, $user->password)) {
+            throw ValidationException::withMessages([
+                'current_password' => ['The current password is incorrect.'],
+            ]);
+        }
+
+        $user->update([
+            'password' => Hash::make($request->password),
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password changed successfully',
+        ]);
+    }
+
+    // Update name
+    public function updateName(Request $request)
+    {
+        $request->validate([
+            'name' => 'required|string|max:255',
+        ]);
+
+        $user = $request->user();
+        $user->update([
+            'name' => $request->name,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Name updated successfully',
+            'data' => new UserResource($user->load('profile')),
+        ]);
+    }
+
+    // Delete account
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string',
+        ]);
+
+        $user = $request->user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            throw ValidationException::withMessages([
+                'password' => ['The password is incorrect.'],
+            ]);
+        }
+
+        // Delete all tokens
+        $user->tokens()->delete();
+
+        // Delete user (cascades to profile via foreign key)
+        $user->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Account deleted successfully',
         ]);
     }
 }

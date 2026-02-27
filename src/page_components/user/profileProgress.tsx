@@ -1,4 +1,3 @@
-import type { JSX } from "react";
 import rise from "../../assets/rise.png";
 import ProgressSuggestions from "./progressSuggestions";
 

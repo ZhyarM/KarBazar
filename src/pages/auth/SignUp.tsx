@@ -6,20 +6,18 @@ import {
   faEyeSlash,
   faUserPlus,
 } from "@fortawesome/free-solid-svg-icons";
-import {registerUser} from "../../API/RegisterAPI";
+import { registerUser } from "../../API/RegisterAPI";
 
 import { Link } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MessageToast from "../../utils/message";
 
 function SignUp() {
-  
-    
-    const [message, setMessage] = useState<string | null>(null);
+  const [message, setMessage] = useState<string | null>(null);
   interface SignupForm {
     first_name: string;
     last_name: string;
-    Type: "client" | "freelancer" | "";
+    Type: "client" | "business" | "";
     email: string;
     password: string;
     confirm_password: string;
@@ -47,48 +45,32 @@ function SignUp() {
   const [loading, setLoading] = useState(false); // show saving spinner
   const [success, setSuccess] = useState<boolean | null>(null); // track success/error
 
-
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log("creating user");
     e.preventDefault();
     setLoading(true);
 
-    console.log(
-      form
-    )
+    console.log(form);
 
     const res = await registerUser({
-      name: form.first_name+" "+form.last_name,
+      name: form.first_name + " " + form.last_name,
       email: form.email,
       password: form.password,
       password_confirmation: form.confirm_password,
       role: form.Type,
     });
 
-    if(res.success){
+    if (res.success) {
       setSuccess(true);
       setMessage(res.message);
-      
-
-     
-    }else{
+    } else {
       setSuccess(false);
     }
 
     console.log(res);
 
     setLoading(false);
-
-
-
-
-
-
-
-
-  }
-
-
+  };
 
   return (
     <>
@@ -129,7 +111,7 @@ function SignUp() {
             tracking-tight font-bold font-sans
               text-(--color-text)"
             >
-              Join KarBazar and connect with clients Nattion-wide. <br /> Turn
+              Join KarBazar and connect with clients Nation-wide. <br /> Turn
               your skills into income.
             </h2>
             <ul className="fade-up label-heading mt-10 flex flex-col gap-5">
@@ -142,13 +124,13 @@ function SignUp() {
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  showcase your protfolio
+                  showcase your portfolio
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  Increae your income
+                  Increase your income
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
@@ -184,7 +166,7 @@ function SignUp() {
                   form.Type === "client" ? "selected" : ""
                 } `}
               >
-                Client Account
+                Regular User
               </div>
               <div
                 onClick={() => updateForm("Type", "freelancer")}
@@ -192,7 +174,7 @@ function SignUp() {
                   form.Type === "freelancer" ? "selected" : ""
                 } `}
               >
-                Bussiness Account
+                Freelancer
               </div>
             </div>
 
@@ -221,7 +203,7 @@ function SignUp() {
                 onChange={(value) => updateForm("email", value)}
                 icon=""
                 label="Email Address"
-                placeholder="Exmaple@gmail.com"
+                placeholder="Example@gmail.com"
                 size="full"
               ></Input>
 
@@ -243,10 +225,10 @@ function SignUp() {
 
               <div className="relative">
                 <Input
-                  type="text"
+                  type={IsHidden ? "text" : "password"}
                   onChange={(value) => updateForm("confirm_password", value)}
                   icon=""
-                  label="Confirm Passowrd"
+                  label="Confirm Password"
                   placeholder="d$bb*****"
                   size="full"
                 ></Input>
@@ -268,7 +250,7 @@ function SignUp() {
                 Sign Up
               </button>
             </div>
-            <div className="fade-up flex gap-1 items-center justify-center mt-4">
+            <div className="fade-up flex gap-1 items-center justify-center mt-4 text-(--color-text-inverse)">
               already have an
               <Link className="text-blue-600 font-bold" to={"/sign-in"}>
                 Account

@@ -1,18 +1,20 @@
-import type { CategoryType } from "../../utils/CategoriesData";
+interface CategoryData {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  gig_count: number;
+  bg: string;
+}
 
- interface CategoryData {
-   id: number;
-   name: string;
-   slug: string;
-   description: string;
-   icon: string;
-   gig_count: number;
-   bg: string;
-
- }
-
-
-function CategoryCard({id,name,slug,description,icon , bg="bg-(--color-primary)" , gig_count}: CategoryData) {
+function CategoryCard({
+  name,
+  description,
+  icon,
+  bg = "bg-(--color-primary)",
+  gig_count,
+}: CategoryData) {
   return (
     <article
       className="

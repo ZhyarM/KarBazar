@@ -17,6 +17,8 @@ use App\Http\Controllers\Api\PaymentController;
 use App\Http\Controllers\Api\AdController;
 use App\Http\Controllers\Api\AdRequestController;
 use App\Http\Controllers\Api\SettingsController;
+use App\Http\Controllers\Api\PostController;
+use App\Http\Controllers\Api\FollowController;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -41,6 +43,7 @@ Route::get('/gigs/{id}', [GigController::class, 'show'])->where('id', '[0-9]+');
 
 // Public profiles
 Route::get('/profiles/freelancers', [ProfileController::class, 'freelancers']);
+Route::get('/profiles/user/{userId}', [ProfileController::class, 'showById']);
 Route::get('/profiles/{username}', [ProfileController::class, 'show']);
 
 // Public reviews
@@ -58,19 +61,36 @@ Route::post('/ad-requests', [AdRequestController::class, 'store']);
 // ⭐ NEW: Public Settings (get platform fee, etc)
 Route::get('/settings/{key}', [SettingsController::class, 'show']);
 
+// Public posts browsing
+Route::get('/posts', [PostController::class, 'index']);
+Route::get('/posts/feed', [PostController::class, 'feed']);
+Route::get('/posts/{id}', [PostController::class, 'show'])->where('id', '[0-9]+');
+Route::get('/posts/{id}/comments', [PostController::class, 'getComments'])->where('id', '[0-9]+');
+Route::get('/posts/user/{userId}', [PostController::class, 'userPosts']);
+
+// Public follow stats
+Route::get('/follow/{userId}/stats', [FollowController::class, 'stats']);
+Route::get('/follow/{userId}/followers', [FollowController::class, 'followers']);
+Route::get('/follow/{userId}/following', [FollowController::class, 'following']);
+
 // Protected routes (require authentication)
 Route::middleware('auth:sanctum')->group(function () {
-    
+
     // Auth
     Route::prefix('auth')->group(function () {
         Route::post('/logout', [AuthController::class, 'logout']);
         Route::get('/me', [AuthController::class, 'me']);
+        Route::put('/change-password', [AuthController::class, 'changePassword']);
+        Route::delete('/delete-account', [AuthController::class, 'deleteAccount']);
+        Route::put('/update-name', [AuthController::class, 'updateName']);
     });
 
     // Profile
     Route::prefix('profile')->group(function () {
         Route::get('/me', [ProfileController::class, 'me']);
         Route::put('/update', [ProfileController::class, 'update']);
+        Route::put('/section/{section}', [ProfileController::class, 'updateSection']);
+        Route::get('/statistics', [ProfileController::class, 'statistics']);
     });
 
     // Categories (Admin only)
@@ -86,6 +106,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('freelancer')->post('/', [GigController::class, 'store']);
         Route::put('/{id}', [GigController::class, 'update']);
         Route::delete('/{id}', [GigController::class, 'destroy']);
+    });
+
+    // Posts (Protected Routes)
+    Route::prefix('posts')->group(function () {
+        Route::get('/my-posts', [PostController::class, 'myPosts']);
+        Route::get('/bookmarked', [PostController::class, 'bookmarkedPosts']);
+        Route::post('/', [PostController::class, 'store']);
+        Route::put('/{id}', [PostController::class, 'update']);
+        Route::delete('/{id}', [PostController::class, 'destroy']);
+        Route::post('/{id}/like', [PostController::class, 'toggleLike']);
+        Route::post('/{id}/comment', [PostController::class, 'addComment']);
+        Route::delete('/{postId}/comment/{commentId}', [PostController::class, 'deleteComment']);
+        Route::post('/{id}/bookmark', [PostController::class, 'toggleBookmark']);
+    });
+
+    // Follow System
+    Route::prefix('follow')->group(function () {
+        Route::post('/{userId}', [FollowController::class, 'toggle']);
+        Route::get('/{userId}/check', [FollowController::class, 'check']);
     });
 
     // Orders

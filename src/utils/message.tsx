@@ -6,7 +6,6 @@ interface ToastMessageProps {
   onClose: () => void;
   duration?: number; // default 2000ms
   visible: boolean;
-  
 }
 
 const MessageToast = ({
@@ -26,7 +25,7 @@ const MessageToast = ({
     return () => clearTimeout(timer);
   }, [message, duration, onClose]);
 
-  if (!message) return null;
+  if (!message || !visible) return null;
 
   return (
     <div

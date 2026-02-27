@@ -77,17 +77,69 @@ class User extends Authenticatable
     }
 
     public function favorites()
-{
-    return $this->hasMany(Favorite::class);
-}
+    {
+        return $this->hasMany(Favorite::class);
+    }
 
-public function favoriteGigs()
-{
-    return $this->morphedByMany(Gig::class, 'favoritable', 'favorites');
-}
+    public function favoriteGigs()
+    {
+        return $this->morphedByMany(Gig::class, 'favoritable', 'favorites');
+    }
 
-public function favoriteFreelancers()
-{
-    return $this->morphedByMany(User::class, 'favoritable', 'favorites');
-}
+    public function favoriteFreelancers()
+    {
+        return $this->morphedByMany(User::class, 'favoritable', 'favorites');
+    }
+
+    // Posts (freelancer posts)
+    public function posts()
+    {
+        return $this->hasMany(Post::class);
+    }
+
+    public function postLikes()
+    {
+        return $this->hasMany(PostLike::class);
+    }
+
+    public function postComments()
+    {
+        return $this->hasMany(PostComment::class);
+    }
+
+    public function postBookmarks()
+    {
+        return $this->hasMany(PostBookmark::class);
+    }
+
+    // Follow system
+    public function followers()
+    {
+        return $this->hasMany(Follow::class, 'following_id');
+    }
+
+    public function following()
+    {
+        return $this->hasMany(Follow::class, 'follower_id');
+    }
+
+    public function isFollowing($userId)
+    {
+        return $this->following()->where('following_id', $userId)->exists();
+    }
+
+    public function isFollowedBy($userId)
+    {
+        return $this->followers()->where('follower_id', $userId)->exists();
+    }
+
+    public function followersCount()
+    {
+        return $this->followers()->count();
+    }
+
+    public function followingCount()
+    {
+        return $this->following()->count();
+    }
 }

@@ -25,6 +25,7 @@ class Gig extends Model
         'rating',
         'review_count',
         'order_count',
+        'view_count',
         'is_active',
         'is_featured',
         'is_trending',
@@ -39,6 +40,7 @@ class Gig extends Model
         'delivery_time' => 'integer',
         'review_count' => 'integer',
         'order_count' => 'integer',
+        'view_count' => 'integer',
         'is_active' => 'boolean',
         'is_featured' => 'boolean',
         'is_trending' => 'boolean',
@@ -70,7 +72,7 @@ class Gig extends Model
         return $this->morphToMany(User::class, 'favoritable', 'favorites');
     }
 
-public function isFavoritedBy($userId)
+    public function isFavoritedBy($userId)
     {
         return $this->favoritedBy()->where('user_id', $userId)->exists();
     }

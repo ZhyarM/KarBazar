@@ -1,7 +1,3 @@
-import { cache } from "react";
-
-// 1. In Vite, use VITE_ prefix and 'import.meta.env.VITE_...'
-// import.meta.env.BASE_URL is actually a Vite internal for the project root path
 const BASE_API_URL =
   import.meta.env.VITE_API_URL || "http://localhost:8000/api";
 
@@ -24,12 +20,17 @@ export interface Gig {
   image_url: string | null;
   gallery: string[] | null;
   tags: string[];
-  packages: any | null;
+  packages: {
+    basic?: PackageTier;
+    standard?: PackageTier;
+    premium?: PackageTier;
+  } | null;
   requirements: string | null;
-  faq: any | null;
+  faq: Array<{ question: string; answer: string }> | null;
   rating: string;
   review_count: number;
   order_count: number;
+  view_count: number;
   is_active: boolean;
   is_featured: boolean;
   is_trending: boolean;
@@ -37,6 +38,13 @@ export interface Gig {
   updated_at: string;
   seller: Seller;
   category: Category;
+}
+
+export interface PackageTier {
+  price: number;
+  description: string;
+  delivery_time: number;
+  features: string[];
 }
 
 export interface Seller {
@@ -89,30 +97,61 @@ export interface PaginationMeta {
   total: number;
 }
 
+export interface GigFilters {
+  page?: number;
+  search?: string;
+  category_id?: number;
+  min_price?: number;
+  max_price?: number;
+  max_delivery_time?: number;
+  min_rating?: number;
+  sort_by?: string;
+  sort_order?: "asc" | "desc";
+}
+
 /**
  * API FUNCTIONS
  */
+export const fetchGigs = async (
+  filters: GigFilters = {},
+): Promise<GigResponse> => {
+  try {
+    const params = new URLSearchParams();
 
-// We use React 'cache' for Server Components to prevent duplicate requests
-export const fetchGigs = cache(
-  async (page: number): Promise<GigResponse> => {
-    try {
-      // Adding the page parameter to the URL
-      const response = await fetch(`${BASE_API_URL}/gigs?page=${page}`, {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+    if (filters.page) params.append("page", filters.page.toString());
+    if (filters.search) params.append("search", filters.search);
+    if (filters.category_id)
+      params.append("category_id", filters.category_id.toString());
+    if (filters.min_price !== undefined && filters.min_price > 0)
+      params.append("min_price", filters.min_price.toString());
+    if (filters.max_price !== undefined && filters.max_price < 1000)
+      params.append("max_price", filters.max_price.toString());
+    if (filters.max_delivery_time)
+      params.append("max_delivery_time", filters.max_delivery_time.toString());
+    if (filters.min_rating)
+      params.append("min_rating", filters.min_rating.toString());
+    if (filters.sort_by) params.append("sort_by", filters.sort_by);
+    if (filters.sort_order) params.append("sort_order", filters.sort_order);
 
-      if (!response.ok) {
-        throw new Error(`Error: ${response.status} - Failed to fetch gigs`);
-      }
+    const queryString = params.toString();
+    const url = queryString
+      ? `${BASE_API_URL}/gigs?${queryString}`
+      : `${BASE_API_URL}/gigs`;
 
-      return await response.json();
-    } catch (error) {
-      console.error("FetchGigs error:", error);
-      throw new Error("An error occurred while fetching gigs");
+    const response = await fetch(url, {
+      method: "GET",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    });
+
+    if (!response.ok) {
+      throw new Error(`Error: ${response.status} - Failed to fetch gigs`);
     }
-  },
-);
+
+    return await response.json();
+  } catch (error) {
+    console.error("FetchGigs error:", error);
+    throw new Error("An error occurred while fetching gigs");
+  }
+};

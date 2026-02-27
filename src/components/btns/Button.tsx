@@ -1,14 +1,15 @@
 import type { JSX, ReactNode } from "react";
 
-type ButtonProps = {
+export type ButtonProps = {
   text?: React.ReactNode | string;
   bgColor?: string;
   textColor?: string;
   backdropColor?: string;
   onClick?: React.MouseEventHandler<HTMLButtonElement>;
   icon?: ReactNode;
-  hover?: string
-  bold ?: string;
+  hover?: string;
+  bold?: string;
+  disabled?: boolean;
 };
 
 function Button({
@@ -19,11 +20,13 @@ function Button({
   icon,
   hover,
   onClick,
-  bold ,
+  bold,
+  disabled = false,
 }: ButtonProps): JSX.Element {
   return (
     <button
       onClick={onClick}
+      disabled={disabled}
       className={`
         ${bold ? bold : "font-semibold"}
         flex items-center justify-center
@@ -32,7 +35,7 @@ function Button({
         transition-all duration-300
         active:scale-95 select-none
         hover:scale-105
-
+        ${disabled ? "opacity-50 cursor-not-allowed" : ""}
        ${hover} ${bgColor} ${backdropColor} ${textColor}
       `}
     >
