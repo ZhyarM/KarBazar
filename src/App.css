@@ -28,7 +28,7 @@ body.light {
 
   --color-text: #0F172A;
   --color-text-inverse: #f1f5f9;
-  --color-text-muted: #475569;
+  --color-text-muted: #858f9d;
 
   --color-border: #E2E8F0;
 
@@ -48,13 +48,13 @@ body.dark {
 
   --color-bg: #0F172A;
   --color-bg-inverse:#F8FAFC;
-  --color-bg-muted: #18263b;
+  --color-bg-muted: #1f304a;
 
   --color-surface: #1E293B;
 
   --color-text: #F1F5F9;
   --color-text-inverse:#0F172A;
-  --color-text-muted: #CBD5E1;
+  --color-text-muted: #5c7492;
 
   --color-border: #334155;
 
@@ -103,9 +103,22 @@ body.dark {
   --gradient-surface: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
   --gradient-glow: radial-gradient(circle at top left, rgba(59,130,246,0.4), rgba(30,58,138,0) 70%);
 
-  /* ======================================
-      TYPOGRAPHY — NEW VARIABLES ADDED
-  ====================================== */
+  /* Soft & Clean Professional Blues */
+  --grad-skyline: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --grad-oceanic: linear-gradient(to right, #243b55, #141e30);
+  
+  /* Modern Tech & SaaS Purples */
+  --grad-indigo-flow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --grad-deep-space: linear-gradient(135deg, #434343 0%, #000000 100%);
+
+  /* Warm & Energetic Accents */
+  --grad-sunset-aura: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  --grad-rose-quartz: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
+
+  /* Subtle Glassmorphism / Neutral */
+  --grad-glass-light: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  --grad-cool-mint: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+
 
   /* 🌟 Section Title (big section headers) */
   --section-title-size: 2.25rem;      /* 36px */
@@ -128,6 +141,39 @@ body.dark {
   --section-title-size-lg: 3rem;      /* 48px */
   --subsection-title-size-lg: 2rem;   /* 32px */
 }
+
+.gradient-secondary{
+  background: var(--gradient-secondary);
+
+}
+
+
+/* Base Utility Class */
+.gradient-box {
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gradient-box:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.1);
+}
+
+/* Specific Gradient Classes */
+.bg-skyline    { background: var(--grad-skyline); }
+.bg-oceanic    { background: var(--grad-oceanic); }
+.bg-indigo     { background: var(--grad-indigo-flow); }
+.bg-deep-space { background: var(--grad-deep-space); }
+.bg-sunset     { background: var(--grad-sunset-aura); }
+.bg-rose       { background: var(--grad-rose-quartz); }
+.bg-mint       { background: var(--grad-cool-mint); }
 
 /* Background SVG utilities */
 .svg {
@@ -258,4 +304,13 @@ body.dark {
   background: transparent;
   
 
+}
+
+.blured-background{
+    background: rgba(255, 255, 255, 0.2); /* Translucent background */
+    backdrop-filter: blur(10px);          /* The blur effect */
+    -webkit-backdrop-filter: blur(10px);  /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 15px;
 }

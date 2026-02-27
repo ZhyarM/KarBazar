@@ -5,19 +5,16 @@ import { fetchCategories } from "../API/CategoriesAPI.tsx";
 import { useEffect, useState } from "react";
 import LoadingCircle from "../utils/loading.tsx";
 
-  interface CategoryData {
+interface CategoryData {
   id: number;
   name: string;
   slug: string;
   description: string;
-  icon: string; 
+  icon: string;
   gig_count: number;
-
 }
 
 function Categories() {
-
-
   const [loading, setLoading] = useState(false);
   const [categories, setCategories] = useState<CategoryData[]>([]); // Initialize with empty array
 
@@ -34,11 +31,6 @@ function Categories() {
     loadCategories();
   }, []);
 
-
-  useEffect(() => {
-    console.log("State updated:", categories);
-  }, [loading]);
-
   if (loading) {
     return <LoadingCircle size={14} />;
   } */
@@ -51,7 +43,7 @@ function Categories() {
           {/* FIX: Use 'categories' (state) instead of 'categoriesData' (import) */}
           {categoriesData.map((cat) => (
             // Ensure you use a valid key, ideally cat.id
-            <CategoryCard key={cat.name} {...cat} />
+            <CategoryCard key={cat.id || cat.name} {...cat} />
           ))}
         </div>
       </section>

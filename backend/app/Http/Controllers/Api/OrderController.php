@@ -20,7 +20,7 @@ class OrderController extends Controller
     public function index(Request $request)
     {
         $user = $request->user();
-        
+
         $query = Order::with(['gig.seller.profile', 'buyer.profile', 'seller.profile']);
 
         // Filter by role
@@ -59,9 +59,11 @@ class OrderController extends Controller
             ->findOrFail($id);
 
         // Check authorization
-        if ($order->buyer_id !== $request->user()->id && 
-            $order->seller_id !== $request->user()->id && 
-            $request->user()->role !== 'admin') {
+        if (
+            $order->buyer_id !== $request->user()->id &&
+            $order->seller_id !== $request->user()->id &&
+            $request->user()->role !== 'admin'
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized',
@@ -84,8 +86,6 @@ class OrderController extends Controller
 
         $gig = Gig::findOrFail($request->gig_id);
 
-        $platformFeePercentage = Setting::getPlatformFee();
-        
         // Check if user is trying to order their own gig
         if ($gig->seller_id === $request->user()->id) {
             return response()->json([
@@ -94,23 +94,15 @@ class OrderController extends Controller
             ], 400);
         }
 
-        // ⭐ Get platform fee percentage from settings
-        $platformFeePercentage = Setting::getPlatformFee();
-        
-        // ⭐ Calculate platform fee amount
-        $platformFeeAmount = ($gig->price * $platformFeePercentage) / 100;
-        
-        // ⭐ Calculate seller earnings (price - platform fee)
-        $sellerEarnings = $gig->price - $platformFeeAmount;
-
+        // Free platform - no payment required
         $order = Order::create([
             'gig_id' => $gig->id,
             'buyer_id' => $request->user()->id,
             'seller_id' => $gig->seller_id,
-            'price' => $gig->price,
-            'platform_fee_percentage' => $platformFeePercentage,
-            'platform_fee_amount' => $platformFeeAmount,
-            'seller_earnings' => $sellerEarnings,
+            'price' => 0,
+            'platform_fee_percentage' => 0,
+            'platform_fee_amount' => 0,
+            'seller_earnings' => 0,
             'delivery_time' => $gig->delivery_time,
             'requirements' => $request->requirements,
             'status' => 'pending',
@@ -172,7 +164,7 @@ class OrderController extends Controller
         // If completed, update completed_at
         if ($request->status === 'completed') {
             $order->update(['completed_at' => now()]);
-            
+
             // Update seller's profile stats with seller earnings
             $seller = $order->seller;
             $seller->profile->increment('total_jobs');
@@ -180,7 +172,7 @@ class OrderController extends Controller
         }
 
         // Create notification
-        $message = match($request->status) {
+        $message = match ($request->status) {
             'in_progress' => 'Your order is now in progress',
             'delivered' => 'Your order has been delivered',
             'completed' => 'Your order has been completed',

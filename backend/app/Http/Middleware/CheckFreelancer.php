@@ -23,11 +23,12 @@ class CheckFreelancer
             ], 401);
         }
 
-        // Check if user is freelancer or admin (admin can do everything)
-        if ($request->user()->role !== 'freelancer' && $request->user()->role !== 'admin') {
+        // Check if user is freelancer, business, or admin (admin can do everything)
+        $allowedRoles = ['freelancer', 'business', 'admin'];
+        if (!in_array($request->user()->role, $allowedRoles)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Unauthorized. Freelancer access required.',
+                'message' => 'Unauthorized. Business or freelancer access required.',
             ], 403);
         }
 

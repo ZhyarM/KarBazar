@@ -1,17 +1,20 @@
-import type { CategoryType } from "../../utils/CategoriesData";
+interface CategoryData {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  gig_count: number;
+  bg: string;
+}
 
-/*  interface CategoryData {
-   id: number;
-   name: string;
-   slug: string;
-   description: string;
-   icon: string;
-   gig_count: number;
-   bg: string;
-
- } */
-
-function CategoryCard({ name, description, logo, services, bg }: CategoryType) {
+function CategoryCard({
+  name,
+  description,
+  icon,
+  bg = "bg-(--color-primary)",
+  gig_count,
+}: CategoryData) {
   return (
     <article
       className="
@@ -39,7 +42,7 @@ function CategoryCard({ name, description, logo, services, bg }: CategoryType) {
           `}
         >
           <span className="text-2xl transition-transform duration-300 group-hover:scale-110">
-            {logo}
+            {icon}
           </span>
         </div>
 
@@ -65,7 +68,7 @@ function CategoryCard({ name, description, logo, services, bg }: CategoryType) {
               text-white
             "
           >
-            {services}
+            {gig_count} services
           </span>
         </div>
       </div>

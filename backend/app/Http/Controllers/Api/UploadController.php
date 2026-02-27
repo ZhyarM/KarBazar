@@ -17,11 +17,11 @@ class UploadController extends Controller
         ]);
 
         $user = $request->user();
-        
+
         // Delete old avatar if exists
         if ($user->profile->avatar_url) {
-            $oldPath = str_replace('/storage/', '', $user->profile->avatar_url);
-            Storage::disk('public')->delete($oldPath);
+            $oldPath = str_replace('avatars/', '', $user->profile->avatar_url);
+            Storage::disk('public')->delete('avatars/' . $oldPath);
         }
 
         // Store new image
@@ -31,14 +31,14 @@ class UploadController extends Controller
 
         // Update profile
         $user->profile->update([
-            'avatar_url' => '/storage/' . $path,
+            'avatar_url' => $path,  // Store relative path
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Profile picture uploaded successfully',
             'data' => [
-                'avatar_url' => asset('storage/' . $path),
+                'avatar_url' => $path,  // Return relative path
             ],
         ]);
     }
@@ -51,11 +51,11 @@ class UploadController extends Controller
         ]);
 
         $user = $request->user();
-        
+
         // Delete old cover if exists
         if ($user->profile->cover_url) {
-            $oldPath = str_replace('/storage/', '', $user->profile->cover_url);
-            Storage::disk('public')->delete($oldPath);
+            $oldPath = str_replace('covers/', '', $user->profile->cover_url);
+            Storage::disk('public')->delete('covers/' . $oldPath);
         }
 
         // Store new image
@@ -65,14 +65,14 @@ class UploadController extends Controller
 
         // Update profile
         $user->profile->update([
-            'cover_url' => '/storage/' . $path,
+            'cover_url' => $path,  // Store relative path
         ]);
 
         return response()->json([
             'success' => true,
             'message' => 'Cover photo uploaded successfully',
             'data' => [
-                'cover_url' => asset('storage/' . $path),
+                'cover_url' => $path,  // Return relative path
             ],
         ]);
     }
@@ -92,7 +92,7 @@ class UploadController extends Controller
             'success' => true,
             'message' => 'Gig image uploaded successfully',
             'data' => [
-                'image_url' => asset('storage/' . $path),
+                'image_url' => $path,  // Return relative path, frontend will convert to /storage/...
             ],
         ]);
     }
@@ -110,7 +110,7 @@ class UploadController extends Controller
         foreach ($request->file('images') as $file) {
             $filename = Str::random(40) . '.' . $file->getClientOriginalExtension();
             $path = $file->storeAs('gigs/gallery', $filename, 'public');
-            $uploadedImages[] = asset('storage/' . $path);
+            $uploadedImages[] = $path;  // Return relative path
         }
 
         return response()->json([
@@ -136,10 +136,10 @@ class UploadController extends Controller
             $originalName = $file->getClientOriginalName();
             $filename = Str::random(40) . '_' . $originalName;
             $path = $file->storeAs('deliveries', $filename, 'public');
-            
+
             $uploadedFiles[] = [
                 'name' => $originalName,
-                'url' => asset('storage/' . $path),
+                'url' => $path,  // Return relative path
                 'size' => $file->getSize(),
                 'type' => $file->getMimeType(),
             ];
@@ -171,7 +171,7 @@ class UploadController extends Controller
             'message' => 'File uploaded successfully',
             'data' => [
                 'name' => $originalName,
-                'url' => asset('storage/' . $path),
+                'url' => $path,  // Return relative path
                 'size' => $file->getSize(),
                 'type' => $file->getMimeType(),
             ],
@@ -186,11 +186,11 @@ class UploadController extends Controller
         ]);
 
         $fileUrl = $request->file_url;
-        $path = str_replace([asset('storage/'), '/storage/'], '', $fileUrl);
+        $path = str_replace(['/storage/'], '', $fileUrl);
 
         if (Storage::disk('public')->exists($path)) {
             Storage::disk('public')->delete($path);
-            
+
             return response()->json([
                 'success' => true,
                 'message' => 'File deleted successfully',

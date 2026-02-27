@@ -7,9 +7,8 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { loginuser } from "../../API/LoginAPI";
 import MessageToast from "../../utils/message";
 
-
 function isLogedIn() {
-  if (localStorage.getItem("LoginUsertoken")) {
+  if (localStorage.getItem("auth_token")) {
     return true;
   } else {
     return false;
@@ -20,8 +19,6 @@ function SignIn() {
   if (isLogedIn()) {
     window.location.href = "/";
   }
-
-
 
   const navigate = useNavigate();
 
@@ -46,7 +43,6 @@ function SignIn() {
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<boolean | null>(null);
   const [message, setMessage] = useState<string | null>(null);
-  
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log("logging in user");
@@ -63,9 +59,9 @@ function SignIn() {
       });
 
       if (res.success && res.data) {
-        
-        cookieStore.set("Authorization", res.data.token);
-        localStorage.setItem("User", JSON.stringify(res.data.user));
+        // Store token in localStorage
+        localStorage.setItem("auth_token", res.data.token);
+        localStorage.setItem("user", JSON.stringify(res.data.user));
 
         console.log(res.data);
         setSuccess(true);
@@ -92,7 +88,6 @@ function SignIn() {
         onClose={() => {
           setSuccess(null);
           setMessage(null);
-
         }}
       />
       <div className="flex flex-row h-screen  w-full background-image ">

@@ -20,7 +20,7 @@ class GigController extends Controller
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('title', 'like', "%{$search}%")
-                  ->orWhere('description', 'like', "%{$search}%");
+                    ->orWhere('description', 'like', "%{$search}%");
             });
         }
 
@@ -58,7 +58,7 @@ class GigController extends Controller
         // Sorting
         $sortBy = $request->get('sort_by', 'created_at');
         $sortOrder = $request->get('sort_order', 'desc');
-        
+
         if ($sortBy == 'relevance' && $request->has('search')) {
             // Custom relevance sorting could be implemented here
             $query->orderBy('rating', 'desc')->orderBy('order_count', 'desc');
@@ -81,10 +81,40 @@ class GigController extends Controller
     }
 
     // Get single gig
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $gig = Gig::with(['seller.profile', 'category', 'reviews.reviewer.profile'])
             ->findOrFail($id);
+
+        // Track view (once per user per gig, lifetime)
+        $userId = null;
+        if ($request->user()) {
+            $userId = $request->user()->id;
+        }
+
+        $viewerIp = $request->ip();
+
+        // Check if this user/ip already viewed this gig
+        $existingView = \DB::table('gig_views')
+            ->where('gig_id', $gig->id)
+            ->where(function ($query) use ($userId, $viewerIp) {
+                if ($userId) {
+                    $query->where('user_id', $userId);
+                } else {
+                    $query->where('ip_address', $viewerIp);
+                }
+            })
+            ->exists();
+
+        if (!$existingView) {
+            \DB::table('gig_views')->insert([
+                'gig_id' => $gig->id,
+                'user_id' => $userId,
+                'ip_address' => $viewerIp,
+                'created_at' => now(),
+            ]);
+            $gig->increment('view_count');
+        }
 
         return response()->json([
             'success' => true,
@@ -92,47 +122,80 @@ class GigController extends Controller
         ]);
     }
 
-    // Create gig (Freelancer only)
+    // Create gig (Freelancer/Business only)
     public function store(Request $request)
     {
-        if ($request->user()->role !== 'freelancer' && $request->user()->role !== 'admin') {
+        $allowedRoles = ['freelancer', 'business', 'admin'];
+        if (!in_array($request->user()->role, $allowedRoles)) {
             return response()->json([
                 'success' => false,
-                'message' => 'Only freelancers can create gigs',
+                'message' => 'Only business accounts can create gigs',
             ], 403);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'category_id' => 'required|exists:categories,id',
             'title' => 'required|string|max:255',
             'description' => 'required|string',
-            'price' => 'required|integer|min:5',
-            'delivery_time' => 'required|integer|min:1',
-            'image_url' => 'nullable|url',
+            'basic_price' => 'required|integer|min:5',
+            'basic_delivery_time' => 'required|integer|min:1',
+            'basic_description' => 'required|string',
+            'standard_price' => 'nullable|integer|min:5',
+            'standard_delivery_time' => 'nullable|integer|min:1',
+            'standard_description' => 'nullable|string',
+            'premium_price' => 'nullable|integer|min:5',
+            'premium_delivery_time' => 'nullable|integer|min:1',
+            'premium_description' => 'nullable|string',
+            'image_url' => 'nullable|string',
             'gallery' => 'nullable|array',
             'tags' => 'nullable|array',
-            'packages' => 'nullable|array',
             'requirements' => 'nullable|string',
-            'faq' => 'nullable|string',
+            'faqs' => 'nullable|array',
         ]);
+
+        // Build packages JSON
+        $packages = [
+            'basic' => [
+                'price' => $validated['basic_price'],
+                'delivery_time' => $validated['basic_delivery_time'],
+                'description' => $validated['basic_description'],
+            ],
+        ];
+
+        if (!empty($validated['standard_price'])) {
+            $packages['standard'] = [
+                'price' => $validated['standard_price'],
+                'delivery_time' => $validated['standard_delivery_time'],
+                'description' => $validated['standard_description'] ?? '',
+            ];
+        }
+
+        if (!empty($validated['premium_price'])) {
+            $packages['premium'] = [
+                'price' => $validated['premium_price'],
+                'delivery_time' => $validated['premium_delivery_time'],
+                'description' => $validated['premium_description'] ?? '',
+            ];
+        }
 
         $gig = Gig::create([
             'seller_id' => $request->user()->id,
-            'category_id' => $request->category_id,
-            'title' => $request->title,
-            'description' => $request->description,
-            'price' => $request->price,
-            'delivery_time' => $request->delivery_time,
-            'image_url' => $request->image_url,
-            'gallery' => $request->gallery,
-            'tags' => $request->tags,
-            'packages' => $request->packages,
-            'requirements' => $request->requirements,
-            'faq' => $request->faq,
+            'category_id' => $validated['category_id'],
+            'title' => $validated['title'],
+            'description' => $validated['description'],
+            'price' => $validated['basic_price'], // Starting price
+            'delivery_time' => $validated['basic_delivery_time'], // Starting delivery time
+            'image_url' => $validated['image_url'] ?? null,
+            'gallery' => $validated['gallery'] ?? null,
+            'tags' => $validated['tags'] ?? null,
+            'packages' => $packages,
+            'requirements' => $validated['requirements'] ?? null,
+            'faq' => !empty($validated['faqs']) ? json_encode($validated['faqs']) : null,
+            'is_active' => true, // New gigs are active by default
         ]);
 
         // Update category gig count
-        $category = Category::find($request->category_id);
+        $category = Category::find($validated['category_id']);
         $category->increment('gig_count');
 
         return response()->json([
@@ -155,22 +218,72 @@ class GigController extends Controller
             ], 403);
         }
 
-        $request->validate([
+        $validated = $request->validate([
             'category_id' => 'sometimes|exists:categories,id',
             'title' => 'sometimes|string|max:255',
             'description' => 'sometimes|string',
-            'price' => 'sometimes|integer|min:5',
-            'delivery_time' => 'sometimes|integer|min:1',
-            'image_url' => 'nullable|url',
+            'basic_price' => 'sometimes|integer|min:5',
+            'basic_delivery_time' => 'sometimes|integer|min:1',
+            'basic_description' => 'sometimes|string',
+            'standard_price' => 'nullable|integer|min:5',
+            'standard_delivery_time' => 'nullable|integer|min:1',
+            'standard_description' => 'nullable|string',
+            'premium_price' => 'nullable|integer|min:5',
+            'premium_delivery_time' => 'nullable|integer|min:1',
+            'premium_description' => 'nullable|string',
+            'image_url' => 'nullable|string',
             'gallery' => 'nullable|array',
             'tags' => 'nullable|array',
-            'packages' => 'nullable|array',
             'requirements' => 'nullable|string',
-            'faq' => 'nullable|string',
+            'faqs' => 'nullable|array',
             'is_active' => 'sometimes|boolean',
         ]);
 
-        $gig->update($request->all());
+        // Build packages JSON if package data is provided
+        $updateData = [];
+
+        if (isset($validated['basic_price'])) {
+            $packages = [
+                'basic' => [
+                    'price' => $validated['basic_price'],
+                    'delivery_time' => $validated['basic_delivery_time'],
+                    'description' => $validated['basic_description'],
+                ],
+            ];
+
+            if (!empty($validated['standard_price'])) {
+                $packages['standard'] = [
+                    'price' => $validated['standard_price'],
+                    'delivery_time' => $validated['standard_delivery_time'],
+                    'description' => $validated['standard_description'] ?? '',
+                ];
+            }
+
+            if (!empty($validated['premium_price'])) {
+                $packages['premium'] = [
+                    'price' => $validated['premium_price'],
+                    'delivery_time' => $validated['premium_delivery_time'],
+                    'description' => $validated['premium_description'] ?? '',
+                ];
+            }
+
+            $updateData['packages'] = $packages;
+            $updateData['price'] = $validated['basic_price'];
+            $updateData['delivery_time'] = $validated['basic_delivery_time'];
+        }
+
+        // Add other fields
+        foreach (['category_id', 'title', 'description', 'image_url', 'gallery', 'tags', 'requirements', 'is_active'] as $field) {
+            if (isset($validated[$field])) {
+                $updateData[$field] = $validated[$field];
+            }
+        }
+
+        if (!empty($validated['faqs'])) {
+            $updateData['faq'] = json_encode($validated['faqs']);
+        }
+
+        $gig->update($updateData);
 
         return response()->json([
             'success' => true,

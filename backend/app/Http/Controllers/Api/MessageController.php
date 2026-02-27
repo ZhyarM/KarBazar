@@ -20,9 +20,9 @@ class MessageController extends Controller
 
         // Get unique conversation partners with last message
         $conversations = Message::where(function ($query) use ($userId) {
-                $query->where('sender_id', $userId)
-                      ->orWhere('receiver_id', $userId);
-            })
+            $query->where('sender_id', $userId)
+                ->orWhere('receiver_id', $userId);
+        })
             ->with(['sender.profile', 'receiver.profile'])
             ->orderBy('created_at', 'desc')
             ->get()
@@ -34,7 +34,7 @@ class MessageController extends Controller
                 $lastMessage = $messages->first();
                 $otherUserId = $lastMessage->sender_id == $userId ? $lastMessage->receiver_id : $lastMessage->sender_id;
                 $otherUser = User::with('profile')->find($otherUserId);
-                
+
                 // Count unread messages
                 $unreadCount = Message::where('sender_id', $otherUserId)
                     ->where('receiver_id', $userId)
@@ -42,13 +42,7 @@ class MessageController extends Controller
                     ->count();
 
                 return [
-                    'user' => [
-                        'id' => $otherUser->id,
-                        'name' => $otherUser->name,
-                        'email' => $otherUser->email,
-                        'image' => $otherUser->image,
-                        'profile' => $otherUser->profile,
-                    ],
+                    'user' => new \App\Http\Resources\UserResource($otherUser),
                     'last_message' => [
                         'content' => $lastMessage->content,
                         'created_at' => $lastMessage->created_at,
@@ -71,12 +65,12 @@ class MessageController extends Controller
         $currentUserId = $request->user()->id;
 
         $messages = Message::where(function ($query) use ($currentUserId, $userId) {
-                $query->where('sender_id', $currentUserId)
-                      ->where('receiver_id', $userId);
-            })
+            $query->where('sender_id', $currentUserId)
+                ->where('receiver_id', $userId);
+        })
             ->orWhere(function ($query) use ($currentUserId, $userId) {
                 $query->where('sender_id', $userId)
-                      ->where('receiver_id', $currentUserId);
+                    ->where('receiver_id', $currentUserId);
             })
             ->with(['sender.profile', 'receiver.profile'])
             ->orderBy('created_at', 'asc')
@@ -164,8 +158,10 @@ class MessageController extends Controller
         $message = Message::findOrFail($id);
 
         // Check if user is sender or receiver
-        if ($message->sender_id !== $request->user()->id && 
-            $message->receiver_id !== $request->user()->id) {
+        if (
+            $message->sender_id !== $request->user()->id &&
+            $message->receiver_id !== $request->user()->id
+        ) {
             return response()->json([
                 'success' => false,
                 'message' => 'Unauthorized',

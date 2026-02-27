@@ -3,27 +3,21 @@ import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars } from "@fortawesome/free-solid-svg-icons";
+import { faBars, faBell, faEnvelope } from "@fortawesome/free-solid-svg-icons";
 import NavLinks from "../../utils/NavLinks.tsx";
 import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
 import { useEffect, useState } from "react";
-import Profile from "./profileIcon.tsx";
+import ProfileDropdown from "./profileIcon.tsx";
 import moon from "../../assets/moon.png";
 import theme from "../../assets/theme.png";
-import me, {type AuthResponse} from "../../API/me.tsx";
-
-
-function isLogedIn() {
-  return document.cookie
-    .split(";")
-    .some((row) => row.trim().startsWith("Authorization="));
-}
+import me, { type AuthResponse } from "../../API/me.tsx";
+import { getUnreadCount } from "../../API/NotificationsAPI.ts";
+import { isAuthenticated } from "../../API/apiClient.ts";
 
 const getUser = async () => {
   const user = await me();
 
   if (user) {
-  
     return user;
   } else {
     return null;
@@ -34,15 +28,44 @@ function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
   const [user, setUser] = useState<AuthResponse | null>(null);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   useEffect(() => {
     const fetchUser = async () => {
+      if (!isAuthenticated()) {
+        setUser(null);
+        return;
+      }
+
       const user = await getUser();
       setUser(user);
+
+      if (user) {
+        try {
+          const count = await getUnreadCount();
+          setUnreadCount(count);
+        } catch (error) {
+          console.error("Failed to get unread count:", error);
+        }
+      }
     };
 
-    fetchUser()
-  },[]);
+    fetchUser();
+
+    // Poll for notifications every 30 seconds if logged in
+    const interval = setInterval(() => {
+      if (isAuthenticated()) {
+        getUnreadCount().then(setUnreadCount).catch(console.error);
+      }
+    }, 30000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const isFreelancer =
+    user?.data?.role === "freelancer" ||
+    user?.data?.role === "business" ||
+    user?.data?.role === "admin";
 
   return (
     <>
@@ -93,19 +116,19 @@ function Navbar() {
         </div>
 
         {/* RIGHT */}
-        <div className="flex items-center gap-2 shrink-0 p-2  rounded-3xl animated shadow-(--color-shadow) shadow-md">
+        <div className="flex items-center gap-1.5 shrink-0 p-2 rounded-3xl animated shadow-(--color-shadow) shadow-md">
           <button
             onClick={toggleTheme}
-            className="cursor-pointer nav p-1 text-(--color-text)"
+            className="cursor-pointer nav p-1.5 text-(--color-text) rounded-full hover:bg-(--color-surface) transition-colors"
           >
             {isBgLight ? (
-              <img src={theme} className="w-6 h-6" alt="" />
+              <img src={theme} className="w-5 h-5" alt="" />
             ) : (
-              <img src={moon} className="w-6 h-6" alt="" />
+              <img src={moon} className="w-5 h-5" alt="" />
             )}
           </button>
 
-          {!isLogedIn() ? (
+          {!isAuthenticated() ? (
             <>
               <Link to="/sign-in">
                 <Button
@@ -124,8 +147,33 @@ function Navbar() {
               </Link>
             </>
           ) : (
-            
-              <Profile  username={user?.data?.name  || "Error"} />
+            <>
+              {/* Messages */}
+              <Link
+                to="/messages"
+                className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
+                title="Messages"
+              >
+                <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
+              </Link>
+
+              {/* Notifications */}
+              <Link
+                to="/notifications"
+                className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
+                title="Notifications"
+              >
+                <FontAwesomeIcon icon={faBell} className="text-lg" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </Link>
+
+              {/* Profile dropdown with all other actions */}
+              <ProfileDropdown user={user} isFreelancer={isFreelancer} />
+            </>
           )}
         </div>
       </nav>
