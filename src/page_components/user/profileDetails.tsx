@@ -294,7 +294,9 @@ function ProfileDetails({
                     className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-bold hover:bg-green-600 transition-colors flex items-center gap-1 disabled:opacity-50"
                   >
                     <FontAwesomeIcon icon={savingInfo ? faSave : faCheck} />
-                    {savingInfo ? t("profilePage.saving") : t("profilePage.save")}
+                    {savingInfo
+                      ? t("profilePage.saving")
+                      : t("profilePage.save")}
                   </button>
                   <button
                     onClick={handleCancelEdit}
