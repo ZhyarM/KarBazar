@@ -6,27 +6,23 @@ function AdminControlPage() {
 
   const sections = [
     {
-      title: "Listings & Content",
-      description:
-        "Moderate gigs and posts, hide harmful content, and keep quality standards.",
+      title: t("admin.control.section.listingsTitle"),
+      description: t("admin.control.section.listingsDescription"),
       to: "/admin/listings",
     },
     {
-      title: "Deals & Promotions",
-      description:
-        "Create, pause, and adjust active discounts for gig packages.",
+      title: t("admin.control.section.dealsTitle"),
+      description: t("admin.control.section.dealsDescription"),
       to: "/admin/deals",
     },
     {
-      title: "Orders & Reviews",
-      description:
-        "Review all orders, resolve order issues, and moderate review quality.",
+      title: t("admin.control.section.ordersTitle"),
+      description: t("admin.control.section.ordersDescription"),
       to: "/admin/orders",
     },
     {
-      title: "Settings & News",
-      description:
-        "Configure platform settings and publish announcements to all users.",
+      title: t("admin.control.section.settingsTitle"),
+      description: t("admin.control.section.settingsDescription"),
       to: "/admin/settings",
     },
   ];
@@ -61,28 +57,26 @@ function AdminControlPage() {
 
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <p className="text-(--color-text-muted)">
-          Additional tools enabled in this admin panel: Manage Deals, Publish
-          News, Process Role Requests, and Free-Platform Operations (no
-          monetization focus).
+          {t("admin.control.additionalTools")}
         </p>
         <div className="mt-4 flex flex-wrap gap-2">
           <Link
             to="/admin/users"
             className="inline-block px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold hover:opacity-90 transition-opacity"
           >
-            User Management
+            {t("admin.users.title")}
           </Link>
           <Link
             to="/admin/news"
             className="inline-block px-4 py-2 rounded-md border border-(--color-border) text-(--color-text) font-semibold"
           >
-            Publish News
+            {t("admin.news.publishTitle")}
           </Link>
           <Link
             to="/admin/deals"
             className="inline-block px-4 py-2 rounded-md border border-(--color-border) text-(--color-text) font-semibold"
           >
-            Manage Deals
+            {t("admin.deals.title")}
           </Link>
         </div>
       </div>

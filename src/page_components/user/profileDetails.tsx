@@ -14,6 +14,7 @@ import {
 import moon from "../../assets/moon.png";
 import { getImageUrlCandidates } from "../../utils/imageUrl";
 import { useEffect, useRef, useState } from "react";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface ProfileDetailsProps {
   name?: string;
@@ -56,6 +57,7 @@ function ProfileDetails({
   onUpdateBasicInfo,
   onToggleAvailability,
 }: ProfileDetailsProps) {
+  const { t } = useLanguage();
   const avatarInputRef = useRef<HTMLInputElement>(null);
   const coverInputRef = useRef<HTMLInputElement>(null);
   const [uploadingAvatar, setUploadingAvatar] = useState(false);
@@ -200,7 +202,7 @@ function ProfileDetails({
             <div className="relative z-10 flex gap-2">
               <button
                 onClick={() => setIsEditingInfo(true)}
-                title="Edit profile info"
+                title={t("profilePage.details.editProfileInfo")}
                 className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-md border border-white/20 rounded-xl flex justify-center items-center text-white hover:bg-white/40 transition-all"
               >
                 <FontAwesomeIcon icon={faPen} />
@@ -208,7 +210,7 @@ function ProfileDetails({
               <button
                 onClick={() => coverInputRef.current?.click()}
                 disabled={uploadingCover}
-                title="Upload cover photo"
+                title={t("profilePage.details.uploadCoverPhoto")}
                 className="w-10 h-10 lg:w-12 lg:h-12 bg-white/20 backdrop-blur-md border border-white/20 rounded-xl flex justify-center items-center text-white hover:bg-white/40 transition-all disabled:opacity-50"
               >
                 {uploadingCover ? (
@@ -242,7 +244,7 @@ function ProfileDetails({
               <button
                 onClick={() => avatarInputRef.current?.click()}
                 disabled={uploadingAvatar}
-                title="Change profile picture"
+                title={t("profilePage.details.changeProfilePicture")}
                 className="absolute bottom-0 right-0 w-8 h-8 lg:w-10 lg:h-10 bg-indigo-600 text-white rounded-full flex items-center justify-center shadow-lg hover:bg-indigo-700 transition-all border-2 border-(--color-card) disabled:opacity-50"
               >
                 {uploadingAvatar ? (
@@ -266,7 +268,7 @@ function ProfileDetails({
                   type="text"
                   value={editName}
                   onChange={(e) => setEditName(e.target.value)}
-                  placeholder="Your name"
+                  placeholder={t("profilePage.details.yourName")}
                   className="text-2xl lg:text-3xl font-bold bg-(--color-surface) text-(--color-text) border border-(--color-border) rounded-lg px-3 py-1 focus:outline-none focus:border-(--color-primary)"
                 />
                 <div className="flex flex-wrap gap-2">
@@ -274,14 +276,14 @@ function ProfileDetails({
                     type="text"
                     value={editUsername}
                     onChange={(e) => setEditUsername(e.target.value)}
-                    placeholder="username"
+                    placeholder={t("profilePage.details.username")}
                     className="text-sm font-bold bg-(--color-surface) text-(--color-primary) border border-(--color-border) rounded-lg px-3 py-1 focus:outline-none focus:border-(--color-primary)"
                   />
                   <input
                     type="text"
                     value={editTitle}
                     onChange={(e) => setEditTitle(e.target.value)}
-                    placeholder="Professional title"
+                    placeholder={t("profilePage.details.professionalTitle")}
                     className="text-sm font-semibold bg-(--color-surface) text-(--color-text-muted) border border-(--color-border) rounded-lg px-3 py-1 focus:outline-none focus:border-(--color-primary)"
                   />
                 </div>
@@ -292,14 +294,14 @@ function ProfileDetails({
                     className="px-3 py-1 bg-green-500 text-white rounded-lg text-sm font-bold hover:bg-green-600 transition-colors flex items-center gap-1 disabled:opacity-50"
                   >
                     <FontAwesomeIcon icon={savingInfo ? faSave : faCheck} />
-                    {savingInfo ? "Saving..." : "Save"}
+                    {savingInfo ? t("profilePage.saving") : t("profilePage.save")}
                   </button>
                   <button
                     onClick={handleCancelEdit}
                     className="px-3 py-1 bg-gray-500 text-white rounded-lg text-sm font-bold hover:bg-gray-600 transition-colors flex items-center gap-1"
                   >
                     <FontAwesomeIcon icon={faTimes} />
-                    Cancel
+                    {t("profilePage.cancel")}
                   </button>
                 </div>
               </div>
@@ -339,7 +341,9 @@ function ProfileDetails({
                     icon={faCircle}
                     className={`text-[8px] ${available ? "text-green-500" : "text-red-500"}`}
                   />
-                  {available ? "Available" : "Busy"}
+                  {available
+                    ? t("profilePage.details.available")
+                    : t("profilePage.details.busy")}
                 </button>
               ) : available ? (
                 <div className="bg-green-100 px-3 py-1.5 rounded-lg border border-green-200 text-xs lg:text-sm font-bold text-green-700 flex items-center gap-2">
@@ -347,7 +351,7 @@ function ProfileDetails({
                     icon={faCircle}
                     className="text-[8px] text-green-500"
                   />
-                  Available
+                  {t("profilePage.details.available")}
                 </div>
               ) : (
                 <div className="bg-red-100 px-3 py-1.5 rounded-lg border border-red-200 text-xs lg:text-sm font-bold text-red-700 flex items-center gap-2">
@@ -355,14 +359,14 @@ function ProfileDetails({
                     icon={faCircle}
                     className="text-[8px] text-red-500"
                   />
-                  Busy
+                  {t("profilePage.details.busy")}
                 </div>
               )}
 
               {topRated && (
                 <div className="bg-indigo-100 px-3 py-1.5 rounded-lg border border-indigo-200 text-xs lg:text-sm font-bold text-indigo-700 flex items-center gap-2">
                   <FontAwesomeIcon icon={faStar} className="text-orange-400" />
-                  Top Rated
+                  {t("profilePage.details.topRated")}
                 </div>
               )}
             </div>

@@ -8,6 +8,7 @@ import {
   type AdminDeal,
   type DealFormPayload,
 } from "../../API/AdminAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 const packageOptions: Array<DealFormPayload["package_key"]> = [
   "basic",
@@ -16,6 +17,7 @@ const packageOptions: Array<DealFormPayload["package_key"]> = [
 ];
 
 function AdminDealsPage() {
+  const { t } = useLanguage();
   const [deals, setDeals] = useState<AdminDeal[]>([]);
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
@@ -52,12 +54,12 @@ function AdminDealsPage() {
     const discountPercentage = Number(form.discount_percentage);
 
     if (!Number.isFinite(gigId) || gigId <= 0) {
-      alert("Enter a valid gig ID.");
+      alert(t("admin.deals.invalidGigId"));
       return;
     }
 
     if (!Number.isFinite(discountPercentage) || discountPercentage <= 0) {
-      alert("Enter a valid discount percentage.");
+      alert(t("admin.deals.invalidDiscount"));
       return;
     }
 
@@ -80,7 +82,9 @@ function AdminDealsPage() {
       await loadDeals();
     } catch (error) {
       console.error("Failed to create deal:", error);
-      alert(error instanceof Error ? error.message : "Failed to create deal.");
+      alert(
+        error instanceof Error ? error.message : t("admin.deals.createFailed"),
+      );
     } finally {
       setSaving(false);
     }
@@ -92,13 +96,15 @@ function AdminDealsPage() {
       await loadDeals();
     } catch (error) {
       console.error("Failed to update deal:", error);
-      alert(error instanceof Error ? error.message : "Failed to update deal.");
+      alert(
+        error instanceof Error ? error.message : t("admin.deals.updateFailed"),
+      );
     }
   };
 
   const handleEdit = async (deal: AdminDeal) => {
     const nextDiscount = window.prompt(
-      "Discount percentage",
+      t("admin.deals.editDiscountPrompt"),
       String(deal.discount_percentage),
     );
 
@@ -107,13 +113,13 @@ function AdminDealsPage() {
     }
 
     const nextExpiry = window.prompt(
-      "Expiry date (YYYY-MM-DD or leave blank for no expiry)",
+      t("admin.deals.editExpiryPrompt"),
       deal.expires_at ? deal.expires_at.slice(0, 10) : "",
     );
 
     const discountPercentage = Number(nextDiscount);
     if (!Number.isFinite(discountPercentage) || discountPercentage <= 0) {
-      alert("Enter a valid discount percentage.");
+      alert(t("admin.deals.invalidDiscount"));
       return;
     }
 
@@ -125,13 +131,17 @@ function AdminDealsPage() {
       await loadDeals();
     } catch (error) {
       console.error("Failed to edit deal:", error);
-      alert(error instanceof Error ? error.message : "Failed to update deal.");
+      alert(
+        error instanceof Error ? error.message : t("admin.deals.updateFailed"),
+      );
     }
   };
 
   const handleDelete = async (deal: AdminDeal) => {
     const confirmed = window.confirm(
-      `Delete the ${deal.package_label} deal for ${deal.gig.title}?`,
+      t("admin.deals.confirmDelete")
+        .replace("{package}", deal.package_label)
+        .replace("{gig}", deal.gig.title),
     );
     if (!confirmed) {
       return;
@@ -142,17 +152,20 @@ function AdminDealsPage() {
       await loadDeals();
     } catch (error) {
       console.error("Failed to delete deal:", error);
-      alert(error instanceof Error ? error.message : "Failed to delete deal.");
+      alert(
+        error instanceof Error ? error.message : t("admin.deals.deleteFailed"),
+      );
     }
   };
 
   return (
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
-        <h2 className="text-xl font-bold text-(--color-text)">Manage Deals</h2>
+        <h2 className="text-xl font-bold text-(--color-text)">
+          {t("admin.deals.title")}
+        </h2>
         <p className="text-(--color-text-muted) mt-2">
-          Create and manage active discounts for gigs using the existing package
-          discount system.
+          {t("admin.deals.subtitle")}
         </p>
       </div>
 
@@ -166,7 +179,7 @@ function AdminDealsPage() {
             onChange={(e) =>
               setForm((prev) => ({ ...prev, gig_id: e.target.value }))
             }
-            placeholder="Gig ID"
+            placeholder={t("admin.deals.gigIdPlaceholder")}
             className={fieldClassName}
             inputMode="numeric"
             required
@@ -195,7 +208,7 @@ function AdminDealsPage() {
                 discount_percentage: e.target.value,
               }))
             }
-            placeholder="Discount %"
+            placeholder={t("admin.deals.discountPlaceholder")}
             className={fieldClassName}
             inputMode="decimal"
             required
@@ -205,7 +218,7 @@ function AdminDealsPage() {
             onChange={(e) =>
               setForm((prev) => ({ ...prev, expires_at: e.target.value }))
             }
-            placeholder="Expiry date (optional)"
+            placeholder={t("admin.deals.expiryOptional")}
             className={fieldClassName}
             type="date"
           />
@@ -214,7 +227,7 @@ function AdminDealsPage() {
             disabled={saving}
             className="px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold disabled:opacity-60"
           >
-            {saving ? "Saving..." : "Create Deal"}
+            {saving ? t("admin.deals.saving") : t("admin.deals.create")}
           </button>
           <label className="md:col-span-5 flex items-center gap-2 text-sm text-(--color-text-muted)">
             <input
@@ -224,7 +237,7 @@ function AdminDealsPage() {
                 setForm((prev) => ({ ...prev, is_active: e.target.checked }))
               }
             />
-            Publish immediately
+            {t("admin.deals.publishImmediately")}
           </label>
         </form>
       </div>
@@ -235,7 +248,9 @@ function AdminDealsPage() {
             <div className="animate-spin rounded-full h-10 w-10 border-b-2 border-(--color-primary)"></div>
           </div>
         ) : deals.length === 0 ? (
-          <p className="text-(--color-text-muted)">No active deals found.</p>
+          <p className="text-(--color-text-muted)">
+            {t("admin.deals.noActive")}
+          </p>
         ) : (
           <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
             {deals.map((deal) => (
@@ -249,12 +264,12 @@ function AdminDealsPage() {
                       {deal.gig.title}
                     </p>
                     <p className="text-sm text-(--color-text-muted)">
-                      {deal.package_label} package · {deal.discount_percentage}%
-                      off
+                      {deal.package_label} {t("admin.deals.package")} ·{" "}
+                      {deal.discount_percentage}% {t("deals.off")}
                     </p>
                     <p className="text-sm text-(--color-text-muted) mt-1">
-                      Seller: {deal.gig.seller.name} · Category:{" "}
-                      {deal.gig.category.name}
+                      {t("admin.deals.seller")}: {deal.gig.seller.name} ·{" "}
+                      {t("admin.deals.category")}: {deal.gig.category.name}
                     </p>
                   </div>
                   <span
@@ -264,35 +279,39 @@ function AdminDealsPage() {
                         : "bg-red-100 text-red-700"
                     }`}
                   >
-                    {deal.is_active ? "Active" : "Paused"}
+                    {deal.is_active
+                      ? t("admin.deals.active")
+                      : t("admin.deals.paused")}
                   </span>
                 </div>
 
                 <div className="mt-4 grid grid-cols-2 gap-3 text-sm text-(--color-text-muted)">
                   <div>
-                    Original:{" "}
+                    {t("admin.deals.original")}:{" "}
                     <span className="text-(--color-text)">
                       {deal.original_price}
                     </span>
                   </div>
                   <div>
-                    Discounted:{" "}
+                    {t("admin.deals.discounted")}:{" "}
                     <span className="text-(--color-text)">
                       {deal.discounted_price}
                     </span>
                   </div>
                   <div>
-                    Expires:{" "}
+                    {t("admin.deals.expires")}:{" "}
                     <span className="text-(--color-text)">
                       {deal.expires_at
                         ? new Date(deal.expires_at).toLocaleDateString()
-                        : "Never"}
+                        : t("admin.deals.never")}
                     </span>
                   </div>
                   <div>
-                    Expiring soon:{" "}
+                    {t("admin.deals.expiringSoon")}:{" "}
                     <span className="text-(--color-text)">
-                      {deal.is_expiring_soon ? "Yes" : "No"}
+                      {deal.is_expiring_soon
+                        ? t("admin.deals.yes")
+                        : t("admin.deals.no")}
                     </span>
                   </div>
                 </div>
@@ -303,21 +322,23 @@ function AdminDealsPage() {
                     onClick={() => handleEdit(deal)}
                     className="px-3 py-1 rounded-md border border-(--color-border) text-sm"
                   >
-                    Edit
+                    {t("admin.deals.edit")}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleToggleActive(deal)}
                     className="px-3 py-1 rounded-md border border-(--color-border) text-sm"
                   >
-                    {deal.is_active ? "Pause" : "Activate"}
+                    {deal.is_active
+                      ? t("admin.deals.pause")
+                      : t("admin.deals.activate")}
                   </button>
                   <button
                     type="button"
                     onClick={() => handleDelete(deal)}
                     className="px-3 py-1 rounded-md border border-red-500/20 bg-red-500/10 text-red-600 text-sm"
                   >
-                    Delete
+                    {t("admin.deals.delete")}
                   </button>
                 </div>
               </article>

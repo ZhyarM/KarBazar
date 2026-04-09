@@ -5,8 +5,10 @@ import {
   updateAdminSetting,
   type AdminSetting,
 } from "../../API/AdminAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 function AdminSettingsPage() {
+  const { t } = useLanguage();
   const [settings, setSettings] = useState<AdminSetting[]>([]);
   const [savingMaintenance, setSavingMaintenance] = useState(false);
   const [form, setForm] = useState({
@@ -48,8 +50,7 @@ function AdminSettingsPage() {
         key: "platform_maintenance_mode",
         value: !isMaintenanceEnabled,
         type: "boolean",
-        description:
-          "Blocks non-admin API requests while the platform is in maintenance mode.",
+        description: t("admin.settings.maintenanceDescription"),
       });
       await loadSettings();
     } catch (error) {
@@ -57,7 +58,7 @@ function AdminSettingsPage() {
       alert(
         error instanceof Error
           ? error.message
-          : "Failed to update maintenance mode.",
+          : t("admin.settings.updateMaintenanceFailed"),
       );
     } finally {
       setSavingMaintenance(false);
@@ -81,7 +82,7 @@ function AdminSettingsPage() {
       try {
         value = JSON.parse(form.value);
       } catch {
-        alert("Invalid JSON format.");
+        alert(t("admin.settings.invalidJson"));
         return;
       }
     }
@@ -97,7 +98,9 @@ function AdminSettingsPage() {
       await loadSettings();
     } catch (error) {
       console.error("Failed to save setting:", error);
-      alert(error instanceof Error ? error.message : "Failed to save setting.");
+      alert(
+        error instanceof Error ? error.message : t("admin.settings.saveFailed"),
+      );
     }
   };
 
@@ -105,11 +108,10 @@ function AdminSettingsPage() {
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <h2 className="text-xl font-bold text-(--color-text)">
-          Configure Platform Settings
+          {t("admin.settings.title")}
         </h2>
         <p className="text-(--color-text-muted) mt-2">
-          Manage global platform behavior. Keep the platform free by avoiding
-          payment-related settings.
+          {t("admin.settings.subtitle")}
         </p>
       </div>
 
@@ -117,10 +119,10 @@ function AdminSettingsPage() {
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
           <div>
             <h3 className="text-lg font-semibold text-(--color-text)">
-              Maintenance Mode
+              {t("admin.settings.maintenanceTitle")}
             </h3>
             <p className="text-sm text-(--color-text-muted) mt-1">
-              When enabled, the backend returns 503 for non-admin requests.
+              {t("admin.settings.maintenanceDescription")}
             </p>
           </div>
           <div className="flex items-center gap-3">
@@ -131,7 +133,9 @@ function AdminSettingsPage() {
                   : "bg-green-100 text-green-700"
               }`}
             >
-              {isMaintenanceEnabled ? "Enabled" : "Disabled"}
+              {isMaintenanceEnabled
+                ? t("admin.settings.enabled")
+                : t("admin.settings.disabled")}
             </span>
             <button
               type="button"
@@ -140,10 +144,10 @@ function AdminSettingsPage() {
               className="px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold disabled:opacity-60"
             >
               {savingMaintenance
-                ? "Updating..."
+                ? t("admin.settings.updating")
                 : isMaintenanceEnabled
-                  ? "Disable Maintenance"
-                  : "Enable Maintenance"}
+                  ? t("admin.settings.disableMaintenance")
+                  : t("admin.settings.enableMaintenance")}
             </button>
           </div>
         </div>
@@ -159,7 +163,7 @@ function AdminSettingsPage() {
             onChange={(e) =>
               setForm((prev) => ({ ...prev, key: e.target.value }))
             }
-            placeholder="setting_key"
+            placeholder={t("admin.settings.keyPlaceholder")}
             className={fieldClassName}
             required
           />
@@ -187,7 +191,7 @@ function AdminSettingsPage() {
             onChange={(e) =>
               setForm((prev) => ({ ...prev, value: e.target.value }))
             }
-            placeholder="value"
+            placeholder={t("admin.settings.valuePlaceholder")}
             className={`${fieldClassName} md:col-span-2`}
             required
           />
@@ -196,21 +200,21 @@ function AdminSettingsPage() {
             onChange={(e) =>
               setForm((prev) => ({ ...prev, description: e.target.value }))
             }
-            placeholder="description (optional)"
+            placeholder={t("admin.settings.descriptionPlaceholder")}
             className={`${fieldClassName} md:col-span-2`}
           />
           <button
             type="submit"
             className="px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold md:col-span-2"
           >
-            Save Setting
+            {t("admin.settings.save")}
           </button>
         </form>
       </div>
 
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <h3 className="text-lg font-semibold text-(--color-text) mb-4">
-          Existing Settings
+          {t("admin.settings.existing")}
         </h3>
         <div className="space-y-2">
           {settings.map((setting) => (
@@ -220,7 +224,8 @@ function AdminSettingsPage() {
             >
               <p className="font-semibold text-(--color-text)">{setting.key}</p>
               <p className="text-sm text-(--color-text-muted)">
-                Type: {setting.type} | Value: {String(setting.value)}
+                {t("admin.settings.type")}: {setting.type} |{" "}
+                {t("admin.settings.value")}: {String(setting.value)}
               </p>
               {setting.description && (
                 <p className="text-sm text-(--color-text-muted)">

@@ -7,8 +7,10 @@ import {
   updateAdminCategory,
   type AdminCategory,
 } from "../../API/AdminAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 function AdminCategoriesPage() {
+  const { t } = useLanguage();
   const [categories, setCategories] = useState<AdminCategory[]>([]);
   const [name, setName] = useState("");
   const [description, setDescription] = useState("");
@@ -39,13 +41,18 @@ function AdminCategoriesPage() {
     } catch (error) {
       console.error("Failed to create category:", error);
       alert(
-        error instanceof Error ? error.message : "Failed to create category.",
+        error instanceof Error
+          ? error.message
+          : t("admin.categories.createFailed"),
       );
     }
   };
 
   const handleRename = async (category: AdminCategory) => {
-    const nextName = window.prompt("New category name", category.name);
+    const nextName = window.prompt(
+      t("admin.categories.renamePrompt"),
+      category.name,
+    );
     if (!nextName || nextName === category.name) {
       return;
     }
@@ -56,13 +63,15 @@ function AdminCategoriesPage() {
     } catch (error) {
       console.error("Failed to update category:", error);
       alert(
-        error instanceof Error ? error.message : "Failed to update category.",
+        error instanceof Error
+          ? error.message
+          : t("admin.categories.updateFailed"),
       );
     }
   };
 
   const handleDelete = async (categoryId: number) => {
-    if (!window.confirm("Delete this category?")) {
+    if (!window.confirm(t("admin.categories.confirmDelete"))) {
       return;
     }
 
@@ -72,7 +81,9 @@ function AdminCategoriesPage() {
     } catch (error) {
       console.error("Failed to delete category:", error);
       alert(
-        error instanceof Error ? error.message : "Failed to delete category.",
+        error instanceof Error
+          ? error.message
+          : t("admin.categories.deleteFailed"),
       );
     }
   };
@@ -81,10 +92,10 @@ function AdminCategoriesPage() {
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <h2 className="text-xl font-bold text-(--color-text)">
-          Manage Categories
+          {t("admin.categories.title")}
         </h2>
         <p className="text-(--color-text-muted) mt-2">
-          Create and organize categories for listings and content.
+          {t("admin.categories.subtitle")}
         </p>
       </div>
 
@@ -96,21 +107,21 @@ function AdminCategoriesPage() {
           <input
             value={name}
             onChange={(e) => setName(e.target.value)}
-            placeholder="Category name"
+            placeholder={t("admin.categories.namePlaceholder")}
             className={fieldClassName}
             required
           />
           <input
             value={description}
             onChange={(e) => setDescription(e.target.value)}
-            placeholder="Description"
+            placeholder={t("admin.categories.descriptionPlaceholder")}
             className={fieldClassName}
           />
           <button
             type="submit"
             className="px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold"
           >
-            Add Category
+            {t("admin.categories.add")}
           </button>
         </form>
       </div>
@@ -127,7 +138,7 @@ function AdminCategoriesPage() {
                   {category.name}
                 </p>
                 <p className="text-sm text-(--color-text-muted)">
-                  {category.description || "No description"}
+                  {category.description || t("admin.categories.noDescription")}
                 </p>
               </div>
               <div className="flex gap-2">
@@ -136,14 +147,14 @@ function AdminCategoriesPage() {
                   onClick={() => handleRename(category)}
                   className="px-3 py-1 rounded-md border border-(--color-border) text-sm text-(--color-text) bg-(--color-surface)"
                 >
-                  Edit
+                  {t("admin.categories.edit")}
                 </button>
                 <button
                   type="button"
                   onClick={() => handleDelete(category.id)}
                   className="px-3 py-1 rounded-md border border-red-500/20 bg-red-500/10 text-red-600 text-sm"
                 >
-                  Delete
+                  {t("admin.categories.delete")}
                 </button>
               </div>
             </div>

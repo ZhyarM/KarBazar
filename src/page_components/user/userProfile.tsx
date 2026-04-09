@@ -122,11 +122,11 @@ function UserProfile() {
       setSaving(true);
       const updatedProfile = await updateProfile(data);
       setProfile(updatedProfile);
-      setToast({ message: "Profile updated successfully", type: "success" });
+      setToast({ message: t("profilePage.toast.updated"), type: "success" });
       return true;
     } catch (err) {
       console.error("Error updating profile:", err);
-      setToast({ message: "Failed to update profile", type: "error" });
+      setToast({ message: t("profilePage.toast.updateFailed"), type: "error" });
       return false;
     } finally {
       setSaving(false);
@@ -147,10 +147,13 @@ function UserProfile() {
           : prev,
       );
       await fetchProfile();
-      setToast({ message: "Profile picture updated", type: "success" });
+      setToast({
+        message: t("profilePage.toast.avatarUpdated"),
+        type: "success",
+      });
     } catch (err) {
       console.error("Error uploading avatar:", err);
-      setToast({ message: "Failed to upload profile picture", type: "error" });
+      setToast({ message: t("profilePage.toast.avatarFailed"), type: "error" });
     }
   };
 
@@ -168,10 +171,13 @@ function UserProfile() {
           : prev,
       );
       await fetchProfile();
-      setToast({ message: "Cover photo updated", type: "success" });
+      setToast({
+        message: t("profilePage.toast.coverUpdated"),
+        type: "success",
+      });
     } catch (err) {
       console.error("Error uploading cover:", err);
-      setToast({ message: "Failed to upload cover photo", type: "error" });
+      setToast({ message: t("profilePage.toast.coverFailed"), type: "error" });
     }
   };
 
@@ -193,11 +199,14 @@ function UserProfile() {
         await updateProfile(profileData);
       }
       await fetchProfile(); // Refresh all data
-      setToast({ message: "Profile info updated", type: "success" });
+      setToast({
+        message: t("profilePage.toast.infoUpdated"),
+        type: "success",
+      });
       return true;
     } catch (err) {
       console.error("Error updating basic info:", err);
-      setToast({ message: "Failed to update profile info", type: "error" });
+      setToast({ message: t("profilePage.toast.infoFailed"), type: "error" });
       return false;
     }
   };
@@ -248,7 +257,7 @@ function UserProfile() {
     const parsed = Number(responseTimeInput);
     if (!Number.isFinite(parsed) || parsed <= 0) {
       setToast({
-        message: "Response time must be a positive number",
+        message: t("profilePage.toast.responsePositive"),
         type: "error",
       });
       return;
@@ -365,25 +374,31 @@ function UserProfile() {
   if (!items.basicInfo) {
     completionSuggestions.push({
       section: "basicInfo",
-      text: "+ Add basic info",
+      text: t("profilePage.progress.addBasicInfo"),
     });
   }
   if (!items.professionalBio) {
-    completionSuggestions.push({ section: "bio", text: "+ Add complete bio" });
+    completionSuggestions.push({
+      section: "bio",
+      text: t("profilePage.progress.addCompleteBio"),
+    });
   }
   if (!items.skills) {
-    completionSuggestions.push({ section: "skills", text: "+ Add skills" });
+    completionSuggestions.push({
+      section: "skills",
+      text: t("profilePage.progress.addSkills"),
+    });
   }
   if (!items.portfolio) {
     completionSuggestions.push({
       section: "portfolio",
-      text: "+ Add portfolio",
+      text: t("profilePage.progress.addPortfolio"),
     });
   }
   if (!items.workExperience) {
     completionSuggestions.push({
       section: "work",
-      text: "+ Add work experience",
+      text: t("profilePage.progress.addWorkExperience"),
     });
   }
 
@@ -455,7 +470,7 @@ function UserProfile() {
                 cover_url={profile.cover_url || ""}
                 avatar_url={profile.avatar_url || profile.user?.image || ""}
                 imageVersion={profileImageVersion}
-                name={profile.user?.name || "User"}
+                name={profile.user?.name || t("profile.user")}
                 username={profile.username}
                 title={profile.title || ""}
                 saves={profile.profile_views}
@@ -509,7 +524,8 @@ function UserProfile() {
                       {`${profile.response_time ?? 0}h`}
                     </h1>
                     <label className="text-(--color-text-muted) font-medium text-sm uppercase tracking-wider">
-                      {t("profilePage.stats.response")} (hours)
+                      {t("profilePage.stats.response")} (
+                      {t("profilePage.hours")})
                     </label>
                     <div className="flex gap-2">
                       <input
@@ -526,7 +542,9 @@ function UserProfile() {
                         disabled={savingResponseTime}
                         className="px-3 py-2 bg-(--color-primary) text-(--color-text-inverse) rounded-lg font-semibold hover:opacity-90 disabled:opacity-60"
                       >
-                        {savingResponseTime ? "Saving..." : "Save"}
+                        {savingResponseTime
+                          ? t("profilePage.saving")
+                          : t("profilePage.save")}
                       </button>
                     </div>
                   </div>

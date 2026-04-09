@@ -7,8 +7,10 @@ import {
   type AdminGig,
   type AdminPost,
 } from "../../API/AdminAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 function AdminListingsPage() {
+  const { t } = useLanguage();
   const [gigs, setGigs] = useState<AdminGig[]>([]);
   const [posts, setPosts] = useState<AdminPost[]>([]);
   const [loading, setLoading] = useState(true);
@@ -42,7 +44,7 @@ function AdminListingsPage() {
       alert(
         error instanceof Error
           ? error.message
-          : "Failed to update listing status.",
+          : t("admin.listings.updateListingFailed"),
       );
     }
   };
@@ -56,7 +58,7 @@ function AdminListingsPage() {
       alert(
         error instanceof Error
           ? error.message
-          : "Failed to update post status.",
+          : t("admin.listings.updatePostFailed"),
       );
     }
   };
@@ -73,17 +75,17 @@ function AdminListingsPage() {
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <h2 className="text-xl font-bold text-(--color-text)">
-          Moderate Listings
+          {t("admin.listings.title")}
         </h2>
         <p className="text-(--color-text-muted) mt-2">
-          Enable or disable gigs and posts to keep marketplace content safe.
+          {t("admin.listings.subtitle")}
         </p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
           <h3 className="text-lg font-semibold text-(--color-text) mb-4">
-            Gigs
+            {t("admin.listings.gigs")}
           </h3>
           <div className="space-y-3 max-h-[420px] overflow-auto pr-2">
             {gigs.map((gig) => (
@@ -93,7 +95,8 @@ function AdminListingsPage() {
               >
                 <p className="font-semibold text-(--color-text)">{gig.title}</p>
                 <p className="text-sm text-(--color-text-muted)">
-                  Seller: {gig.seller?.name || "Unknown"}
+                  {t("admin.listings.seller")}:{" "}
+                  {gig.seller?.name || t("admin.listings.unknown")}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <span
@@ -103,14 +106,18 @@ function AdminListingsPage() {
                         : "bg-red-100 text-red-700"
                     }`}
                   >
-                    {gig.is_active ? "Active" : "Hidden"}
+                    {gig.is_active
+                      ? t("admin.listings.active")
+                      : t("admin.listings.hidden")}
                   </span>
                   <button
                     type="button"
                     onClick={() => toggleGigStatus(gig)}
                     className="px-3 py-1 text-sm rounded-md border border-(--color-border) bg-(--color-surface)"
                   >
-                    {gig.is_active ? "Hide" : "Restore"}
+                    {gig.is_active
+                      ? t("admin.listings.hide")
+                      : t("admin.listings.restore")}
                   </button>
                 </div>
               </div>
@@ -120,7 +127,7 @@ function AdminListingsPage() {
 
         <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
           <h3 className="text-lg font-semibold text-(--color-text) mb-4">
-            Posts
+            {t("admin.listings.posts")}
           </h3>
           <div className="space-y-3 max-h-[420px] overflow-auto pr-2">
             {posts.map((post) => (
@@ -132,7 +139,8 @@ function AdminListingsPage() {
                   {post.title}
                 </p>
                 <p className="text-sm text-(--color-text-muted)">
-                  Author: {post.user?.name || "Unknown"}
+                  {t("admin.listings.author")}:{" "}
+                  {post.user?.name || t("admin.listings.unknown")}
                 </p>
                 <div className="mt-3 flex items-center gap-2">
                   <span
@@ -142,14 +150,18 @@ function AdminListingsPage() {
                         : "bg-red-100 text-red-700"
                     }`}
                   >
-                    {post.is_active ? "Active" : "Hidden"}
+                    {post.is_active
+                      ? t("admin.listings.active")
+                      : t("admin.listings.hidden")}
                   </span>
                   <button
                     type="button"
                     onClick={() => togglePostStatus(post)}
                     className="px-3 py-1 text-sm rounded-md border border-(--color-border) bg-(--color-surface)"
                   >
-                    {post.is_active ? "Hide" : "Restore"}
+                    {post.is_active
+                      ? t("admin.listings.hide")
+                      : t("admin.listings.restore")}
                   </button>
                 </div>
               </div>

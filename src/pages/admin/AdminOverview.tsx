@@ -74,11 +74,13 @@ function MiniBarChart({
   data,
   accentClass,
   formatter,
+  periodLabel,
 }: {
   title: string;
   data: AdminChartPoint[];
   accentClass: string;
   formatter?: (value: number) => string;
+  periodLabel: string;
 }) {
   const visibleData = data.slice(-12);
   const maxValue = Math.max(...visibleData.map((entry) => entry.value), 1);
@@ -87,7 +89,7 @@ function MiniBarChart({
     <div className="bg-(--color-surface) rounded-xl p-5 shadow-md border border-(--color-border)">
       <div className="flex items-center justify-between mb-4">
         <h3 className="text-lg font-semibold text-(--color-text)">{title}</h3>
-        <span className="text-xs text-(--color-text-muted)">Last 30 days</span>
+        <span className="text-xs text-(--color-text-muted)">{periodLabel}</span>
       </div>
       <div className="h-48 flex items-end gap-2">
         {visibleData.map((entry) => {
@@ -199,13 +201,13 @@ function AdminOverviewPage() {
     },
     {
       icon: faLayerGroup,
-      label: "Total Categories",
+      label: t("admin.overview.totalCategories"),
       value: formatCompact(dashboardStats.total_categories),
       tone: "bg-violet-700",
     },
     {
       icon: faListCheck,
-      label: "Pending Orders",
+      label: t("admin.overview.pendingOrders"),
       value: formatCompact(dashboardStats.pending_orders),
       tone: "bg-rose-700",
     },
@@ -217,19 +219,21 @@ function AdminOverviewPage() {
     },
     {
       icon: faDollarSign,
-      label: "Revenue",
+      label: t("admin.overview.revenue"),
       value: formatCurrency(dashboardStats.total_revenue),
       tone: "bg-emerald-700",
-      subtitle: `Platform fee: ${dashboardStats.current_platform_fee}%`,
+      subtitle: `${t("admin.overview.platformFee")} ${dashboardStats.current_platform_fee}%`,
     },
     {
       icon: faShieldHalved,
-      label: "Maintenance",
-      value: dashboardStats.maintenance_mode ? "On" : "Off",
+      label: t("admin.overview.maintenance"),
+      value: dashboardStats.maintenance_mode
+        ? t("admin.overview.on")
+        : t("admin.overview.off"),
       tone: dashboardStats.maintenance_mode ? "bg-red-700" : "bg-green-700",
       subtitle: dashboardStats.maintenance_mode
-        ? "Non-admin API requests are blocked"
-        : "Public API requests are open",
+        ? t("admin.overview.maintenanceBlocked")
+        : t("admin.overview.publicOpen"),
     },
   ];
 
@@ -250,37 +254,41 @@ function AdminOverviewPage() {
 
       <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
         <MiniBarChart
-          title="Revenue"
+          title={t("admin.overview.revenue")}
           data={charts.revenue}
           accentClass="bg-emerald-600"
           formatter={formatCurrency}
+          periodLabel={t("admin.overview.last30Days")}
         />
         <MiniBarChart
-          title="Orders"
+          title={t("admin.overview.orders")}
           data={charts.orders}
           accentClass="bg-orange-600"
           formatter={(value) => formatCompact(value)}
+          periodLabel={t("admin.overview.last30Days")}
         />
         <MiniBarChart
-          title="Categories"
+          title={t("admin.overview.categories")}
           data={charts.categories}
           accentClass="bg-violet-600"
           formatter={(value) => formatCompact(value)}
+          periodLabel={t("admin.overview.last30Days")}
         />
         <MiniBarChart
-          title="Top Freelancers"
+          title={t("admin.overview.topFreelancers")}
           data={charts.freelancers.map((entry) => ({
             label: entry.username || entry.name,
             value: entry.total_earnings,
           }))}
           accentClass="bg-sky-600"
           formatter={formatCurrency}
+          periodLabel={t("admin.overview.last30Days")}
         />
       </div>
 
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
         <ListCard<AdminTopFreelancer>
-          title="Top Freelancers"
+          title={t("admin.overview.topFreelancers")}
           items={tables.top_freelancers}
           renderItem={(item) => (
             <div
@@ -301,14 +309,15 @@ function AdminOverviewPage() {
                 </span>
               </div>
               <p className="mt-2 text-xs text-(--color-text-muted)">
-                {item.total_orders} orders · Rating {item.rating.toFixed(1)}
+                {item.total_orders} {t("admin.overview.ordersSuffix")} ·{" "}
+                {t("admin.overview.rating")} {item.rating.toFixed(1)}
               </p>
             </div>
           )}
         />
 
         <ListCard<AdminTopGig>
-          title="Top Gigs"
+          title={t("admin.overview.topGigs")}
           items={tables.top_gigs}
           renderItem={(item) => (
             <div
@@ -320,7 +329,8 @@ function AdminOverviewPage() {
                 {item.seller} · {item.category}
               </p>
               <p className="mt-2 text-xs text-(--color-text-muted)">
-                {item.total_orders} orders · {item.review_count} reviews ·{" "}
+                {item.total_orders} {t("admin.overview.ordersSuffix")} ·{" "}
+                {item.review_count} {t("admin.overview.reviewsSuffix")} ·{" "}
                 {formatCurrency(item.price)}
               </p>
             </div>
@@ -329,12 +339,12 @@ function AdminOverviewPage() {
 
         <div className="bg-(--color-surface) rounded-xl p-5 shadow-md border border-(--color-border)">
           <h3 className="text-lg font-semibold text-(--color-text) mb-4">
-            Recent Activity
+            {t("admin.overview.recentActivity")}
           </h3>
           <div className="space-y-3">
             {activities.length === 0 ? (
               <p className="text-sm text-(--color-text-muted)">
-                No activity yet.
+                {t("admin.overview.noActivityYet")}
               </p>
             ) : (
               activities.slice(0, 5).map((activity, index) => (

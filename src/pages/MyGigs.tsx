@@ -94,7 +94,7 @@ function MyGigs() {
       await loadGigs();
     } catch (error) {
       console.error("Failed to delete gig:", error);
-      alert("Failed to delete gig. Please try again.");
+      alert(t("myGigs.deleteFailed"));
     } finally {
       setDeleting(null);
     }

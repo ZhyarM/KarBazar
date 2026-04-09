@@ -160,18 +160,30 @@ function Navbar() {
           ) : (
             <>
               {/* Messages */}
-              <Link
+              <NavLink
                 to="/messages"
-                className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
+                className={({ isActive }) =>
+                  `relative p-2 rounded-full transition-all ${
+                    isActive
+                      ? "bg-(--color-surface) text-(--color-primary)"
+                      : "text-(--color-text-muted) hover:bg-(--color-surface) hover:text-(--color-primary)"
+                  }`
+                }
                 title={t("nav.messages")}
               >
                 <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
-              </Link>
+              </NavLink>
 
               {/* Notifications */}
-              <Link
+              <NavLink
                 to="/notifications"
-                className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
+                className={({ isActive }) =>
+                  `relative p-2 rounded-full transition-all ${
+                    isActive
+                      ? "bg-(--color-surface) text-(--color-primary)"
+                      : "text-(--color-text-muted) hover:bg-(--color-surface) hover:text-(--color-primary)"
+                  }`
+                }
                 title={t("nav.notifications")}
               >
                 <FontAwesomeIcon icon={faBell} className="text-lg" />
@@ -182,7 +194,7 @@ function Navbar() {
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
-              </Link>
+              </NavLink>
 
               {/* Profile dropdown with all other actions */}
               <ProfileDropdown user={user} isFreelancer={isSeller} />
