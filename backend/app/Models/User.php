@@ -36,6 +36,11 @@ class User extends Authenticatable
         return $this->hasOne(Profile::class);
     }
 
+    public function accountMetadata()
+    {
+        return $this->hasOne(AccountMetadata::class);
+    }
+
     public function gigsAsSeller()
     {
         return $this->hasMany(Gig::class, 'seller_id');

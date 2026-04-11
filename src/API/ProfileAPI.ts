@@ -1,6 +1,5 @@
 import {
   apiCall,
-  getAuthHeaders,
   getAuthHeadersForUpload,
   API_BASE_URL,
 } from "./apiClient";

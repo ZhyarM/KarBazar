@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\UserResource;
 use App\Models\User;
 use App\Models\Profile;
+use App\Models\AccountMetadata;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -18,13 +19,25 @@ class AuthController extends Controller
     // Register
     public function register(Request $request)
     {
-        $request->validate([
+        // Base validation
+        $rules = [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|in:client,freelancer,business,admin',
-        ]);
+        ];
 
+        // Conditional validation for business role
+        if ($request->role === 'business') {
+            $rules['company_name'] = 'required|string|max:255';
+            $rules['description'] = 'required|string|max:1000';
+            $rules['team_size'] = 'required|integer|min:1';
+            $rules['industry'] = 'required|string|max:255';
+        }
+
+        $request->validate($rules);
+
+        // Create user
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
@@ -38,6 +51,17 @@ class AuthController extends Controller
             'username' => strtolower(str_replace(' ', '_', $request->name)) . '_' . $user->id,
         ]);
 
+        // Create account metadata for business role
+        if ($request->role === 'business') {
+            AccountMetadata::create([
+                'user_id' => $user->id,
+                'company_name' => $request->company_name,
+                'description' => $request->description,
+                'team_size' => $request->team_size,
+                'industry' => $request->industry,
+            ]);
+        }
+
         // Send welcome email (MUST BE BEFORE return statement!)
         Mail::to($user->email)->send(new WelcomeEmail($user));
 
@@ -47,7 +71,7 @@ class AuthController extends Controller
             'success' => true,
             'message' => 'User registered successfully',
             'data' => [
-                'user' => new UserResource($user->load('profile')),
+                'user' => new UserResource($user->load('profile', 'accountMetadata')),
                 'token' => $token,
             ],
         ], 201);
