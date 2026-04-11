@@ -1,9 +1,4 @@
-import {
-  apiCall,
-  getAuthHeaders,
-  getAuthHeadersForUpload,
-  API_BASE_URL,
-} from "./apiClient";
+import { apiCall, getAuthHeadersForUpload, API_BASE_URL } from "./apiClient";
 
 // Types
 export interface Education {

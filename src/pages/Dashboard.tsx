@@ -16,6 +16,7 @@ import {
   faStar,
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
+import { isSellerRole } from "../utils/roles";
 
 function Dashboard() {
   const [orders, setOrders] = useState<Order[]>([]);
@@ -24,8 +25,7 @@ function Dashboard() {
   const [loading, setLoading] = useState(true);
 
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-  const isFreelancer =
-    currentUser.role === "freelancer" || currentUser.role === "business";
+  const isSeller = isSellerRole(currentUser.role);
 
   useEffect(() => {
     loadDashboardData();
@@ -41,7 +41,7 @@ function Dashboard() {
       setOrders(ordersData);
       setUnreadNotifications(unreadCount);
 
-      if (isFreelancer) {
+      if (isSeller) {
         const gigsData = await getMyGigs();
         setGigs(gigsData);
       }
@@ -81,8 +81,8 @@ function Dashboard() {
             Welcome back, {currentUser.name}!
           </h1>
           <p className="text-(--color-text-muted)">
-            Here's what's happening with your{" "}
-            {isFreelancer ? "business" : "orders"} today.
+            Here's what's happening with your {isSeller ? "business" : "orders"}{" "}
+            today.
           </p>
         </div>
 
@@ -103,7 +103,7 @@ function Dashboard() {
             </h3>
           </div>
 
-          {isFreelancer && (
+          {isSeller && (
             <>
               <div className="bg-(--color-surface) rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow">
                 <div className="flex items-center justify-between mb-4">
@@ -159,7 +159,7 @@ function Dashboard() {
             Quick Actions
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-            {isFreelancer && (
+            {isSeller && (
               <Link
                 to="/create-gig"
                 className="flex items-center gap-3 p-4 bg-(--color-bg) rounded-lg hover:bg-(--color-primary) hover:text-white transition-all group"
@@ -263,8 +263,8 @@ function Dashboard() {
             )}
           </div>
 
-          {/* My Gigs (Freelancer) or Browse Recommendations (Client) */}
-          {isFreelancer ? (
+          {/* My Gigs (Seller) or Browse Recommendations (Client) */}
+          {isSeller ? (
             <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-(--color-text)">

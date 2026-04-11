@@ -338,7 +338,7 @@ function UserProfile() {
               username={profile.username}
               title={profile.title || ""}
               saves={profile.profile_views}
-              typeOfBussiness={profile.title || "Freelancer"}
+              typeOfBussiness={profile.title || "Business"}
               views={profile.profile_views}
               isOwner={isOwner}
               onAvatarUpload={isOwner ? handleAvatarUpload : undefined}

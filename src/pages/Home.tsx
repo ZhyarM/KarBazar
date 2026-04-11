@@ -19,6 +19,7 @@ import {
   faFire,
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
+import { isSellerRole } from "../utils/roles";
 
 function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
@@ -37,10 +38,7 @@ function Home() {
     }
   }, []);
 
-  const isFreelancer =
-    currentUser?.role === "freelancer" ||
-    currentUser?.role === "business" ||
-    currentUser?.role === "admin";
+  const isSeller = isSellerRole(currentUser?.role);
 
   if (loggedIn) {
     return (
@@ -92,7 +90,7 @@ function Home() {
 
                 {/* Navigation */}
                 <nav className="bg-(--color-surface) rounded-2xl border border-(--color-border) py-2">
-                  {isFreelancer && (
+                  {isSeller && (
                     <Link
                       to="/create-post"
                       className="flex items-center gap-3 px-4 py-2.5 text-sm text-(--color-text) hover:bg-(--color-primary)/5 hover:text-(--color-primary) transition-colors"
@@ -146,7 +144,7 @@ function Home() {
             {/* ── Main Feed ───────────────────────── */}
             <main className="flex-1 min-w-0">
               {/* Create post prompt */}
-              {isFreelancer && (
+              {isSeller && (
                 <Link to="/create-post" className="block mb-5">
                   <div className="bg-(--color-surface) rounded-2xl p-4 border border-(--color-border) flex items-center gap-3 hover:border-(--color-primary)/30 hover:shadow-[0_4px_20px_rgba(49,91,181,0.06)] transition-all">
                     <div className="w-11 h-11 rounded-full bg-linear-to-br from-[#315bb5] to-[#6D28D9] flex items-center justify-center text-white font-bold text-base shrink-0">

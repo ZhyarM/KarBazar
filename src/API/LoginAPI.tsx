@@ -1,3 +1,5 @@
+import { normalizeRoleForUi } from "../utils/roles";
+
 interface UserProfile {
   id: number;
   user_id: number;
@@ -24,7 +26,7 @@ interface User {
   name: string;
   email: string;
   image: string | null;
-  role: "freelancer" | "client" | "admin";
+  role: "business" | "client" | "admin";
   is_active: boolean | null;
   email_verified_at: string | null;
   created_at: string;
@@ -48,7 +50,7 @@ interface RequestPayload {
 }
 
 export const loginuser = async (
-  payload: RequestPayload
+  payload: RequestPayload,
 ): Promise<AuthResponse> => {
   const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
     method: "POST",
@@ -63,6 +65,10 @@ export const loginuser = async (
 
   if (!response.ok) {
     throw new Error(data.message || "Login failed");
+  }
+
+  if (data.data?.user) {
+    data.data.user.role = normalizeRoleForUi(data.data.user.role);
   }
 
   return data;
