@@ -70,11 +70,26 @@ const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {
       credentials: "omit",
     });
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
-
     const data: AuthResponse = await response.json();
+
+    if (!response.ok) {
+      // Extract validation errors from Laravel response
+      const errorData = data as any;
+      if (errorData.errors && typeof errorData.errors === "object") {
+        const validationErrors = Object.values(errorData.errors)
+          .flat()
+          .join(", ");
+        console.error("Validation errors:", errorData.errors);
+        throw new Error(
+          validationErrors ||
+            errorData.message ||
+            `HTTP error! status: ${response.status}`,
+        );
+      }
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`,
+      );
+    }
 
     if (data.data?.user) {
       data.data.user.role = normalizeRoleForUi(data.data.user.role);
@@ -83,7 +98,11 @@ const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {
     return data;
   } catch (error) {
     console.error("Error registering user:", error);
-    return { success: false, message: "Error registering user", data: null };
+    return {
+      success: false,
+      message: (error as Error).message || "Error registering user",
+      data: null,
+    };
   }
 };
 

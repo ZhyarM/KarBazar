@@ -16,6 +16,7 @@ type StepType = 1 | 2 | 3;
 
 function SignUp() {
   const [message, setMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
 
   interface SignupForm {
@@ -53,6 +54,14 @@ function SignUp() {
       ...prev,
       [Field]: value,
     }));
+    // Clear field error when user starts typing
+    if (fieldErrors[Field]) {
+      setFieldErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[Field];
+        return updated;
+      });
+    }
   };
 
   const [IsHidden, setIsHidden] = useState(false);
@@ -133,6 +142,7 @@ function SignUp() {
       }, 1500);
     } else {
       setSuccess(false);
+      setMessage(res.message || "Registration failed. Please try again.");
     }
 
     console.log(res);
@@ -277,7 +287,7 @@ function SignUp() {
                     className={`flex-1 p-6 rounded-lg border-2 cursor-pointer transition-all ${
                       form.Type === "client"
                         ? "border-(--color-primary) bg-(--color-primary)/10"
-                        : "border-(--color-surface) bg-(--color-surface)"
+                        : "border-(--color-border)/20 bg-transparent hover:bg-(--color-surface)/30"
                     }`}
                   >
                     <h3 className="font-bold text-(--color-text-inverse) text-center">
@@ -292,7 +302,7 @@ function SignUp() {
                     className={`flex-1 p-6 rounded-lg border-2 cursor-pointer transition-all ${
                       form.Type === "business"
                         ? "border-(--color-primary) bg-(--color-primary)/10"
-                        : "border-(--color-surface) bg-(--color-surface)"
+                        : "border-(--color-border)/20 bg-transparent hover:bg-(--color-surface)/30"
                     }`}
                   >
                     <h3 className="font-bold text-(--color-text-inverse) text-center">
@@ -322,6 +332,7 @@ function SignUp() {
                       label="First Name"
                       placeholder="John"
                       size="1/2"
+                      error={fieldErrors.first_name}
                     />
                     <Input
                       type="text"
@@ -331,6 +342,7 @@ function SignUp() {
                       label="Last Name"
                       placeholder="Doe"
                       size="1/2"
+                      error={fieldErrors.last_name}
                     />
                   </div>
                   <Input
@@ -341,6 +353,7 @@ function SignUp() {
                     label="Email Address"
                     placeholder="john@example.com"
                     size="full"
+                    error={fieldErrors.email}
                   />
                   <div className="relative">
                     <Input
@@ -351,6 +364,7 @@ function SignUp() {
                       label="Password"
                       placeholder="••••••••"
                       size="full"
+                      error={fieldErrors.password}
                     />
                     <FontAwesomeIcon
                       onClick={() => setIsHidden((prev) => !prev)}
@@ -369,6 +383,7 @@ function SignUp() {
                       label="Confirm Password"
                       placeholder="••••••••"
                       size="full"
+                      error={fieldErrors.confirm_password}
                     />
                     <FontAwesomeIcon
                       onClick={() => setIsHidden((prev) => !prev)}
@@ -397,6 +412,7 @@ function SignUp() {
                         label="Your Location"
                         placeholder="City, Country"
                         size="full"
+                        error={fieldErrors.location}
                       />
                       <div className="flex flex-row gap-4">
                         <Input
@@ -407,6 +423,7 @@ function SignUp() {
                           label="Min Budget ($)"
                           placeholder="100"
                           size="1/2"
+                          error={fieldErrors.budget_min}
                         />
                         <Input
                           type="number"
@@ -416,6 +433,7 @@ function SignUp() {
                           label="Max Budget ($)"
                           placeholder="10000"
                           size="1/2"
+                          error={fieldErrors.budget_max}
                         />
                       </div>
                     </div>
@@ -436,6 +454,7 @@ function SignUp() {
                         label="Company Name"
                         placeholder="Acme Corp"
                         size="full"
+                        error={fieldErrors.company_name}
                       />
                       <Input
                         type="text"
@@ -447,6 +466,7 @@ function SignUp() {
                         label="Business Category"
                         placeholder="e.g. Web Development, Graphic Design"
                         size="full"
+                        error={fieldErrors.business_category}
                       />
                       <Input
                         type="number"
@@ -456,6 +476,7 @@ function SignUp() {
                         label="Hourly Rate ($)"
                         placeholder="75"
                         size="full"
+                        error={fieldErrors.hourly_rate}
                       />
                     </div>
                   </>
