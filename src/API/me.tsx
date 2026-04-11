@@ -24,7 +24,7 @@ interface User {
   name: string;
   email: string;
   image: string | null;
-  role: "freelancer" | "client" | "admin";
+  role: "freelancer" | "client" | "admin" | "business";
   is_active: boolean | null;
   email_verified_at: string | null;
   created_at: string;
