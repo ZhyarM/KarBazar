@@ -24,11 +24,22 @@ interface User {
   name: string;
   email: string;
   image: string | null;
-  role: "freelancer" | "client" | "admin"; // add more roles if needed
+  role: "freelancer" | "client" | "admin" | "business";
   is_active: boolean | null;
   email_verified_at: string | null;
   created_at: string;
   profile: UserProfile;
+  accountMetadata?: {
+    id: number;
+    user_id: number;
+    organization_name: string | null;
+    company_name: string | null;
+    description: string | null;
+    team_size: number | null;
+    industry: string | null;
+    created_at: string;
+    updated_at: string;
+  };
 }
 
 interface AuthData {
@@ -40,50 +51,45 @@ interface AuthResponse {
   success: boolean;
   message: string;
   data: AuthData | null;
-    } ;
+}
 
-
-interface requestPayload{
-    name: String;
-    email: String;
-    password: String;
-    password_confirmation: String;
-    role: String;
+interface requestPayload {
+  name: String;
+  email: String;
+  password: String;
+  password_confirmation: String;
+  role: String;
+  // Business account fields
+  company_name?: String;
+  description?: String;
+  team_size?: Number;
+  industry?: String;
 }
 
 const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {
-    try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/auth/register",
-          {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Access-Control-Allow-Origin": "*",
-            },
-            body: JSON.stringify(payload),
-            credentials: "omit",
-          }
-        );
+  try {
+    const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(payload),
+      credentials: "omit",
+    });
 
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        
-        }
-
-      const data: AuthResponse = await response.json();
-      
-      return data;
-    } catch (error) {
-        console.error("Error registering user:", error);
-        return { success: false, message: "Error registering user", data: null };
-
+    if (!response.ok) {
+      throw new Error(`HTTP error! status: ${response.status}`);
     }
-}
+
+    const data: AuthResponse = await response.json();
+
+    return data;
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return { success: false, message: "Error registering user", data: null };
+  }
+};
 
 export { registerUser };
-
-
-
-
