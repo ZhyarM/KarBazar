@@ -11,6 +11,7 @@ import TrustStrip from "../page_components/home_page/TrustStrip.tsx";
 import HomeFAQ from "../page_components/home_page/HomeFAQ.tsx";
 import PostFeed from "../page_components/home_page/PostFeed.tsx";
 import { isAuthenticated } from "../API/apiClient.ts";
+import { fetchCategories } from "../API/CategoriesAPI.tsx";
 import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -29,6 +30,9 @@ import { isSellerRole } from "../utils/roles";
 function Home() {
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
+  const [trendingCategories, setTrendingCategories] = useState<
+    Array<{ id: number; name: string; gig_count: number }>
+  >([]);
 
   useEffect(() => {
     const authenticated = isAuthenticated();
@@ -41,6 +45,29 @@ function Home() {
         setCurrentUser(null);
       }
     }
+  }, []);
+
+  useEffect(() => {
+    const loadTrendingCategories = async () => {
+      const response = await fetchCategories();
+      if (!response.success) {
+        setTrendingCategories([]);
+        return;
+      }
+
+      const topCategories = response.data
+        .sort((a, b) => (b.gig_count ?? 0) - (a.gig_count ?? 0))
+        .slice(0, 5)
+        .map((category) => ({
+          id: category.id,
+          name: category.name,
+          gig_count: category.gig_count,
+        }));
+
+      setTrendingCategories(topCategories);
+    };
+
+    loadTrendingCategories();
   }, []);
 
   const isSeller = isSellerRole(currentUser?.role);
@@ -194,54 +221,35 @@ function Home() {
                       className="text-sm text-orange-500"
                     />
                     <h3 className="font-semibold text-(--color-text) text-sm">
-                      Trending
+                      Trending Categories
                     </h3>
                   </div>
                   <div className="flex flex-col gap-1">
-                    {[
-                      {
-                        tag: "design",
-                        posts: "2.4k",
-                        desc: "UI/UX & Branding",
-                      },
-                      {
-                        tag: "development",
-                        posts: "1.9k",
-                        desc: "Full-stack & APIs",
-                      },
-                      {
-                        tag: "marketing",
-                        posts: "1.2k",
-                        desc: "SEO & Social",
-                      },
-                      {
-                        tag: "writing",
-                        posts: "890",
-                        desc: "Copy & Content",
-                      },
-                      {
-                        tag: "video",
-                        posts: "670",
-                        desc: "Editing & Motion",
-                      },
-                    ].map(({ tag, posts, desc }) => (
-                      <div
-                        key={tag}
+                    {trendingCategories.map((category) => (
+                      <Link
+                        key={category.id}
+                        to={`/browse-gigs?category_id=${category.id}&category=${encodeURIComponent(category.name)}`}
                         className="flex items-center justify-between px-3 py-2.5 rounded-xl hover:bg-(--color-bg) transition-colors cursor-pointer group"
                       >
                         <div>
                           <p className="text-sm font-medium text-(--color-text) group-hover:text-(--color-primary) transition-colors">
-                            #{tag}
+                            {category.name}
                           </p>
                           <p className="text-[11px] text-(--color-text-muted)">
-                            {desc}
+                            Browse gigs in this category
                           </p>
                         </div>
                         <span className="text-xs text-(--color-text-muted) font-medium">
-                          {posts}
+                          {category.gig_count}
                         </span>
-                      </div>
+                      </Link>
                     ))}
+
+                    {trendingCategories.length === 0 && (
+                      <p className="px-3 py-2 text-xs text-(--color-text-muted)">
+                        No categories available right now.
+                      </p>
+                    )}
                   </div>
                 </div>
 

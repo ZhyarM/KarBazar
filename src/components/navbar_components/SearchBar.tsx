@@ -1,13 +1,36 @@
+import { useEffect, useState } from "react";
 import { handleSearchSubmit } from "../../utils/HandleFormSearch";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
+  onInputChange?: (query: string) => void;
 }
 
-function SearchBar({ onSearch }: SearchBarProps) {
+function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
+  const [query, setQuery] = useState("");
+
+  useEffect(() => {
+    if (!onInputChange) {
+      return;
+    }
+
+    const timeout = setTimeout(() => {
+      onInputChange(query);
+    }, 120);
+
+    return () => clearTimeout(timeout);
+  }, [query, onInputChange]);
+
   return (
     <form
-      onSubmit={(e) => handleSearchSubmit(e, onSearch)}
+      onSubmit={(e) => {
+        e.preventDefault();
+        if (onSearch) {
+          onSearch(query);
+          return;
+        }
+        handleSearchSubmit(e, onSearch);
+      }}
       className="relative flex items-center"
     >
       <svg
@@ -29,6 +52,8 @@ function SearchBar({ onSearch }: SearchBarProps) {
       <input
         type="search"
         name="q"
+        value={query}
+        onChange={(e) => setQuery(e.target.value)}
         placeholder="Search for services..."
         className="
     h-11

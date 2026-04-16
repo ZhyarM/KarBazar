@@ -137,6 +137,17 @@ interface FreelancersResponse {
   };
 }
 
+interface AccountsResponse {
+  success: boolean;
+  data: Profile[];
+  meta: {
+    current_page: number;
+    last_page: number;
+    per_page: number;
+    total: number;
+  };
+}
+
 interface StatisticsResponse {
   success: boolean;
   data: ProfileStatistics;
@@ -193,6 +204,12 @@ export interface FreelancerFilters {
   per_page?: number;
 }
 
+export interface AccountFilters {
+  search?: string;
+  page?: number;
+  per_page?: number;
+}
+
 export const getFreelancers = async (
   filters?: FreelancerFilters,
 ): Promise<FreelancersResponse> => {
@@ -223,6 +240,30 @@ export const getFreelancers = async (
       "Content-Type": "application/json",
     },
   });
+  return response.json();
+};
+
+// Get all public accounts (clients, freelancers, businesses) with optional search
+export const getAccounts = async (
+  filters?: AccountFilters,
+): Promise<AccountsResponse> => {
+  const params = new URLSearchParams();
+
+  if (filters) {
+    if (filters.search) params.append("search", filters.search);
+    if (filters.page) params.append("page", filters.page.toString());
+    if (filters.per_page)
+      params.append("per_page", filters.per_page.toString());
+  }
+
+  const url = `${API_BASE_URL}/profiles/accounts${params.toString() ? "?" + params.toString() : ""}`;
+  const response = await fetch(url, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  });
+
   return response.json();
 };
 

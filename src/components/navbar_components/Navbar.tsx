@@ -1,4 +1,4 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
@@ -28,6 +28,7 @@ const getUser = async () => {
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
+  const navigate = useNavigate();
   const [user, setUser] = useState<AuthResponse | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -110,7 +111,24 @@ function Navbar() {
 
         {/* CENTER - SEARCH BAR */}
         <div className="hidden lg:flex flex-1  justify-center ">
-          <SearchBar />
+          <SearchBar
+            onSearch={(query) => {
+              const q = query.trim();
+              if (!q) {
+                return;
+              }
+              navigate(`/search?q=${encodeURIComponent(q)}`);
+            }}
+            onInputChange={(query) => {
+              const q = query.trim();
+              if (!q) {
+                return;
+              }
+              navigate(`/search?q=${encodeURIComponent(q)}`, {
+                replace: true,
+              });
+            }}
+          />
         </div>
 
         {/* RIGHT */}

@@ -43,6 +43,7 @@ Route::get('/gigs/{id}', [GigController::class, 'show'])->where('id', '[0-9]+');
 
 // Public profiles
 Route::get('/profiles/freelancers', [ProfileController::class, 'freelancers']);
+Route::get('/profiles/accounts', [ProfileController::class, 'accounts']);
 Route::get('/profiles/user/{userId}', [ProfileController::class, 'showById']);
 Route::get('/profiles/{username}', [ProfileController::class, 'show']);
 

@@ -229,6 +229,42 @@ class ProfileController extends Controller
         ]);
     }
 
+    // Get all public account profiles (clients, freelancers, businesses)
+    public function accounts(Request $request)
+    {
+        $query = Profile::whereHas('user', function ($q) {
+            $q->where('is_active', true)
+                ->whereIn('role', ['client', 'freelancer', 'business']);
+        })->where('is_public', true)->with('user');
+
+        if ($request->has('search')) {
+            $search = $request->search;
+            $query->where(function ($q) use ($search) {
+                $q->where('username', 'like', "%{$search}%")
+                    ->orWhere('title', 'like', "%{$search}%")
+                    ->orWhere('bio', 'like', "%{$search}%")
+                    ->orWhereHas('user', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $query->orderByDesc('rating')->orderByDesc('total_reviews');
+
+        $profiles = $query->paginate($request->get('per_page', 12));
+
+        return response()->json([
+            'success' => true,
+            'data' => ProfileResource::collection($profiles),
+            'meta' => [
+                'current_page' => $profiles->currentPage(),
+                'last_page' => $profiles->lastPage(),
+                'per_page' => $profiles->perPage(),
+                'total' => $profiles->total(),
+            ],
+        ]);
+    }
+
     // Get profile statistics
     public function statistics(Request $request)
     {

@@ -21,6 +21,7 @@ import MyGigs from "../pages/MyGigs.tsx";
 import Notifications from "../pages/Notifications.tsx";
 import Favorites from "../pages/Favorites.tsx";
 import Checkout from "../pages/Checkout.tsx";
+import SearchResults from "../pages/SearchResults.tsx";
 
 // Post Pages
 import CreatePost from "../pages/CreatePost.tsx";
@@ -35,6 +36,7 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "browseGigs", element: <BrowseGigs /> },
       { path: "browse-gigs", element: <BrowseGigs /> },
+      { path: "search", element: <SearchResults /> },
       { path: "/user/:userId", element: <UserDetails /> },
       { path: "/gig/:id", element: <UserDetails /> },
       { path: "/gigs/:id", element: <UserDetails /> },
