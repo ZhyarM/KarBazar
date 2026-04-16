@@ -13,6 +13,7 @@ import {
 import { logout } from "../../API/LogoutAPI";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import type { AuthResponse } from "../../API/me.tsx";
+import { roleLabel } from "../../utils/roles";
 
 interface ProfileDropdownProps {
   user: AuthResponse | null;
@@ -25,7 +26,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
 
   const avatarUrl = getAvatarUrl(user?.data?.profile?.avatar_url);
   const name = user?.data?.name || "User";
-  const role = user?.data?.role || "client";
+  const role = roleLabel(user?.data?.role);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {

@@ -37,12 +37,21 @@ function SignIn() {
       ...prev,
       [field]: value,
     }));
+    // Clear field error when user starts typing
+    if (fieldErrors[field]) {
+      setFieldErrors((prev) => {
+        const updated = { ...prev };
+        delete updated[field];
+        return updated;
+      });
+    }
   };
 
   const [IsHidden, setIsHidden] = useState(false);
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState<boolean | null>(null);
   const [message, setMessage] = useState<string | null>(null);
+  const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     console.log("logging in user");
@@ -121,20 +130,24 @@ function SignIn() {
               <Input
                 type="text"
                 onChange={(value) => updateForm("email", value)}
+                value={form.email}
                 icon=""
                 label="Email Address"
                 placeholder="Example@gmail.com"
                 size="full"
+                error={fieldErrors.email}
               ></Input>
 
               <div className="relative">
                 <Input
                   type={IsHidden ? "text" : "password"}
                   onChange={(value) => updateForm("password", value)}
+                  value={form.password}
                   icon=""
                   label="Password"
                   placeholder="d$bb*****"
                   size="full"
+                  error={fieldErrors.password}
                 ></Input>
                 <FontAwesomeIcon
                   onClick={() => setIsHidden((prev) => !prev)}

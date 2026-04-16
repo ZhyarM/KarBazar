@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import PricingCard from "./../../components/cards/PricingCard.tsx";
-import Button from "../../components/btns/Button.tsx";
 import type { JSX } from "react/jsx-runtime";
 import { lazy, Suspense } from "react";
 import { fetchGigByID } from "../../API/gigs/getGigByID.tsx";

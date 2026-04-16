@@ -16,11 +16,11 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
 import me from "../../API/me.tsx";
+import { isAuthenticated } from "../../API/apiClient.ts";
+import { isSellerRole } from "../../utils/roles";
 
 function isLogedIn() {
-  return document.cookie
-    .split(";")
-    .some((row) => row.trim().startsWith("Authorization="));
+  return isAuthenticated();
 }
 
 export default function Sidebar(): JSX.Element {
@@ -127,9 +127,7 @@ export default function Sidebar(): JSX.Element {
             ))}
 
             {/* Freelancer-only Links */}
-            {(userRole === "freelancer" ||
-              userRole === "business" ||
-              userRole === "admin") && (
+            {isSellerRole(userRole) && (
               <>
                 <li className="mt-4 px-3 py-2 text-xs font-semibold text-(--color-text-muted) uppercase">
                   Seller

@@ -25,6 +25,7 @@ import {
 import { toggleFollow } from "../../API/FollowAPI";
 import { isAuthenticated } from "../../API/apiClient";
 import { getAvatarUrl } from "../../utils/imageUrl";
+import { isBusinessRole } from "../../utils/roles";
 
 interface PostCardProps {
   post: Post;
@@ -147,7 +148,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
               >
                 {post.user?.name}
               </Link>
-              {post.user?.role === "freelancer" && (
+              {isBusinessRole(post.user?.role) && (
                 <span className="px-1.5 py-0.5 bg-(--color-primary)/10 text-(--color-primary) rounded text-[0.6rem] font-bold uppercase tracking-wide">
                   PRO
                 </span>

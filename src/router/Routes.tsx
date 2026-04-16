@@ -6,7 +6,7 @@ import About from "./../pages/About.tsx";
 import SignIn from "./../pages/auth/SignIn.tsx";
 import SignUp from "./../pages/auth/SignUp.tsx";
 import ErrorPage from "./../pages/ErrorPages/ErrorPage.tsx";
-import Root from "./Root.tsx";
+/* import Root from "./Root.tsx"; */
 import UserDetails from "./../page_components/user_profile/UserDetails";
 import { adminRoutes } from "./admin.routes.tsx";
 import UserProfile from "../page_components/user/userProfile.tsx";
@@ -22,6 +22,7 @@ import MyGigs from "../pages/MyGigs.tsx";
 import Notifications from "../pages/Notifications.tsx";
 import Favorites from "../pages/Favorites.tsx";
 import Checkout from "../pages/Checkout.tsx";
+import SearchResults from "../pages/SearchResults.tsx";
 
 // Post Pages
 import CreatePost from "../pages/CreatePost.tsx";
@@ -31,15 +32,12 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
     errorElement: <ErrorPage />,
     children: [
-      {
-        path: "/",
-        element: <Root />,
-        children: [
-          { index: true, element: <Home /> },
-          { path: "browseGigs", element: <BrowseGigs /> },
-          { path: "browse-gigs", element: <BrowseGigs /> },
-      { path: "user/:userId", element: <UserDetails /> },
-          { path: "/gig/:id", element: <UserDetails /> },
+      { index: true, element: <Home /> },
+      { path: "browseGigs", element: <BrowseGigs /> },
+      { path: "browse-gigs", element: <BrowseGigs /> },
+      { path: "search", element: <SearchResults /> },
+      { path: "/user/:userId", element: <UserDetails /> },
+      { path: "/gig/:id", element: <UserDetails /> },
       { path: "/gigs/:id", element: <UserDetails /> },
       { path: "categories", element: <Categories /> },
           { path: "about", element: <About /> },

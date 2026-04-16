@@ -3,6 +3,7 @@ import Header from "./../page_components/browseGigs_components/GigsHeader.tsx";
 import GigCard from "../page_components/browseGigs_components/GigCardContainer.tsx";
 import { filtersConfig } from "../config/filters.config.ts";
 import { useState, useEffect, useCallback } from "react";
+import { useSearchParams } from "react-router-dom";
 
 import { fetchGigs } from "../API/gigs/getGigs.tsx";
 import type { Gig, GigResponse, GigFilters } from "../API/gigs/getGigs.tsx";
@@ -27,6 +28,29 @@ function BrowseGigs() {
   const [loading, setLoading] = useState(false);
   const [Gigs, setGigs] = useState<Gig[]>([]);
   const [response, setResponse] = useState<GigResponse>();
+  const [searchParams] = useSearchParams();
+  const [selectedCategoryId, setSelectedCategoryId] = useState<
+    number | undefined
+  >(undefined);
+
+  useEffect(() => {
+    const categoryIdParam = searchParams.get("category_id");
+    const categoryNameParam = searchParams.get("category");
+
+    if (categoryIdParam) {
+      const parsedId = Number(categoryIdParam);
+      if (!Number.isNaN(parsedId)) {
+        setSelectedCategoryId(parsedId);
+      }
+    }
+
+    if (categoryNameParam) {
+      setFilters((prev: Record<string, any>) => ({
+        ...prev,
+        category: categoryNameParam,
+      }));
+    }
+  }, [searchParams]);
 
   const buildApiFilters = useCallback((): GigFilters => {
     const apiFilters: GigFilters = { page: pageNumber };
@@ -37,15 +61,13 @@ function BrowseGigs() {
 
     // Category filter - match by name to find category_id
     if (filters.category) {
+      if (selectedCategoryId) {
+        apiFilters.category_id = selectedCategoryId;
+      }
+
       // The backend supports category name search via the search param
       // or category_id. We'll pass category name as search if no other search is active
-      apiFilters.search = apiFilters.search
-        ? `${apiFilters.search}`
-        : undefined;
-      // We pass category name and let the backend handle it
-      // The backend GigController filters by category_id, so we need to map names to IDs
-      // For now, we include category in search
-      if (!apiFilters.search) {
+      if (!apiFilters.search && !apiFilters.category_id) {
         apiFilters.search = filters.category;
       }
     }
@@ -99,7 +121,7 @@ function BrowseGigs() {
     }
 
     return apiFilters;
-  }, [pageNumber, searchQuery, filters, sortBy]);
+  }, [pageNumber, searchQuery, filters, sortBy, selectedCategoryId]);
 
   const loadGigs = useCallback(async () => {
     setLoading(true);
@@ -153,14 +175,18 @@ function BrowseGigs() {
           <Filters
             config={filtersConfig}
             value={filters}
-            onChange={(id, value) =>
+            onChange={(id, value) => {
+              if (id === "category") {
+                setSelectedCategoryId(undefined);
+              }
               setFilters((prev: Record<string, any>) => ({
                 ...prev,
                 [id]: value,
-              }))
-            }
+              }));
+            }}
             onReset={() => {
               setFilters(createInitialFiltersState());
+              setSelectedCategoryId(undefined);
               setSearchQuery("");
               setSortBy("");
               setPageNumber(1);

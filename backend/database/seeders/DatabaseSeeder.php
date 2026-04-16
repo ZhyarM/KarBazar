@@ -18,6 +18,12 @@ class DatabaseSeeder extends Seeder
             PostSeeder::class,
         ]);
 
+        if ((bool) env('MASSIVE_SEED', false)) {
+            $this->call([
+                MassiveDataSeeder::class,
+            ]);
+        }
+
         $this->command->info('');
         $this->command->info('🎉 ================================');
         $this->command->info('✅ Database seeded successfully!');

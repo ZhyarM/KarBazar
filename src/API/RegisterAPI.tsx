@@ -1,3 +1,5 @@
+import { normalizeRoleForUi, toApiRole, type UiRole } from "../utils/roles";
+
 interface UserProfile {
   id: number;
   user_id: number;
@@ -24,7 +26,7 @@ interface User {
   name: string;
   email: string;
   image: string | null;
-  role: "freelancer" | "client" | "admin"; // add more roles if needed
+  role: UiRole;
   is_active: boolean | null;
   email_verified_at: string | null;
   created_at: string;
@@ -40,50 +42,69 @@ interface AuthResponse {
   success: boolean;
   message: string;
   data: AuthData | null;
-    } ;
+}
 
-
-interface requestPayload{
-    name: String;
-    email: String;
-    password: String;
-    password_confirmation: String;
-    role: String;
+interface requestPayload {
+  name: string;
+  email: string;
+  password: string;
+  password_confirmation: string;
+  role: UiRole;
+  business_category?: string;
 }
 
 const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {
-    try {
-        const response = await fetch(
-          "http://127.0.0.1:8000/api/auth/register",
-          {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "application/json",
-                "Access-Control-Allow-Origin": "*",
-            },
-            body: JSON.stringify(payload),
-            credentials: "omit",
-          }
+  try {
+    const apiPayload = {
+      ...payload,
+      role: toApiRole(payload.role),
+    };
+
+    const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Accept: "application/json",
+        "Access-Control-Allow-Origin": "*",
+      },
+      body: JSON.stringify(apiPayload),
+      credentials: "omit",
+    });
+
+    const data: AuthResponse = await response.json();
+
+    if (!response.ok) {
+      // Extract validation errors from Laravel response
+      const errorData = data as any;
+      if (errorData.errors && typeof errorData.errors === "object") {
+        const validationErrors = Object.values(errorData.errors)
+          .flat()
+          .join(", ");
+        console.error("Validation errors:", errorData.errors);
+        throw new Error(
+          validationErrors ||
+            errorData.message ||
+            `HTTP error! status: ${response.status}`,
         );
-
-        if (!response.ok) {
-            throw new Error(`HTTP error! status: ${response.status}`);
-        
-        }
-
-      const data: AuthResponse = await response.json();
-      
-      return data;
-    } catch (error) {
-        console.error("Error registering user:", error);
-        return { success: false, message: "Error registering user", data: null };
-
+      }
+      throw new Error(
+        errorData.message || `HTTP error! status: ${response.status}`,
+      );
     }
-}
+
+    if (data.data?.user) {
+      data.data.user.role = normalizeRoleForUi(data.data.user.role);
+    }
+
+    return data;
+  } catch (error) {
+    console.error("Error registering user:", error);
+    return {
+      success: false,
+      message: (error as Error).message || "Error registering user",
+      data: null,
+    };
+  }
+};
 
 export { registerUser };
-
-
-
-

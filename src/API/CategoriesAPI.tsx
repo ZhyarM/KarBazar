@@ -1,29 +1,56 @@
-interface responseData {
-  success: boolean;
-  data: any;
+import { apiCall } from "./apiClient";
+
+interface Category {
+  id: number;
+  name: string;
+  slug: string;
+  description: string;
+  icon: string;
+  gig_count: number;
 }
 
-const fetchCategories = async (): Promise<responseData> => {
+interface ResponseData {
+  success: boolean;
+  data: Category[];
+}
+
+const fetchCategories = async (): Promise<ResponseData> => {
   try {
-    const response = await fetch("http://127.0.0.1:8000/api/categories");
+    const response = await apiCall<{ success: boolean; data: unknown }>(
+      "/categories",
+    );
 
-    if (!response.ok) {
-      throw new Error(`HTTP error! status: ${response.status}`);
-    }
+    const rawCategories = Array.isArray(response.data)
+      ? response.data
+      : response.data &&
+          typeof response.data === "object" &&
+          Array.isArray((response.data as { data?: unknown[] }).data)
+        ? ((response.data as { data?: unknown[] }).data ?? [])
+        : [];
 
-    const data: responseData = await response.json();
+    const categories: Category[] = rawCategories.map((item) => {
+      const row = (item ?? {}) as Record<string, unknown>;
+      return {
+        id: Number(row.id ?? 0),
+        name: String(row.name ?? ""),
+        slug: String(row.slug ?? ""),
+        description: String(row.description ?? ""),
+        icon: String(row.icon ?? ""),
+        gig_count: Number(row.gig_count ?? 0),
+      };
+    });
 
-    return data;
+    return { success: response.success, data: categories };
   } catch (error) {
     console.error("Error fetching categories:", error);
-    return { success: false, data: null };
+    return { success: false, data: [] };
   }
 };
 
 // Alias for compatibility
 const getCategories = async () => {
   const response = await fetchCategories();
-  return response.data || [];
+  return response.success ? response.data : [];
 };
 
 export { fetchCategories, getCategories };

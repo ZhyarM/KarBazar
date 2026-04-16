@@ -10,37 +10,70 @@ use App\Models\Review;
 use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Cache;
+use Throwable;
 
 class AnalyticsController extends Controller
 {
+    // Public homepage stats
+    public function publicStats()
+    {
+        $computeStats = function () {
+            return [
+                // Backend role remains freelancer for compatibility, UI labels this as business
+                'active_businesses' => User::where('role', 'freelancer')
+                    ->where(function ($query) {
+                        $query->whereNull('is_active')->orWhere('is_active', true);
+                    })
+                    ->count(),
+                'projects_completed' => Order::where('status', 'completed')->count(),
+                'projects_live' => Gig::where('is_active', true)->count(),
+                'average_rating' => round((float) (Review::avg('rating') ?? 0), 1),
+            ];
+        };
+
+        try {
+            // Use file cache explicitly so missing DB cache table does not break public stats.
+            $stats = Cache::store('file')->remember('homepage_public_stats', 300, $computeStats);
+        } catch (Throwable $e) {
+            report($e);
+            $stats = $computeStats();
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $stats,
+        ]);
+    }
+
     // Dashboard overview stats
     public function overview()
     {
         $stats = [
-        'total_users' => User::count(),
-        'total_freelancers' => User::where('role', 'freelancer')->count(),
-        'total_clients' => User::where('role', 'client')->count(),
-        'total_gigs' => Gig::count(),
-        'active_gigs' => Gig::where('is_active', true)->count(),
-        'total_orders' => Order::count(),
-        'pending_orders' => Order::where('status', 'pending')->count(),
-        'in_progress_orders' => Order::where('status', 'in_progress')->count(),
-        'completed_orders' => Order::where('status', 'completed')->count(),
-        'total_revenue' => Order::where('status', 'completed')->sum('price'),
-        
-        // ⭐ NEW: Platform earnings
-        'platform_earnings' => Order::where('status', 'completed')->sum('platform_fee_amount'),
-        'current_platform_fee' => \App\Models\Setting::getPlatformFee(),
-        
-        'total_reviews' => Review::count(),
-        'average_rating' => round(Review::avg('rating'), 2),
-        'total_categories' => Category::count(),
-        
-        // ⭐ NEW: Advertisement stats
-        'total_ads' => \App\Models\Advertisement::count(),
-        'active_ads' => \App\Models\Advertisement::where('status', 'active')->count(),
-        'pending_ad_requests' => \App\Models\AdRequest::where('status', 'pending')->count(),
-        'ad_revenue' => \App\Models\Advertisement::sum('paid_amount'),
+            'total_users' => User::count(),
+            'total_freelancers' => User::where('role', 'freelancer')->count(),
+            'total_clients' => User::where('role', 'client')->count(),
+            'total_gigs' => Gig::count(),
+            'active_gigs' => Gig::where('is_active', true)->count(),
+            'total_orders' => Order::count(),
+            'pending_orders' => Order::where('status', 'pending')->count(),
+            'in_progress_orders' => Order::where('status', 'in_progress')->count(),
+            'completed_orders' => Order::where('status', 'completed')->count(),
+            'total_revenue' => Order::where('status', 'completed')->sum('price'),
+
+            // ⭐ NEW: Platform earnings
+            'platform_earnings' => Order::where('status', 'completed')->sum('platform_fee_amount'),
+            'current_platform_fee' => \App\Models\Setting::getPlatformFee(),
+
+            'total_reviews' => Review::count(),
+            'average_rating' => round(Review::avg('rating'), 2),
+            'total_categories' => Category::count(),
+
+            // ⭐ NEW: Advertisement stats
+            'total_ads' => \App\Models\Advertisement::count(),
+            'active_ads' => \App\Models\Advertisement::where('status', 'active')->count(),
+            'pending_ad_requests' => \App\Models\AdRequest::where('status', 'pending')->count(),
+            'ad_revenue' => \App\Models\Advertisement::sum('paid_amount'),
         ];
 
         // New users this month

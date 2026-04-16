@@ -1,10 +1,10 @@
-// SubscribtionCard import removed - component not currently used
+import SubscribtionCard from "../../components/cards/SubscribtionCard.tsx";
 
 function CallToActionSection() {
   return (
     <>
       <article className="flex justify-center items-center bg-(--color-surface)">
-        {/* <SubscribtionCard /> */}
+        <SubscribtionCard />
       </article>
     </>
   );

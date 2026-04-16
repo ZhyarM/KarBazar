@@ -338,7 +338,7 @@ function UserProfile() {
               username={profile.username}
               title={profile.title || ""}
               saves={profile.profile_views}
-              typeOfBussiness={profile.title || "Freelancer"}
+              typeOfBussiness={profile.title || "Business"}
               views={profile.profile_views}
               isOwner={isOwner}
               onAvatarUpload={isOwner ? handleAvatarUpload : undefined}
@@ -605,7 +605,7 @@ function UserProfile() {
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-(--color-primary) hover:bg-(--color-accent) text-(--color-text-inverse) font-semibold rounded-lg transition"
                   >
                     <FontAwesomeIcon icon={faMessage} />
-                    Contact Freelancer
+                    Contact Business
                   </button>
                 </div>
 

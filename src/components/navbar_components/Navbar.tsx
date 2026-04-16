@@ -1,4 +1,4 @@
-import { NavLink, Link } from "react-router-dom";
+import { NavLink, Link, useNavigate } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
@@ -13,6 +13,7 @@ import theme from "../../assets/theme.png";
 import me, { type AuthResponse } from "../../API/me.tsx";
 import { getUnreadCount } from "../../API/NotificationsAPI.ts";
 import { isAuthenticated } from "../../API/apiClient.ts";
+import { isSellerRole } from "../../utils/roles";
 
 const getUser = async () => {
   const user = await me();
@@ -27,6 +28,7 @@ const getUser = async () => {
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
+  const navigate = useNavigate();
   const [user, setUser] = useState<AuthResponse | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
 
@@ -62,10 +64,7 @@ function Navbar() {
     return () => clearInterval(interval);
   }, []);
 
-  const isFreelancer =
-    user?.data?.role === "freelancer" ||
-    user?.data?.role === "business" ||
-    user?.data?.role === "admin";
+  const isSeller = isSellerRole(user?.data?.role);
 
   return (
     <>
@@ -112,7 +111,24 @@ function Navbar() {
 
         {/* CENTER - SEARCH BAR */}
         <div className="hidden lg:flex flex-1  justify-center ">
-          <SearchBar />
+          <SearchBar
+            onSearch={(query) => {
+              const q = query.trim();
+              if (!q) {
+                return;
+              }
+              navigate(`/search?q=${encodeURIComponent(q)}`);
+            }}
+            onInputChange={(query) => {
+              const q = query.trim();
+              if (!q) {
+                return;
+              }
+              navigate(`/search?q=${encodeURIComponent(q)}`, {
+                replace: true,
+              });
+            }}
+          />
         </div>
 
         {/* RIGHT */}
@@ -172,7 +188,7 @@ function Navbar() {
               </Link>
 
               {/* Profile dropdown with all other actions */}
-              <ProfileDropdown user={user} isFreelancer={isFreelancer} />
+              <ProfileDropdown user={user} isFreelancer={isSeller} />
             </>
           )}
         </div>

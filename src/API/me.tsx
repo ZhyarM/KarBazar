@@ -1,3 +1,5 @@
+import { normalizeRoleForUi, type UiRole } from "../utils/roles";
+
 interface UserProfile {
   id: number;
   user_id: number;
@@ -24,7 +26,7 @@ interface User {
   name: string;
   email: string;
   image: string | null;
-  role: "freelancer" | "client" | "admin";
+  role: UiRole;
   is_active: boolean | null;
   email_verified_at: string | null;
   created_at: string;
@@ -57,6 +59,10 @@ const me = async (): Promise<AuthResponse> => {
 
   if (!response.ok) {
     throw new Error(data.message || "Failed to get user data");
+  }
+
+  if (data.data) {
+    data.data.role = normalizeRoleForUi(data.data.role);
   }
 
   return data;

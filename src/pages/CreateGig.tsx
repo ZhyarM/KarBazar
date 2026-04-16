@@ -13,6 +13,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import MessageToast from "../utils/message";
 import { getImageUrl } from "../utils/imageUrl";
+import { isSellerRole } from "../utils/roles";
 
 interface Category {
   id: number;
@@ -69,8 +70,7 @@ function CreateGig() {
   // Check role authorization
   useEffect(() => {
     const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-    const allowedRoles = ["business", "freelancer", "admin"];
-    if (!currentUser.id || !allowedRoles.includes(currentUser.role)) {
+    if (!currentUser.id || !isSellerRole(currentUser.role)) {
       setAuthorized(false);
     } else {
       setAuthorized(true);

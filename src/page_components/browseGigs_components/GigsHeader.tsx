@@ -30,7 +30,7 @@ function GigsHeader({
             Browse Gigs
           </h1>
           <span className="text-md text-(--color-text-muted) font-medium">
-            Discover talented freelancers for your project
+            Discover talented businesses for your project
           </span>
         </div>
 

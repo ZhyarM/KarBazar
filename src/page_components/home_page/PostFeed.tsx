@@ -151,7 +151,7 @@ function PostFeed({ currentUserId }: PostFeedProps) {
           </h3>
           <p className="text-(--color-text-muted) text-sm max-w-xs">
             {isAuthenticated()
-              ? "Follow some freelancers to see their posts in your feed!"
+              ? "Follow some businesses to see their posts in your feed!"
               : "Sign in to see personalized posts in your feed!"}
           </p>
         </div>
@@ -162,7 +162,7 @@ function PostFeed({ currentUserId }: PostFeedProps) {
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-(--color-primary) text-white rounded-xl text-sm font-semibold hover:bg-(--color-primary-dark) transition-colors shadow-sm"
             >
               <FontAwesomeIcon icon={faUserPlus} className="text-xs" />
-              Discover Freelancers
+              Discover Businesses
             </a>
             <a
               href="/categories"
