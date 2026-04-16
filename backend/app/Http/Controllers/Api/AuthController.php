@@ -8,10 +8,12 @@ use App\Models\User;
 use App\Models\Profile;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Support\Facades\Mail;
 use App\Mail\WelcomeEmail;
+use Throwable;
 
 class AuthController extends Controller
 {
@@ -38,10 +40,17 @@ class AuthController extends Controller
             'username' => strtolower(str_replace(' ', '_', $request->name)) . '_' . $user->id,
         ]);
 
-        // Send welcome email (MUST BE BEFORE return statement!)
-        Mail::to($user->email)->send(new WelcomeEmail($user));
-
         $token = $user->createToken('auth_token')->plainTextToken;
+
+        try {
+            Mail::to($user->email)->send(new WelcomeEmail($user));
+        } catch (Throwable $exception) {
+            Log::warning('Welcome email could not be sent after registration.', [
+                'user_id' => $user->id,
+                'email' => $user->email,
+                'error' => $exception->getMessage(),
+            ]);
+        }
 
         return response()->json([
             'success' => true,

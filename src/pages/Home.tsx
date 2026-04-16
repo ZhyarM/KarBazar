@@ -4,6 +4,11 @@ import Features from "./../page_components/home_page/Features.tsx";
 import TrendingServices from "../page_components/home_page/TrendingServices.tsx";
 import PlatformStats from "../page_components/home_page/PlatformStats.tsx";
 import CallToActionSection from "./../page_components/home_page/CallToActionSection.tsx";
+import HowItWorks from "../page_components/home_page/HowItWorks.tsx";
+import WhyKarBazar from "../page_components/home_page/WhyKarBazar.tsx";
+import Testimonials from "../page_components/home_page/Testimonials.tsx";
+import TrustStrip from "../page_components/home_page/TrustStrip.tsx";
+import HomeFAQ from "../page_components/home_page/HomeFAQ.tsx";
 import PostFeed from "../page_components/home_page/PostFeed.tsx";
 import { isAuthenticated } from "../API/apiClient.ts";
 import { Link } from "react-router-dom";
@@ -246,7 +251,7 @@ function Home() {
                     Discover Talent
                   </h3>
                   <p className="text-xs text-white/70 mb-4 leading-relaxed">
-                    Find skilled freelancers for your next project
+                    Find skilled businesses for your next project
                   </p>
                   <Link
                     to="/browse-gigs"
@@ -273,7 +278,12 @@ function Home() {
       <Hero />
       <Features />
       <TrendingServices />
+      <HowItWorks />
+      <WhyKarBazar />
+      <Testimonials />
+      <TrustStrip />
       <PlatformStats />
+      <HomeFAQ />
       <CallToActionSection />
     </div>
   );

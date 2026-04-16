@@ -1,14 +1,20 @@
 import type { JSX } from "react";
 import { plans } from "../../utils/SubscribtionPlans.tsx";
 import Button from "../btns/Button.tsx";
+import { useNavigate } from "react-router-dom";
 
 function SubscriptionSection(): JSX.Element {
+  const navigate = useNavigate();
+
   return (
     <section className="text-(--color-text) py-12 md:py-16">
       <div className="max-w-4xl mx-auto px-4 text-center">
-        <h2 className="section-title text-(--color-text)">Choose Your Plan</h2>
+        <h2 className="section-title text-(--color-text)">
+          Flexible Pricing for Every Project
+        </h2>
         <p className="mt-3 body-md text-(--color-text-muted)">
-          Flexible subscriptions for clients and freelancers on KarBazar.
+          Build with confidence using pricing options designed for different
+          project sizes and business goals.
         </p>
       </div>
 
@@ -63,6 +69,7 @@ function SubscriptionSection(): JSX.Element {
                   bgColor="bg-[var(--color-primary)]"
                   textColor="var(--color-text-inverse)"
                   backdropColor=""
+                  onClick={() => navigate(`/sign-up?plan=${plan.id}`)}
                 />
               </div>
             </div>

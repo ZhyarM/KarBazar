@@ -50,6 +50,7 @@ interface requestPayload {
   password: string;
   password_confirmation: string;
   role: UiRole;
+  business_category?: string;
 }
 
 const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {

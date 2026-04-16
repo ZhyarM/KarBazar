@@ -90,7 +90,7 @@ function Favorites() {
                 : "bg-(--color-surface) text-(--color-text)"
             }`}
           >
-            Freelancers ({freelancers.length})
+            Businesses ({freelancers.length})
           </button>
         </div>
 
@@ -191,13 +191,13 @@ function Favorites() {
                   className="text-6xl text-(--color-text-muted) mb-4"
                 />
                 <p className="text-xl text-(--color-text-muted) mb-4">
-                  No favorite freelancers yet
+                  No favorite businesses yet
                 </p>
                 <Link
                   to="/browse-gigs"
                   className="inline-block px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                 >
-                  Browse Freelancers
+                  Browse Businesses
                 </Link>
               </div>
             ) : (

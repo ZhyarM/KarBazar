@@ -11,6 +11,7 @@ import { registerUser } from "../../API/RegisterAPI";
 import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MessageToast from "../../utils/message";
+import { categoriesData } from "../../utils/CategoriesData";
 
 type StepType = 1 | 2 | 3;
 
@@ -18,6 +19,7 @@ function SignUp() {
   const [message, setMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
+  const businessCategories = categoriesData.map((category) => category.name);
 
   interface SignupForm {
     first_name: string;
@@ -130,6 +132,7 @@ function SignUp() {
       password: form.password,
       password_confirmation: form.confirm_password,
       role: form.Type,
+      business_category: form.business_category,
     });
 
     if (res.success) {
@@ -420,20 +423,22 @@ function SignUp() {
                           onChange={(value) => updateForm("budget_min", value)}
                           value={form.budget_min}
                           icon=""
-                          label="Min Budget ($)"
+                          label="Min Budget"
                           placeholder="100"
                           size="1/2"
                           error={fieldErrors.budget_min}
+                          prefix="$"
                         />
                         <Input
                           type="number"
                           onChange={(value) => updateForm("budget_max", value)}
                           value={form.budget_max}
                           icon=""
-                          label="Max Budget ($)"
+                          label="Max Budget"
                           placeholder="10000"
                           size="1/2"
                           error={fieldErrors.budget_max}
+                          prefix="$"
                         />
                       </div>
                     </div>
@@ -456,27 +461,48 @@ function SignUp() {
                         size="full"
                         error={fieldErrors.company_name}
                       />
-                      <Input
-                        type="text"
-                        onChange={(value) =>
-                          updateForm("business_category", value)
-                        }
-                        value={form.business_category}
-                        icon=""
-                        label="Business Category"
-                        placeholder="e.g. Web Development, Graphic Design"
-                        size="full"
-                        error={fieldErrors.business_category}
-                      />
+                      <div className="flex flex-col">
+                        <div className="flex flex-col align-baseline relative p-2 font-bold text-md pl-2 border w-full input-focus rounded-xl transition-colors border-(--color-border)">
+                          <label className="bg-transparent absolute -top-6 label text-(--color-text-inverse) opacity-80">
+                            Business Category
+                          </label>
+                          <select
+                            className="focus:outline-none placeholder-gray-400 text-(--color-text-inverse) bg-transparent w-full"
+                            value={form.business_category}
+                            onChange={(e) =>
+                              updateForm("business_category", e.target.value)
+                            }
+                          >
+                            <option value="" className="text-black">
+                              Select a category
+                            </option>
+                            {businessCategories.map((category) => (
+                              <option
+                                key={category}
+                                value={category}
+                                className="text-black"
+                              >
+                                {category}
+                              </option>
+                            ))}
+                          </select>
+                        </div>
+                        {fieldErrors.business_category && (
+                          <p className="text-red-500 text-sm mt-1 ml-2">
+                            {fieldErrors.business_category}
+                          </p>
+                        )}
+                      </div>
                       <Input
                         type="number"
                         onChange={(value) => updateForm("hourly_rate", value)}
                         value={form.hourly_rate}
                         icon=""
-                        label="Hourly Rate ($)"
+                        label="Hourly Rate"
                         placeholder="75"
                         size="full"
                         error={fieldErrors.hourly_rate}
+                        prefix="$"
                       />
                     </div>
                   </>

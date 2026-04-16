@@ -61,6 +61,9 @@ Route::post('/ad-requests', [AdRequestController::class, 'store']);
 // ⭐ NEW: Public Settings (get platform fee, etc)
 Route::get('/settings/{key}', [SettingsController::class, 'show']);
 
+// Public homepage stats
+Route::get('/stats/public-overview', [AnalyticsController::class, 'publicStats']);
+
 // Public posts browsing
 Route::get('/posts', [PostController::class, 'index']);
 Route::get('/posts/feed', [PostController::class, 'feed']);

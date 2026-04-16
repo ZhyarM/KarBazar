@@ -6,6 +6,8 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ReactNode } from "react";
+import { useEffect, useState } from "react";
+import { getPublicStats, type PublicStats } from "../../API/StatsAPI";
 
 function PlatformStats() {
   type Stats = {
@@ -13,25 +15,46 @@ function PlatformStats() {
     numbers: string;
     text: string;
   };
+
+  const [statsData, setStatsData] = useState<PublicStats | null>(null);
+
+  useEffect(() => {
+    const loadStats = async () => {
+      try {
+        const data = await getPublicStats();
+        setStatsData(data);
+      } catch (error) {
+        console.error("Failed to load platform stats:", error);
+      }
+    };
+
+    loadStats();
+  }, []);
+
+  const formatCount = (value?: number) => {
+    if (!value || value <= 0) return "0";
+    return value.toLocaleString();
+  };
+
   const stats: Stats[] = [
     {
       icon: <FontAwesomeIcon icon={faUsers} />,
-      numbers: "50,000+",
-      text: "Active Freelancers",
+      numbers: formatCount(statsData?.active_businesses),
+      text: "Active Businesses",
     },
     {
       icon: <FontAwesomeIcon icon={faBriefcase} />,
-      numbers: "1M+",
+      numbers: formatCount(statsData?.projects_completed),
       text: "Projects Completed",
     },
     {
       icon: <FontAwesomeIcon icon={faDollarSign} />,
-      numbers: "100%",
-      text: "Free for Clients",
+      numbers: formatCount(statsData?.projects_live),
+      text: "Projects Live on Website",
     },
     {
       icon: <FontAwesomeIcon icon={faStar} />,
-      numbers: "4.5/5",
+      numbers: `${statsData?.average_rating ?? 0}/5`,
       text: "Average Rating",
     },
   ];

@@ -23,7 +23,7 @@ function Footer(): JSX.Element {
           </div>
 
           <p className="text-sm leading-relaxed text-(--color-text-muted)">
-            Connect with talented freelancers worldwide. Find the perfect
+            Connect with talented businesses worldwide. Find the perfect
             professional for your project or offer your skills to clients
             globally.
           </p>

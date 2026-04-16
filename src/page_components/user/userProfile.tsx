@@ -605,7 +605,7 @@ function UserProfile() {
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-(--color-primary) hover:bg-(--color-accent) text-(--color-text-inverse) font-semibold rounded-lg transition"
                   >
                     <FontAwesomeIcon icon={faMessage} />
-                    Contact Freelancer
+                    Contact Business
                   </button>
                 </div>
 

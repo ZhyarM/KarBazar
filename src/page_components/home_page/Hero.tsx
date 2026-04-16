@@ -1,6 +1,7 @@
 import { faArrowRight, faCheck } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/btns/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { Link } from "react-router-dom";
 
 function Hero() {
   return (
@@ -42,15 +43,18 @@ function Hero() {
           </p>
 
           <div className="flex flex-row justify-center items-center gap-2">
-            <div className="border-2 p-1 rounded-4xl bg-(--color-bg-inverse) text-(--color-text-inverse) font-">
+            <Link
+              to="/sign-up"
+              className="border-2 p-1 rounded-4xl bg-(--color-bg-inverse) text-(--color-text-inverse)"
+            >
               <Button
                 text="join for free"
                 bgColor="bg-transparent"
                 textColor="text-[var(--btn-secondary-text)]"
                 backdropColor=""
               />
-            </div>
-            <div className="border-2 rounded-4xl p-1">
+            </Link>
+            <Link to="/browse-gigs" className="border-2 rounded-4xl p-1">
               <Button
                 text={
                   <>
@@ -67,7 +71,7 @@ function Hero() {
                 textColor="text-[var(--color-text)]"
                 backdropColor=""
               />
-            </div>
+            </Link>
           </div>
           <section className="hidden md:hidden lg:block">
             <div className="max-w-6xl mx-auto px-4">

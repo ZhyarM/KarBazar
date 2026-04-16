@@ -13,7 +13,7 @@ class CategoryController extends Controller
     // Get all categories
     public function index()
     {
-        $categories = Category::orderBy('name')->get();
+        $categories = Category::withCount('gigs')->orderBy('name')->get();
 
         return response()->json([
             'success' => true,
