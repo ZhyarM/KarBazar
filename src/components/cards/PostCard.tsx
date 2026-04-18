@@ -26,6 +26,7 @@ import { toggleFollow } from "../../API/FollowAPI";
 import { isAuthenticated } from "../../API/apiClient";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import { isBusinessRole } from "../../utils/roles";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface PostCardProps {
   post: Post;
@@ -34,6 +35,7 @@ interface PostCardProps {
 }
 
 function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
+  const { t, language } = useLanguage();
   const [liked, setLiked] = useState(post.is_liked);
   const [likesCount, setLikesCount] = useState(post.likes_count);
   const [bookmarked, setBookmarked] = useState(post.is_bookmarked);
@@ -46,7 +48,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
 
   const isOwner = currentUserId === post.user?.id;
   const avatarUrl = getAvatarUrl(post.user?.profile?.avatar_url);
-  const timeAgo = getTimeAgo(post.created_at);
+  const timeAgo = getTimeAgo(post.created_at, language, t);
   const hasImages = post.images && post.images.length > 0;
   const hasMultipleImages = post.images && post.images.length > 1;
 
@@ -84,7 +86,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
   };
 
   const handleDelete = async () => {
-    if (!window.confirm("Are you sure you want to delete this post?")) return;
+    if (!window.confirm(t("post.confirmDelete"))) return;
     try {
       await deletePost(post.id);
       onPostDeleted?.(post.id);
@@ -179,7 +181,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
                   : "bg-(--color-primary) text-white hover:bg-(--color-primary-dark) shadow-sm shadow-(--color-primary)/20"
               }`}
             >
-              {following ? "Following" : "+ Follow"}
+              {following ? t("post.following") : `+ ${t("post.follow")}`}
             </button>
           )}
 
@@ -206,14 +208,14 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
                         icon={faPen}
                         className="text-xs text-(--color-text-muted)"
                       />
-                      Edit
+                      {t("post.edit")}
                     </Link>
                     <button
                       onClick={handleDelete}
                       className="flex items-center gap-2.5 px-4 py-2.5 text-sm hover:bg-red-500/10 text-red-500 w-full transition-colors cursor-pointer"
                     >
                       <FontAwesomeIcon icon={faTrash} className="text-xs" />
-                      Delete
+                      {t("post.delete")}
                     </button>
                   </div>
                 </>
@@ -387,7 +389,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
             className="text-lg"
           />
           <span className="text-sm font-medium">
-            {bookmarked ? "Saved" : "Save"}
+            {bookmarked ? t("post.saved") : t("post.save")}
           </span>
         </button>
       </div>
@@ -395,17 +397,24 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
   );
 }
 
-function getTimeAgo(dateString: string): string {
+function getTimeAgo(
+  dateString: string,
+  language: "en" | "ku",
+  t: (key: string) => string,
+): string {
   const date = new Date(dateString);
   const now = new Date();
   const seconds = Math.floor((now.getTime() - date.getTime()) / 1000);
 
-  if (seconds < 60) return "just now";
-  if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
-  if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-  if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
-  if (seconds < 2592000) return `${Math.floor(seconds / 604800)}w ago`;
-  return date.toLocaleDateString();
+  if (seconds < 60) return t("time.justNow");
+  if (seconds < 3600) return `${Math.floor(seconds / 60)} ${t("time.minAgo")}`;
+  if (seconds < 86400)
+    return `${Math.floor(seconds / 3600)} ${t("time.hourAgo")}`;
+  if (seconds < 604800)
+    return `${Math.floor(seconds / 86400)} ${t("time.dayAgo")}`;
+  if (seconds < 2592000)
+    return `${Math.floor(seconds / 604800)} ${t("time.weekAgo")}`;
+  return date.toLocaleDateString(language === "ku" ? "ku" : "en-US");
 }
 
 export default PostCard;

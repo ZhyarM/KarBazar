@@ -10,12 +10,14 @@ import {
   faUserPlus,
   faRss,
 } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface PostFeedProps {
   currentUserId?: number;
 }
 
 function PostFeed({ currentUserId }: PostFeedProps) {
+  const { t } = useLanguage();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -147,12 +149,12 @@ function PostFeed({ currentUserId }: PostFeedProps) {
         </div>
         <div className="text-center">
           <h3 className="text-lg font-semibold text-(--color-text) mb-1">
-            No posts yet
+            {t("postFeed.empty.title")}
           </h3>
           <p className="text-(--color-text-muted) text-sm max-w-xs">
             {isAuthenticated()
-              ? "Follow some businesses to see their posts in your feed!"
-              : "Sign in to see personalized posts in your feed!"}
+              ? t("postFeed.empty.followBusinesses")
+              : t("postFeed.empty.signInPrompt")}
           </p>
         </div>
         {isAuthenticated() && (
@@ -162,14 +164,14 @@ function PostFeed({ currentUserId }: PostFeedProps) {
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-(--color-primary) text-white rounded-xl text-sm font-semibold hover:bg-(--color-primary-dark) transition-colors shadow-sm"
             >
               <FontAwesomeIcon icon={faUserPlus} className="text-xs" />
-              Discover Businesses
+              {t("postFeed.empty.discoverBusinesses")}
             </a>
             <a
               href="/categories"
               className="inline-flex items-center gap-2 px-5 py-2.5 bg-(--color-bg) text-(--color-text) rounded-xl text-sm font-semibold hover:bg-(--color-border) transition-colors border border-(--color-border)"
             >
               <FontAwesomeIcon icon={faRss} className="text-xs" />
-              Browse Categories
+              {t("postFeed.empty.browseCategories")}
             </a>
           </div>
         )}
@@ -196,13 +198,13 @@ function PostFeed({ currentUserId }: PostFeedProps) {
               icon={faSpinner}
               className="text-lg text-(--color-primary) animate-spin"
             />
-            <span className="text-sm">Loading more posts...</span>
+            <span className="text-sm">{t("postFeed.loadingMore")}</span>
           </div>
         )}
         {!hasMore && posts.length > 0 && (
           <div className="flex items-center gap-2 text-(--color-text-muted) text-sm">
             <div className="h-px w-12 bg-(--color-border)" />
-            <span>You're all caught up</span>
+            <span>{t("postFeed.caughtUp")}</span>
             <div className="h-px w-12 bg-(--color-border)" />
           </div>
         )}

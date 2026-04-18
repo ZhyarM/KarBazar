@@ -231,12 +231,24 @@ function Orders() {
               className="px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
             >
               <option value="all">{t("orders.allStatuses")}</option>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="delivered">Delivered</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="revision">Revision</option>
+              <option value="pending">
+                {t("orderDetails.status.pending")}
+              </option>
+              <option value="in_progress">
+                {t("orderDetails.status.inProgress")}
+              </option>
+              <option value="delivered">
+                {t("orderDetails.status.delivered")}
+              </option>
+              <option value="completed">
+                {t("orderDetails.status.completed")}
+              </option>
+              <option value="cancelled">
+                {t("orderDetails.status.cancelled")}
+              </option>
+              <option value="revision">
+                {t("orderDetails.status.revision")}
+              </option>
             </select>
           </div>
         </div>
@@ -248,7 +260,9 @@ function Orders() {
               icon={faShoppingCart}
               className="text-6xl text-(--color-text-muted) mb-4"
             />
-            <p className="text-xl text-(--color-text-muted)">{t("orders.noFound")}</p>
+            <p className="text-xl text-(--color-text-muted)">
+              {t("orders.noFound")}
+            </p>
             <Link
               to="/browse-gigs"
               className="inline-block mt-4 px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
@@ -283,8 +297,8 @@ function Orders() {
                             {order.gig.title}
                           </h3>
                           <p className="text-sm text-(--color-text-muted)">
-                            {isBuyer ? t("orders.seller") : t("orders.buyer")}: @
-                            {otherParty.profile.username}
+                            {isBuyer ? t("orders.seller") : t("orders.buyer")}:
+                            @{otherParty.profile.username}
                           </p>
                         </div>
                         <div className="text-right">
@@ -306,7 +320,9 @@ function Orders() {
                             {order.status.replace("_", " ")}
                           </span>
                         </div>
-                        <div>{t("orders.delivery")}: {order.delivery_time} days</div>
+                        <div>
+                          {t("orders.delivery")}: {order.delivery_time} days
+                        </div>
                         <div>
                           {t("orders.ordered")}:{" "}
                           {new Date(order.created_at).toLocaleDateString()}
@@ -377,7 +393,9 @@ function Orders() {
                           to={`/messages?user=${otherParty.id}`}
                           className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                         >
-                          {isBuyer ? t("orders.messageSeller") : t("orders.messageBuyer")}
+                          {isBuyer
+                            ? t("orders.messageSeller")
+                            : t("orders.messageBuyer")}
                         </Link>
                       </div>
                     </div>
@@ -445,7 +463,9 @@ function Orders() {
                 disabled={actionLoading || !revisionReason.trim()}
                 className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-all"
               >
-                {actionLoading ? t("orders.requesting") : t("orders.requestRevision")}
+                {actionLoading
+                  ? t("orders.requesting")
+                  : t("orders.requestRevision")}
               </button>
               <button
                 onClick={() => {

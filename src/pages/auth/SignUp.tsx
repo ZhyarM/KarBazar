@@ -334,7 +334,7 @@ function SignUp() {
                       value={form.first_name}
                       icon=""
                       label={t("auth.firstName")}
-                      placeholder="John"
+                      placeholder={t("auth.placeholder.firstName")}
                       size="1/2"
                       error={fieldErrors.first_name}
                     />
@@ -344,7 +344,7 @@ function SignUp() {
                       value={form.last_name}
                       icon=""
                       label={t("auth.lastName")}
-                      placeholder="Doe"
+                      placeholder={t("auth.placeholder.lastName")}
                       size="1/2"
                       error={fieldErrors.last_name}
                     />
@@ -355,7 +355,7 @@ function SignUp() {
                     value={form.email}
                     icon=""
                     label={t("auth.emailAddress")}
-                    placeholder="john@example.com"
+                    placeholder={t("auth.placeholder.email")}
                     size="full"
                     error={fieldErrors.email}
                   />
@@ -414,7 +414,7 @@ function SignUp() {
                         value={form.location}
                         icon=""
                         label={t("auth.yourLocation")}
-                        placeholder="City, Country"
+                        placeholder={t("auth.placeholder.location")}
                         size="full"
                         error={fieldErrors.location}
                       />
@@ -458,7 +458,7 @@ function SignUp() {
                         value={form.company_name}
                         icon=""
                         label={t("auth.companyName")}
-                        placeholder="Acme Corp"
+                        placeholder={t("auth.placeholder.companyName")}
                         size="full"
                         error={fieldErrors.company_name}
                       />
@@ -541,7 +541,9 @@ function SignUp() {
                   disabled={loading}
                   className="fade-up SingUpBtn w-full h-full disabled:opacity-70"
                 >
-                  {loading ? t("auth.creatingAccount") : t("auth.createAccount")}
+                  {loading
+                    ? t("auth.creatingAccount")
+                    : t("auth.createAccount")}
                 </button>
               </div>
             )}

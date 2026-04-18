@@ -3,6 +3,8 @@ import UserCard from "../../components/cards/UsersCard.tsx";
 import { Link } from "react-router-dom";
 import { type GigResponse } from "../../API/gigs/getGigs.tsx";
 import { getImageUrl, getAvatarUrl } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext.tsx";
+import { filtersConfig } from "../../config/filters.config";
 
 interface GigCardProps {
   response: GigResponse;
@@ -17,26 +19,52 @@ function GigCard({
   pageNumber,
   onPageChange,
 }: GigCardProps) {
+  const { t } = useLanguage();
   const gigs = response.data;
   const totalPages = response.meta.last_page;
 
+  const getFilterOptionLabel = (filterId: string, value: string): string => {
+    const filter = filtersConfig.find((item) => item.id === filterId);
+    const option = filter?.options?.find((item) => item.value === value);
+    return option ? t(option.labelKey) : value;
+  };
+
   const getAppliedFilters = () => {
-    const applied = [];
+    const applied: string[] = [];
     if (activeFilters.category)
-      applied.push(`Category: ${activeFilters.category}`);
+      applied.push(
+        `${t("browseGigs.applied.category")}: ${getFilterOptionLabel(
+          "category",
+          activeFilters.category,
+        )}`,
+      );
     if (activeFilters.sellerLevel)
-      applied.push(`Level: ${activeFilters.sellerLevel}`);
+      applied.push(
+        `${t("browseGigs.applied.level")}: ${getFilterOptionLabel(
+          "sellerLevel",
+          activeFilters.sellerLevel,
+        )}`,
+      );
     if (activeFilters.budget) {
       const [min, max] = activeFilters.budget;
       if (min > 0 || max < 1000) {
-        applied.push(`Budget: $${min} - $${max === 1000 ? "1k+" : max}`);
+        applied.push(
+          `${t("browseGigs.applied.budget")}: $${min} - ${
+            max === 1000 ? "1k+" : max
+          }`,
+        );
       }
     }
     if (
       activeFilters.deliveryTime &&
       activeFilters.deliveryTime !== "Anytime"
     ) {
-      applied.push(`Delivery: ${activeFilters.deliveryTime}`);
+      applied.push(
+        `${t("browseGigs.applied.delivery")}: ${getFilterOptionLabel(
+          "deliveryTime",
+          activeFilters.deliveryTime,
+        )}`,
+      );
     }
     return applied;
   };
@@ -79,7 +107,7 @@ function GigCard({
             <div className="flex items-center justify-center gap-2 mt-4 flex-wrap">
               <Button
                 onClick={() => goToPage(pageNumber - 1)}
-                text="Previous"
+                text={t("browseGigs.pagination.previous")}
                 bgColor={
                   pageNumber <= 1
                     ? "bg-(--color-bg-muted) opacity-50 cursor-not-allowed"
@@ -157,7 +185,7 @@ function GigCard({
 
               <Button
                 onClick={() => goToPage(pageNumber + 1)}
-                text="Next"
+                text={t("browseGigs.pagination.next")}
                 bgColor={
                   pageNumber >= totalPages
                     ? "bg-(--color-bg-muted) opacity-50 cursor-not-allowed"
@@ -171,12 +199,12 @@ function GigCard({
         <div className="w-full flex flex-col items-center justify-center py-20 bg-(--color-surface) border border-dashed border-(--color-border) rounded-xl px-6">
           <div className="text-4xl mb-4">🔍</div>
           <h3 className="text-lg font-bold text-(--color-text)">
-            No Gigs Found
+            {t("browseGigs.empty.title")}
           </h3>
           <p className="text-(--color-text-muted) mb-4">
             {appliedList.length > 0
-              ? "No results match these filters:"
-              : "No gigs available at the moment."}
+              ? t("browseGigs.empty.filtered")
+              : t("browseGigs.empty.none")}
           </p>
           {appliedList.length > 0 && (
             <div className="flex flex-wrap justify-center gap-2">

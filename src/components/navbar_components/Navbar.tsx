@@ -3,7 +3,13 @@ import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBell, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faBell,
+  faEnvelope,
+  faToggleOff,
+  faToggleOn,
+} from "@fortawesome/free-solid-svg-icons";
 import NavLinks from "../../utils/NavLinks.tsx";
 import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
 import { useEffect, useState } from "react";
@@ -29,7 +35,7 @@ const getUser = async () => {
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
-  const { language, setLanguage, direction, t } = useLanguage();
+  const { language, toggleLanguage, direction, t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState<AuthResponse | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
@@ -136,15 +142,19 @@ function Navbar() {
 
         {/* RIGHT */}
         <div className="flex items-center gap-1.5 shrink-0 p-2 rounded-3xl animated shadow-(--color-shadow) shadow-md">
-          <select
-            value={language}
-            onChange={(e) => setLanguage(e.target.value as "en" | "ku")}
-            className="text-xs md:text-sm rounded-lg px-2 py-1 bg-(--color-surface) text-(--color-text) border border-(--color-border) outline-none"
-            aria-label="Language"
+          <button
+            onClick={toggleLanguage}
+            className="cursor-pointer nav p-1.5 text-(--color-text) rounded-full hover:bg-(--color-surface) transition-colors"
+            aria-label={t("navbar.toggleLanguage")}
+            title={
+              language === "en" ? t("language.kurdish") : t("language.english")
+            }
           >
-            <option value="en">EN</option>
-            <option value="ku">KU</option>
-          </select>
+            <FontAwesomeIcon
+              icon={language === "ku" ? faToggleOn : faToggleOff}
+              className={`text-lg ${language === "ku" ? "text-(--color-primary)" : "text-(--color-text-muted)"}`}
+            />
+          </button>
 
           <button
             onClick={toggleTheme}
@@ -194,7 +204,9 @@ function Navbar() {
               >
                 <FontAwesomeIcon icon={faBell} className="text-lg" />
                 {unreadCount > 0 && (
-                  <span className={`absolute top-0.5 ${isRTL ? "left-0.5" : "right-0.5"} bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none`}>
+                  <span
+                    className={`absolute top-0.5 ${isRTL ? "left-0.5" : "right-0.5"} bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none`}
+                  >
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}

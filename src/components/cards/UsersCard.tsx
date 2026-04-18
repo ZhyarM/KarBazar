@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faStar } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface UserCardProps {
   user_id: string;
@@ -27,6 +28,8 @@ function UsersCard({
   user_profile_img,
   category,
 }: UserCardProps) {
+  const { t } = useLanguage();
+
   return (
     <div
       className="
@@ -112,7 +115,8 @@ function UsersCard({
             </span>
           </div>
           <p className="text-sm font-bold text-(--color-text)">
-            Starting at <span className="text-(--color-primary)">{charge}</span>
+            {t("gigCard.startingAt")}{" "}
+            <span className="text-(--color-primary)">{charge}</span>
           </p>
         </div>
       </div>

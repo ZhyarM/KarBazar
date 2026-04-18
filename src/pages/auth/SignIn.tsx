@@ -136,7 +136,7 @@ function SignIn() {
                 value={form.email}
                 icon=""
                 label={t("auth.emailAddress")}
-                placeholder="Example@gmail.com"
+                placeholder={t("auth.placeholder.email")}
                 size="full"
                 error={fieldErrors.email}
               ></Input>
@@ -148,7 +148,7 @@ function SignIn() {
                   value={form.password}
                   icon=""
                   label={t("auth.password")}
-                  placeholder="d$bb*****"
+                  placeholder={t("auth.placeholder.password")}
                   size="full"
                   error={fieldErrors.password}
                 ></Input>

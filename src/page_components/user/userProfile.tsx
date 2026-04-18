@@ -37,8 +37,10 @@ import {
 } from "../../API/ProfileAPI";
 import { isAuthenticated } from "../../API/apiClient";
 import { getImageUrl } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function UserProfile() {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const { username: usernameParam } = useParams<{ username?: string }>();
 
@@ -97,7 +99,7 @@ function UserProfile() {
       setProfile(data);
       setIsPublicProfile(data.is_public);
     } catch (err) {
-      setError("Failed to load profile. Please try again.");
+      setError(t("profilePage.loadFailed"));
       console.error("Error fetching profile:", err);
     } finally {
       setLoading(false);
@@ -237,7 +239,9 @@ function UserProfile() {
             icon={faSpinner}
             className="text-4xl text-(--color-primary) animate-spin"
           />
-          <p className="text-(--color-text-muted)">Loading profile...</p>
+          <p className="text-(--color-text-muted)">
+            {t("profilePage.loading")}
+          </p>
         </div>
       </div>
     );
@@ -247,12 +251,14 @@ function UserProfile() {
     return (
       <div className="flex justify-center items-center min-h-screen bg-(--color-bg)">
         <div className="text-center">
-          <p className="text-red-500 mb-4">{error || "Profile not found"}</p>
+          <p className="text-red-500 mb-4">
+            {error || t("profilePage.notFound")}
+          </p>
           <button
             onClick={fetchProfile}
             className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90"
           >
-            Try Again
+            {t("profilePage.tryAgain")}
           </button>
         </div>
       </div>
@@ -264,12 +270,12 @@ function UserProfile() {
     return (
       <div className="flex justify-center items-center min-h-screen bg-(--color-bg)">
         <div className="text-center">
-          <p className="text-(--color-text) mb-4">This profile is private</p>
+          <p className="text-(--color-text) mb-4">{t("profilePage.private")}</p>
           <button
             onClick={() => navigate(-1)}
             className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90"
           >
-            Go Back
+            {t("profilePage.goBack")}
           </button>
         </div>
       </div>
@@ -315,7 +321,7 @@ function UserProfile() {
           onClick={() => navigate(-1)}
           className="mb-4 text-(--color-accent) hover:text-(--color-primary) font-semibold self-start"
         >
-          &larr; Back
+          &larr; {t("profilePage.back")}
         </button>
 
         {/* Progress Bar - Only show for owner */}
@@ -338,7 +344,7 @@ function UserProfile() {
               username={profile.username}
               title={profile.title || ""}
               saves={profile.profile_views}
-              typeOfBussiness={profile.title || "Business"}
+              typeOfBussiness={profile.title || t("profilePage.business")}
               views={profile.profile_views}
               isOwner={isOwner}
               onAvatarUpload={isOwner ? handleAvatarUpload : undefined}
@@ -354,7 +360,7 @@ function UserProfile() {
                 icon={<FontAwesomeIcon icon={faStar} />}
                 IconColor="text-orange-500"
                 bg_color="bg-orange-100"
-                label="Rating"
+                label={t("profilePage.stats.rating")}
                 value={profile.rating.toFixed(1)}
                 rating={profile.rating}
                 reviews={profile.total_reviews}
@@ -363,7 +369,7 @@ function UserProfile() {
                 icon={<FontAwesomeIcon icon={faBriefcase} />}
                 IconColor="text-blue-500"
                 bg_color="bg-blue-100"
-                label="Jobs"
+                label={t("profilePage.stats.jobs")}
                 value={profile.total_jobs.toString()}
                 projects={profile.total_jobs}
               />
@@ -371,7 +377,7 @@ function UserProfile() {
                 icon={<FontAwesomeIcon icon={faDollar} />}
                 IconColor="text-green-500"
                 bg_color="bg-green-100"
-                label="Completed"
+                label={t("profilePage.stats.completed")}
                 value={profile.total_jobs.toString()}
                 projects={profile.total_jobs}
               />
@@ -379,7 +385,7 @@ function UserProfile() {
                 icon={<FontAwesomeIcon icon={faClock} />}
                 IconColor="text-purple-500"
                 bg_color="bg-purple-100"
-                label="Response"
+                label={t("profilePage.stats.response")}
                 value={`${profile.response_time}h`}
                 avgTime={profile.response_time}
               />
@@ -397,10 +403,10 @@ function UserProfile() {
               ) : (
                 <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
                   <h3 className="text-lg font-bold text-(--color-text) mb-3">
-                    About
+                    {t("profilePage.about")}
                   </h3>
                   <p className="text-(--color-text) leading-relaxed">
-                    {profile.bio || "No bio available"}
+                    {profile.bio || t("profilePage.noBio")}
                   </p>
                 </div>
               )}
@@ -417,7 +423,7 @@ function UserProfile() {
               ) : (
                 <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
                   <h3 className="text-lg font-bold text-(--color-text) mb-4">
-                    Portfolio
+                    {t("profilePage.portfolio")}
                   </h3>
                   {profile.portfolio && profile.portfolio.length > 0 ? (
                     <div className="grid grid-cols-1 gap-4">
@@ -449,7 +455,7 @@ function UserProfile() {
                                 rel="noopener noreferrer"
                                 className="text-(--color-primary) text-sm hover:underline"
                               >
-                                View Project
+                                {t("profilePage.viewProject")}
                               </a>
                             )}
                           </div>
@@ -458,7 +464,7 @@ function UserProfile() {
                     </div>
                   ) : (
                     <p className="text-(--color-text-muted)">
-                      No portfolio items
+                      {t("profilePage.noPortfolio")}
                     </p>
                   )}
                 </div>
@@ -476,7 +482,7 @@ function UserProfile() {
               ) : (
                 <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
                   <h3 className="text-lg font-bold text-(--color-text) mb-4">
-                    Work Experience
+                    {t("profilePage.workExperience")}
                   </h3>
                   {profile.work_experience &&
                   profile.work_experience.length > 0 ? (
@@ -496,7 +502,7 @@ function UserProfile() {
                             {new Date(exp.start_date).getFullYear()} -{" "}
                             {exp.end_date
                               ? new Date(exp.end_date).getFullYear()
-                              : "Present"}
+                              : t("profilePage.present")}
                           </p>
                           {exp.description && (
                             <p className="text-(--color-text) text-sm mt-2">
@@ -508,7 +514,7 @@ function UserProfile() {
                     </div>
                   ) : (
                     <p className="text-(--color-text-muted)">
-                      No work experience
+                      {t("profilePage.noWorkExperience")}
                     </p>
                   )}
                 </div>
@@ -528,7 +534,7 @@ function UserProfile() {
                 profile.education.length > 0 && (
                   <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
                     <h3 className="text-lg font-bold text-(--color-text) mb-4">
-                      Education
+                      {t("profilePage.education")}
                     </h3>
                     <div className="space-y-4">
                       {profile.education.map((edu, idx) => (
@@ -545,7 +551,7 @@ function UserProfile() {
                           <p className="text-sm text-(--color-text-muted)">
                             {new Date(edu.start_date).getFullYear()} -{" "}
                             {edu.current
-                              ? "Present"
+                              ? t("profilePage.present")
                               : edu.end_date
                                 ? new Date(edu.end_date).getFullYear()
                                 : ""}
@@ -605,26 +611,28 @@ function UserProfile() {
                     className="w-full flex items-center justify-center gap-2 px-4 py-2 bg-(--color-primary) hover:bg-(--color-accent) text-(--color-text-inverse) font-semibold rounded-lg transition"
                   >
                     <FontAwesomeIcon icon={faMessage} />
-                    Contact Business
+                    {t("profilePage.contactBusiness")}
                   </button>
                 </div>
 
                 {/* Additional Info */}
                 <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
                   <h3 className="font-bold text-(--color-text) mb-4">
-                    Contact Info
+                    {t("profilePage.contactInfo")}
                   </h3>
                   {profile.location && (
                     <p className="text-(--color-text) text-sm mb-2">
                       <span className="text-(--color-text-muted)">
-                        Location:
+                        {t("profilePage.location")}:
                       </span>{" "}
                       {profile.location}
                     </p>
                   )}
                   {profile.phone && (
                     <p className="text-(--color-text) text-sm mb-2">
-                      <span className="text-(--color-text-muted)">Phone:</span>{" "}
+                      <span className="text-(--color-text-muted)">
+                        {t("profilePage.phone")}:
+                      </span>{" "}
                       {profile.phone}
                     </p>
                   )}
