@@ -1,0 +1,329 @@
+@import "tailwindcss";
+@import url(assets/svg-light.svg);
+@import url(assets/svg-dark.svg);
+
+html.dir-transition,
+html.dir-transition body,
+html.dir-transition body * {
+  transition:
+    margin 220ms ease,
+    padding 220ms ease,
+    left 220ms ease,
+    right 220ms ease,
+    transform 220ms ease,
+    text-align 220ms ease,
+    border-radius 220ms ease;
+}
+
+/* ============================
+   GLOBAL VARIABLES (shared)
+============================ */
+
+
+/* Hide scrollbar */
+body::-webkit-scrollbar {
+  scrollbar-width: none;
+}
+
+/* ============================
+   🌞 LIGHT MODE
+============================ */
+
+
+
+
+
+body.light {
+  --color-bg: #F2F6FF;          /* soft cool white instead of #F8FAFC */
+  --color-surface: #FFFFFF;     /* you can also change this if needed */
+  --color-bg-inverse: #0F172A;
+  --color-bg-muted: #E8EEFF;
+
+  --color-text: #0F172A;
+  --color-text-inverse: #f1f5f9;
+  --color-text-muted: #858f9d;
+
+  --color-border: #E2E8F0;
+
+  --color-card: #F2F6FF;        /* was var(--color-surface) */
+  --color-card-hover: #E4ECFF;  /* subtle hover effect */
+
+  --svg: url('/src/assets/svg-light.svg');
+  --svg-hero: url('/src/assets/svg-hero-light.svg');
+}
+
+/* ============================
+   🌙 DARK MODE
+============================ */
+body.dark {
+  --svg: url('/src/assets/svg-dark.svg');
+  --svg-hero: url('/src/assets/svg-hero-dark.svg');
+
+  --color-bg: #0F172A;
+  --color-bg-inverse:#F8FAFC;
+  --color-bg-muted: #1f304a;
+
+  --color-surface: #1E293B;
+
+  --color-text: #F1F5F9;
+  --color-text-inverse:#0F172A;
+  --color-text-muted: #5c7492;
+
+  --color-border: #334155;
+
+  --color-card: var(--color-surface);
+  --color-card-hover: #111827;
+
+  /* Dark mode shadow adjustments */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.4);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.5);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.6);
+}
+
+
+:root {
+
+  /* Brand Colors */
+  --color-primary: #315bb5;
+  --color-primary-dark: #1E40AF;
+  --color-primary-light: #38BDF8;
+
+  --color-accent: #F97316;
+
+  /* Feedback */
+  --color-success: #22C55E;
+  --color-warning: #FACC15;
+  --color-danger:  #EF4444;
+
+  /* Radius */
+  --radius-sm: 4px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+
+  /* Shadows */
+  --shadow-sm: 0 1px 2px rgba(0,0,0,0.05);
+  --shadow-md: 0 4px 6px rgba(0,0,0,0.08);
+  --shadow-lg: 0 10px 15px rgba(0,0,0,0.12);
+
+  /* Animation */
+  --transition-fast: 150ms ease;
+  --transition-normal: 250ms ease;
+
+  /* Gradients */
+  --gradient-primary: linear-gradient(135deg, #2563EB, #4338CA, #6D28D9);
+  --gradient-secondary: linear-gradient(135deg, #38BDF8, #0EA5E9, #3B82F6);
+  --gradient-accent: linear-gradient(135deg, #F97316, #F59E0B, #EF4444);
+  --gradient-surface: linear-gradient(135deg, rgba(255,255,255,0.9), rgba(255,255,255,0.6));
+  --gradient-glow: radial-gradient(circle at top left, rgba(59,130,246,0.4), rgba(30,58,138,0) 70%);
+
+  /* Soft & Clean Professional Blues */
+  --grad-skyline: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+  --grad-oceanic: linear-gradient(to right, #243b55, #141e30);
+  
+  /* Modern Tech & SaaS Purples */
+  --grad-indigo-flow: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  --grad-deep-space: linear-gradient(135deg, #434343 0%, #000000 100%);
+
+  /* Warm & Energetic Accents */
+  --grad-sunset-aura: linear-gradient(120deg, #f6d365 0%, #fda085 100%);
+  --grad-rose-quartz: linear-gradient(to top, #fbc2eb 0%, #a6c1ee 100%);
+
+  /* Subtle Glassmorphism / Neutral */
+  --grad-glass-light: linear-gradient(135deg, rgba(255, 255, 255, 0.1), rgba(255, 255, 255, 0.05));
+  --grad-cool-mint: linear-gradient(120deg, #84fab0 0%, #8fd3f4 100%);
+
+
+  /* 🌟 Section Title (big section headers) */
+  --section-title-size: 2.25rem;      /* 36px */
+  --section-title-weight: 700;
+
+  /* ✨ Subsection Title */
+  --subsection-title-size: 1.5rem;    /* 24px */
+  --subsection-title-weight: 600;
+
+  /* 📌 Small Title */
+  --small-title-size: 1.25rem;        /* 20px */
+  --small-title-weight: 600;
+
+  /* 📝 Body scales */
+  --body-lg: 1.125rem;                /* 18px */
+  --body-md: 1rem;                    /* 16px */
+  --body-sm: 0.875rem;                /* 14px */
+
+  /* Responsive scaling */
+  --section-title-size-lg: 3rem;      /* 48px */
+  --subsection-title-size-lg: 2rem;   /* 32px */
+}
+
+.gradient-secondary{
+  background: var(--gradient-secondary);
+
+}
+
+
+/* Base Utility Class */
+.gradient-box {
+  color: white;
+  padding: 2rem;
+  border-radius: 12px;
+  transition: transform 0.3s ease, filter 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.gradient-box:hover {
+  transform: translateY(-5px);
+  filter: brightness(1.1);
+}
+
+/* Specific Gradient Classes */
+.bg-skyline    { background: var(--grad-skyline); }
+.bg-oceanic    { background: var(--grad-oceanic); }
+.bg-indigo     { background: var(--grad-indigo-flow); }
+.bg-deep-space { background: var(--grad-deep-space); }
+.bg-sunset     { background: var(--grad-sunset-aura); }
+.bg-rose       { background: var(--grad-rose-quartz); }
+.bg-mint       { background: var(--grad-cool-mint); }
+
+/* Background SVG utilities */
+.svg {
+  background: var(--svg);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.3s ease;
+}
+
+.svg-hero {
+  background: var(--svg-hero);
+  background-repeat: no-repeat;
+  background-size: cover;
+  background-position: center;
+  transition: background-image 0.3s ease;
+}
+
+/* ======================================
+   TYPOGRAPHY UTILITIES
+====================================== */
+
+.title {
+  font-size: var(--title);
+  line-height: 1.2;
+  font-weight: 700;
+}
+
+/* New typography classes */
+.section-title {
+  font-size: var(--section-title-size);
+  font-weight: var(--section-title-weight);
+  line-height: 1.2;
+}
+
+.subsection-title {
+  font-size: var(--subsection-title-size);
+  font-weight: var(--subsection-title-weight);
+  line-height: 1.25;
+}
+
+.small-title {
+  font-size: var(--small-title-size);
+  font-weight: var(--small-title-weight);
+}
+
+.body-lg { font-size: var(--body-lg); }
+.body-md { font-size: var(--body-md); }
+.body-sm { font-size: var(--body-sm); }
+
+/* Responsive scaling */
+@media (min-width: 1024px) {
+  .section-title {
+    font-size: var(--section-title-size-lg);
+  }
+  .subsection-title {
+    font-size: var(--subsection-title-size-lg);
+  }
+}
+
+/* ======================================
+   SPACING
+====================================== */
+
+.section-spacing {
+  padding-block: var(--section-spacing);
+}
+
+.content-spacing {
+  padding: var(--content-spacing);
+}
+
+/* Utilities */
+.input-padding { padding: var(--input-padding); }
+.button-padding { padding: var(--button-padding); }
+.card-padding { padding: var(--card-padding); }
+
+.navbar-height { height: var(--navbar-height); }
+.sidebar-width { width: var(--sidebar-width); }
+.container-width {
+  max-width: var(--container-width);
+  margin-inline: auto;
+}
+
+.icon-size {
+  width: var(--icon-size);
+  height: var(--icon-size);
+}
+
+.avatar-size {
+  width: var(--avatar-size);
+  height: var(--avatar-size);
+  border-radius: 50%;
+}
+
+.radius { border-radius: var(--radius); }
+.shadow { box-shadow: var(--shadow); }
+.border-default { border: var(--border); }
+
+/* Utility z-index */
+.z-modal { z-index: var(--z-modal); }
+.z-dropdown { z-index: var(--z-dropdown); }
+.z-overlay { z-index: var(--z-overlay); }
+
+.nav-link { font-size: var(--title); }
+
+.btn {
+  background-color: var(--color-primary);
+}
+
+.btn-secondary {
+  background-color: var(--color-gray-400);
+}
+
+.selected {
+  background-color: var(--color-accent);
+}
+
+.input-focus:has(:focus) {
+  outline: 2px solid var(--color-primary);
+}
+
+.animated{
+  transition:all 0.3s ease-in-out;
+}
+
+.transparent-background {
+  background: transparent;
+  
+
+}
+
+.blured-background{
+    background: rgba(255, 255, 255, 0.2); /* Translucent background */
+    backdrop-filter: blur(10px);          /* The blur effect */
+    -webkit-backdrop-filter: blur(10px);  /* Safari support */
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 20px;
+    border-radius: 15px;
+}
