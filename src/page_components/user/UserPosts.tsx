@@ -4,6 +4,7 @@ import { getUserPosts } from "../../API/PostsAPI";
 import type { Post } from "../../API/PostsAPI";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSpinner, faNewspaper } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface UserPostsProps {
   userId: number;
@@ -12,6 +13,7 @@ interface UserPostsProps {
 }
 
 function UserPosts({ userId, currentUserId, isOwner }: UserPostsProps) {
+  const { t } = useLanguage();
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
   const [loadingMore, setLoadingMore] = useState(false);
@@ -84,7 +86,9 @@ function UserPosts({ userId, currentUserId, isOwner }: UserPostsProps) {
   if (loading) {
     return (
       <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
-        <h3 className="text-lg font-bold text-(--color-text) mb-5">Posts</h3>
+        <h3 className="text-lg font-bold text-(--color-text) mb-5">
+          {t("userPosts.title")}
+        </h3>
         <div className="flex flex-col gap-4">
           {[...Array(2)].map((_, i) => (
             <div
@@ -124,7 +128,9 @@ function UserPosts({ userId, currentUserId, isOwner }: UserPostsProps) {
   if (posts.length === 0) {
     return (
       <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
-        <h3 className="text-lg font-bold text-(--color-text) mb-5">Posts</h3>
+        <h3 className="text-lg font-bold text-(--color-text) mb-5">
+          {t("userPosts.title")}
+        </h3>
         <div className="flex flex-col items-center justify-center py-10 gap-4">
           <div className="w-16 h-16 rounded-2xl bg-(--color-primary)/10 flex items-center justify-center">
             <FontAwesomeIcon
@@ -134,12 +140,12 @@ function UserPosts({ userId, currentUserId, isOwner }: UserPostsProps) {
           </div>
           <div className="text-center">
             <h4 className="text-base font-semibold text-(--color-text) mb-1">
-              No posts yet
+              {t("userPosts.empty.title")}
             </h4>
             <p className="text-(--color-text-muted) text-sm">
               {isOwner
-                ? "Share your first post with the community!"
-                : "This user hasn't published any posts yet."}
+                ? t("userPosts.empty.owner")
+                : t("userPosts.empty.visitor")}
             </p>
           </div>
         </div>
@@ -151,7 +157,7 @@ function UserPosts({ userId, currentUserId, isOwner }: UserPostsProps) {
     <div className="bg-(--color-card) border border-(--color-border) rounded-lg p-6">
       <div className="flex items-center justify-between mb-5">
         <h3 className="text-lg font-bold text-(--color-text)">
-          Posts{" "}
+          {t("userPosts.title")}{" "}
           <span className="text-sm font-normal text-(--color-text-muted)">
             ({posts.length}
             {hasMore ? "+" : ""})
@@ -184,7 +190,7 @@ function UserPosts({ userId, currentUserId, isOwner }: UserPostsProps) {
 
       {!hasMore && posts.length > 0 && (
         <p className="text-center text-(--color-text-muted) text-sm py-3">
-          No more posts
+          {t("userPosts.noMore")}
         </p>
       )}
     </div>

@@ -1,6 +1,7 @@
 import Button from "../../components/btns/Button.tsx";
 import * as Slider from "@radix-ui/react-slider";
 import type { FilterConfig } from "../../config/filters.config";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface FiltersProps {
   config: FilterConfig[];
@@ -10,16 +11,27 @@ interface FiltersProps {
   onApply: () => void;
 }
 
-function FilterHeader({ config, value, onChange, onReset, onApply }: FiltersProps) {
+function FilterHeader({
+  config,
+  value,
+  onChange,
+  onReset,
+  onApply,
+}: FiltersProps) {
+  const { t } = useLanguage();
+
   return (
     <section className="w-full bg-(--color-bg) border-b border-(--color-border) py-4 sticky top-0 z-10 transition-colors duration-300">
       <div className="max-w-7xl mx-auto px-4 lg:px-6">
         <div className="flex flex-col gap-4 lg:flex-row lg:items-end lg:justify-between">
           <div className="w-full grid grid-cols-2 gap-3 sm:grid-cols-3 lg:flex lg:flex-wrap lg:items-end lg:justify-between lg:gap-4">
             {config.map((filter) => (
-              <div key={filter.id} className="flex flex-col gap-2 min-w-0 lg:w-[190px]">
+              <div
+                key={filter.id}
+                className="flex flex-col gap-2 min-w-0 lg:w-[190px]"
+              >
                 <label className="text-xs uppercase tracking-widest text-(--color-text-muted) font-bold px-1">
-                  {filter.label}
+                  {t(filter.labelKey)}
                 </label>
 
                 {filter.type === "select" && (
@@ -29,10 +41,12 @@ function FilterHeader({ config, value, onChange, onReset, onApply }: FiltersProp
                       onChange={(e) => onChange(filter.id, e.target.value)}
                       className="w-full bg-(--color-surface) border border-(--color-border) text-(--color-text) text-sm rounded-md pl-3 pr-10 py-2.5 outline-none focus:ring-2 focus:ring-(--color-primary)/20 focus:border-(--color-primary) transition-all appearance-none cursor-pointer shadow-(--shadow-sm)"
                     >
-                      <option value="">All {filter.label}</option>
+                      <option value="">
+                        {t("browseGigs.filters.all")} {t(filter.labelKey)}
+                      </option>
                       {filter.options?.map((opt) => (
-                        <option key={opt} value={opt}>
-                          {opt}
+                        <option key={opt.value} value={opt.value}>
+                          {t(opt.labelKey)}
                         </option>
                       ))}
                     </select>
@@ -73,7 +87,9 @@ function FilterHeader({ config, value, onChange, onReset, onApply }: FiltersProp
                     </Slider.Root>
 
                     <div className="flex justify-between mt-1 text-xs font-bold">
-                      <span className="text-(--color-primary)">${value[filter.id][0]}</span>
+                      <span className="text-(--color-primary)">
+                        ${value[filter.id][0]}
+                      </span>
                       <span className="text-(--color-primary)">
                         {value[filter.id][1] === 1000
                           ? `$${value[filter.id][1] / 1000}k+`
@@ -89,7 +105,7 @@ function FilterHeader({ config, value, onChange, onReset, onApply }: FiltersProp
               <div className="w-full sm:w-auto">
                 <Button
                   onClick={onReset}
-                  text="Reset"
+                  text={t("browseGigs.filters.reset")}
                   bgColor="bg-transparent w-full sm:w-auto"
                   textColor="text-(--color-text-muted)"
                   backdropColor="hover:bg-(--color-border)"
@@ -98,7 +114,7 @@ function FilterHeader({ config, value, onChange, onReset, onApply }: FiltersProp
               <div className="w-full sm:w-auto">
                 <Button
                   onClick={onApply}
-                  text="Apply Filters"
+                  text={t("browseGigs.filters.apply")}
                   bgColor="bg-(--color-primary) w-full sm:w-auto"
                   textColor="text-(--color-text-inverse)"
                   backdropColor=""

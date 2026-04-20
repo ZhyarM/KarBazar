@@ -18,8 +18,10 @@ import {
   faUndo,
 } from "@fortawesome/free-solid-svg-icons";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Orders() {
+  const { t, direction } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "buying" | "selling">("all");
@@ -173,7 +175,7 @@ function Orders() {
   }
 
   return (
-    <div className="min-h-screen bg-(--color-bg) py-8 px-4">
+    <div className="min-h-screen bg-(--color-bg) py-8 px-4" dir={direction}>
       <div className="max-w-7xl mx-auto">
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-(--color-text) flex items-center gap-2">
@@ -181,7 +183,7 @@ function Orders() {
               icon={faShoppingCart}
               className="text-(--color-primary)"
             />
-            My Orders
+            {t("orders.title")}
           </h1>
         </div>
 
@@ -198,7 +200,7 @@ function Orders() {
                     : "bg-(--color-bg) text-(--color-text) hover:bg-opacity-80"
                 }`}
               >
-                All Orders
+                {t("orders.all")}
               </button>
               <button
                 onClick={() => setFilter("buying")}
@@ -208,7 +210,7 @@ function Orders() {
                     : "bg-(--color-bg) text-(--color-text) hover:bg-opacity-80"
                 }`}
               >
-                Buying
+                {t("orders.buying")}
               </button>
               <button
                 onClick={() => setFilter("selling")}
@@ -218,7 +220,7 @@ function Orders() {
                     : "bg-(--color-bg) text-(--color-text) hover:bg-opacity-80"
                 }`}
               >
-                Selling
+                {t("orders.selling")}
               </button>
             </div>
 
@@ -228,13 +230,25 @@ function Orders() {
               onChange={(e) => setStatusFilter(e.target.value)}
               className="px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
             >
-              <option value="all">All Statuses</option>
-              <option value="pending">Pending</option>
-              <option value="in_progress">In Progress</option>
-              <option value="delivered">Delivered</option>
-              <option value="completed">Completed</option>
-              <option value="cancelled">Cancelled</option>
-              <option value="revision">Revision</option>
+              <option value="all">{t("orders.allStatuses")}</option>
+              <option value="pending">
+                {t("orderDetails.status.pending")}
+              </option>
+              <option value="in_progress">
+                {t("orderDetails.status.inProgress")}
+              </option>
+              <option value="delivered">
+                {t("orderDetails.status.delivered")}
+              </option>
+              <option value="completed">
+                {t("orderDetails.status.completed")}
+              </option>
+              <option value="cancelled">
+                {t("orderDetails.status.cancelled")}
+              </option>
+              <option value="revision">
+                {t("orderDetails.status.revision")}
+              </option>
             </select>
           </div>
         </div>
@@ -246,12 +260,14 @@ function Orders() {
               icon={faShoppingCart}
               className="text-6xl text-(--color-text-muted) mb-4"
             />
-            <p className="text-xl text-(--color-text-muted)">No orders found</p>
+            <p className="text-xl text-(--color-text-muted)">
+              {t("orders.noFound")}
+            </p>
             <Link
               to="/browse-gigs"
               className="inline-block mt-4 px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
             >
-              Browse Gigs
+              {t("orders.browseGigs")}
             </Link>
           </div>
         ) : (
@@ -281,8 +297,8 @@ function Orders() {
                             {order.gig.title}
                           </h3>
                           <p className="text-sm text-(--color-text-muted)">
-                            {isBuyer ? "Seller" : "Buyer"}: @
-                            {otherParty.profile.username}
+                            {isBuyer ? t("orders.seller") : t("orders.buyer")}:
+                            @{otherParty.profile.username}
                           </p>
                         </div>
                         <div className="text-right">
@@ -304,9 +320,11 @@ function Orders() {
                             {order.status.replace("_", " ")}
                           </span>
                         </div>
-                        <div>Delivery: {order.delivery_time} days</div>
                         <div>
-                          Ordered:{" "}
+                          {t("orders.delivery")}: {order.delivery_time} days
+                        </div>
+                        <div>
+                          {t("orders.ordered")}:{" "}
                           {new Date(order.created_at).toLocaleDateString()}
                         </div>
                       </div>
@@ -320,7 +338,7 @@ function Orders() {
                             disabled={actionLoading}
                             className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-all"
                           >
-                            Start Order
+                            {t("orders.startOrder")}
                           </button>
                         )}
 
@@ -335,8 +353,8 @@ function Orders() {
                               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 transition-all"
                             >
                               {order.status === "revision"
-                                ? "Re-deliver"
-                                : "Deliver Order"}
+                                ? t("orders.redeliver")
+                                : t("orders.deliverOrder")}
                             </button>
                           )}
 
@@ -348,7 +366,7 @@ function Orders() {
                               disabled={actionLoading}
                               className="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-all"
                             >
-                              Accept Delivery
+                              {t("orders.acceptDelivery")}
                             </button>
                             <button
                               onClick={() => {
@@ -357,7 +375,7 @@ function Orders() {
                               }}
                               className="px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 transition-all"
                             >
-                              Request Revision
+                              {t("orders.requestRevision")}
                             </button>
                           </>
                         )}
@@ -367,7 +385,7 @@ function Orders() {
                           to={`/order/${order.id}`}
                           className="px-4 py-2 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:bg-opacity-80 transition-all"
                         >
-                          View Details
+                          {t("orders.viewDetails")}
                         </Link>
 
                         {/* Message */}
@@ -375,7 +393,9 @@ function Orders() {
                           to={`/messages?user=${otherParty.id}`}
                           className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                         >
-                          Message {isBuyer ? "Seller" : "Buyer"}
+                          {isBuyer
+                            ? t("orders.messageSeller")
+                            : t("orders.messageBuyer")}
                         </Link>
                       </div>
                     </div>
@@ -392,12 +412,12 @@ function Orders() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-lg p-6 max-w-md w-full">
             <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-              Deliver Order
+              {t("orders.deliverTitle")}
             </h2>
             <textarea
               value={deliveryNote}
               onChange={(e) => setDeliveryNote(e.target.value)}
-              placeholder="Add delivery notes for the buyer..."
+              placeholder={t("orders.deliverPlaceholder")}
               rows={4}
               className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary) mb-4"
             />
@@ -407,7 +427,7 @@ function Orders() {
                 disabled={actionLoading || !deliveryNote.trim()}
                 className="flex-1 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 disabled:opacity-50 transition-all"
               >
-                {actionLoading ? "Delivering..." : "Deliver"}
+                {actionLoading ? t("orders.delivering") : t("orders.deliver")}
               </button>
               <button
                 onClick={() => {
@@ -416,7 +436,7 @@ function Orders() {
                 }}
                 className="flex-1 px-4 py-2 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:bg-opacity-80 transition-all"
               >
-                Cancel
+                {t("orders.cancel")}
               </button>
             </div>
           </div>
@@ -428,12 +448,12 @@ function Orders() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-lg p-6 max-w-md w-full">
             <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-              Request Revision
+              {t("orders.revisionTitle")}
             </h2>
             <textarea
               value={revisionReason}
               onChange={(e) => setRevisionReason(e.target.value)}
-              placeholder="Explain what needs to be revised..."
+              placeholder={t("orders.revisionPlaceholder")}
               rows={4}
               className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary) mb-4"
             />
@@ -443,7 +463,9 @@ function Orders() {
                 disabled={actionLoading || !revisionReason.trim()}
                 className="flex-1 px-4 py-2 bg-orange-600 text-white rounded-lg hover:bg-orange-700 disabled:opacity-50 transition-all"
               >
-                {actionLoading ? "Requesting..." : "Request Revision"}
+                {actionLoading
+                  ? t("orders.requesting")
+                  : t("orders.requestRevision")}
               </button>
               <button
                 onClick={() => {
@@ -452,7 +474,7 @@ function Orders() {
                 }}
                 className="flex-1 px-4 py-2 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:bg-opacity-80 transition-all"
               >
-                Cancel
+                {t("orders.cancel")}
               </button>
             </div>
           </div>

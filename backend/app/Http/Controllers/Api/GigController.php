@@ -4,16 +4,25 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\GigResource;
+use App\Http\Resources\GigDealResource;
 use App\Models\Gig;
+use App\Models\GigPackageDiscount;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class GigController extends Controller
 {
     // Get all gigs (with filters)
     public function index(Request $request)
     {
-        $query = Gig::where('is_active', true)->with(['seller.profile', 'category']);
+        $query = Gig::where('is_active', true)->with([
+            'seller.profile',
+            'category',
+            'packageDiscounts' => function ($discountQuery) {
+                $discountQuery->active();
+            },
+        ]);
 
         // Search
         if ($request->has('search')) {
@@ -80,10 +89,70 @@ class GigController extends Controller
         ]);
     }
 
+    public function deals(Request $request)
+    {
+        $query = GigPackageDiscount::query()
+            ->active()
+            ->with(['gig.seller.profile', 'gig.category'])
+            ->whereHas('gig', function ($gigQuery) {
+                $gigQuery->where('is_active', true);
+            });
+
+        if ($request->filled('gig_id')) {
+            $query->where('gig_id', $request->gig_id);
+        }
+
+        if ($request->filled('package_key')) {
+            $query->where('package_key', $request->package_key);
+        }
+
+        if ($request->filled('category_id')) {
+            $query->whereHas('gig', function ($gigQuery) use ($request) {
+                $gigQuery->where('category_id', $request->category_id);
+            });
+        }
+
+        if ($request->filled('discount_min')) {
+            $query->where('discount_percentage', '>=', $request->discount_min);
+        }
+
+        if ($request->filled('discount_max')) {
+            $query->where('discount_percentage', '<=', $request->discount_max);
+        }
+
+        if ($request->has('expiring_soon') && $request->expiring_soon == 'true') {
+            $query->expiringSoon();
+        }
+
+        $query->orderByRaw('CASE WHEN expires_at IS NULL THEN 1 ELSE 0 END')
+            ->orderBy('expires_at', 'asc')
+            ->orderByDesc('discount_percentage');
+
+        $deals = $query->paginate($request->integer('per_page', 12));
+
+        return response()->json([
+            'success' => true,
+            'data' => GigDealResource::collection($deals),
+            'meta' => [
+                'current_page' => $deals->currentPage(),
+                'last_page' => $deals->lastPage(),
+                'per_page' => $deals->perPage(),
+                'total' => $deals->total(),
+            ],
+        ]);
+    }
+
     // Get single gig
     public function show(Request $request, $id)
     {
-        $gig = Gig::with(['seller.profile', 'category', 'reviews.reviewer.profile'])
+        $gig = Gig::with([
+            'seller.profile',
+            'category',
+            'reviews.reviewer.profile',
+            'packageDiscounts' => function ($discountQuery) {
+                $discountQuery->active();
+            },
+        ])
             ->findOrFail($id);
 
         // Track view (once per user per gig, lifetime)
@@ -95,7 +164,7 @@ class GigController extends Controller
         $viewerIp = $request->ip();
 
         // Check if this user/ip already viewed this gig
-        $existingView = \DB::table('gig_views')
+        $existingView = DB::table('gig_views')
             ->where('gig_id', $gig->id)
             ->where(function ($query) use ($userId, $viewerIp) {
                 if ($userId) {
@@ -107,7 +176,7 @@ class GigController extends Controller
             ->exists();
 
         if (!$existingView) {
-            \DB::table('gig_views')->insert([
+            DB::table('gig_views')->insert([
                 'gig_id' => $gig->id,
                 'user_id' => $userId,
                 'ip_address' => $viewerIp,
@@ -237,6 +306,8 @@ class GigController extends Controller
             'requirements' => 'nullable|string',
             'faqs' => 'nullable|array',
             'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'is_trending' => 'sometimes|boolean',
         ]);
 
         // Build packages JSON if package data is provided
@@ -273,7 +344,7 @@ class GigController extends Controller
         }
 
         // Add other fields
-        foreach (['category_id', 'title', 'description', 'image_url', 'gallery', 'tags', 'requirements', 'is_active'] as $field) {
+        foreach (['category_id', 'title', 'description', 'image_url', 'gallery', 'tags', 'requirements', 'is_active', 'is_featured', 'is_trending'] as $field) {
             if (isset($validated[$field])) {
                 $updateData[$field] = $validated[$field];
             }
@@ -328,6 +399,76 @@ class GigController extends Controller
         return response()->json([
             'success' => true,
             'data' => GigResource::collection($gigs),
+        ]);
+    }
+
+    public function storeDiscount(Request $request)
+    {
+        $validated = $request->validate([
+            'gig_id' => 'required|exists:gigs,id',
+            'package_key' => 'required|string|in:basic,standard,premium',
+            'discount_percentage' => 'required|numeric|min:1|max:100',
+            'expires_at' => 'nullable|date',
+            'is_active' => 'sometimes|boolean',
+        ]);
+
+        $gig = Gig::findOrFail($validated['gig_id']);
+        if ($gig->seller_id !== $request->user()->id && $request->user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $discount = GigPackageDiscount::create([
+            'gig_id' => $gig->id,
+            'package_key' => $validated['package_key'],
+            'discount_percentage' => $validated['discount_percentage'],
+            'expires_at' => $validated['expires_at'] ?? null,
+            'is_active' => $validated['is_active'] ?? true,
+            'created_by' => $request->user()->id,
+        ]);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deal created successfully',
+            'data' => new GigDealResource($discount->load(['gig.seller.profile', 'gig.category'])),
+        ], 201);
+    }
+
+    public function updateDiscount(Request $request, $id)
+    {
+        $discount = GigPackageDiscount::with('gig')->findOrFail($id);
+
+        if ($discount->gig->seller_id !== $request->user()->id && $request->user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $validated = $request->validate([
+            'discount_percentage' => 'sometimes|numeric|min:1|max:100',
+            'expires_at' => 'nullable|date',
+            'is_active' => 'sometimes|boolean',
+        ]);
+
+        $discount->update($validated);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deal updated successfully',
+            'data' => new GigDealResource($discount->load(['gig.seller.profile', 'gig.category'])),
+        ]);
+    }
+
+    public function destroyDiscount(Request $request, $id)
+    {
+        $discount = GigPackageDiscount::with('gig')->findOrFail($id);
+
+        if ($discount->gig->seller_id !== $request->user()->id && $request->user()->role !== 'admin') {
+            return response()->json(['success' => false, 'message' => 'Unauthorized'], 403);
+        }
+
+        $discount->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Deal deleted successfully',
         ]);
     }
 }

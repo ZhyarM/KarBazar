@@ -1,18 +1,21 @@
 import { Link } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function HomeFAQ() {
+  const { t } = useLanguage();
+
   const faq = [
     {
-      q: "How do I start a project?",
-      a: "Post your request, review offers, and choose the business that fits your goals.",
+      q: t("faq.q1"),
+      a: t("faq.a1"),
     },
     {
-      q: "Can I compare pricing before hiring?",
-      a: "Yes. You can compare pricing, delivery time, and reviews before starting.",
+      q: t("faq.q2"),
+      a: t("faq.a2"),
     },
     {
-      q: "How is project quality maintained?",
-      a: "Ratings, completed work history, and profile verification help ensure quality.",
+      q: t("faq.q3"),
+      a: t("faq.a3"),
     },
   ];
 
@@ -20,9 +23,9 @@ function HomeFAQ() {
     <section className="w-full bg-(--color-bg) py-14 px-4">
       <div className="max-w-5xl mx-auto">
         <div className="text-center mb-8">
-          <h2 className="section-title text-(--color-text)">Quick FAQ</h2>
+          <h2 className="section-title text-(--color-text)">{t("faq.title")}</h2>
           <p className="small-title text-(--color-text-muted)">
-            Helpful answers before you launch your next project.
+            {t("faq.subtitle")}
           </p>
         </div>
 
@@ -45,7 +48,7 @@ function HomeFAQ() {
             to="/categories"
             className="inline-flex items-center justify-center px-5 py-2.5 rounded-xl bg-(--color-primary) text-(--color-text-inverse) text-sm font-semibold hover:opacity-90 transition"
           >
-            Explore More Services
+            {t("faq.exploreMore")}
           </Link>
         </div>
       </div>

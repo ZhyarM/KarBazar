@@ -13,8 +13,10 @@ import {
   faTrash,
   faCheckDouble,
 } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Notifications() {
+  const { t, direction } = useLanguage();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
@@ -75,7 +77,7 @@ function Notifications() {
     const hours = Math.floor(diff / (1000 * 60 * 60));
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
-    if (minutes < 1) return "Just now";
+    if (minutes < 1) return t("notifications.justNow");
     if (minutes < 60) return `${minutes}m ago`;
     if (hours < 24) return `${hours}h ago`;
     if (days < 7) return `${days}d ago`;
@@ -91,13 +93,13 @@ function Notifications() {
   }
 
   return (
-    <div className="min-h-screen bg-(--color-bg) py-8 px-4">
+    <div className="min-h-screen bg-(--color-bg) py-8 px-4" dir={direction}>
       <div className="max-w-4xl mx-auto">
         {/* Header */}
         <div className="flex justify-between items-center mb-8">
           <h1 className="text-3xl font-bold text-(--color-text) flex items-center gap-2">
             <FontAwesomeIcon icon={faBell} className="text-(--color-primary)" />
-            Notifications
+            {t("notifications.title")}
             {unreadCount > 0 && (
               <span className="px-3 py-1 bg-(--color-primary) text-white rounded-full text-sm">
                 {unreadCount}
@@ -110,7 +112,7 @@ function Notifications() {
               className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all flex items-center gap-2"
             >
               <FontAwesomeIcon icon={faCheckDouble} />
-              Mark all as read
+              {t("notifications.markAll")}
             </button>
           )}
         </div>
@@ -125,7 +127,7 @@ function Notifications() {
                 : "bg-(--color-surface) text-(--color-text)"
             }`}
           >
-            All ({notifications.length})
+            {t("notifications.all")} ({notifications.length})
           </button>
           <button
             onClick={() => setFilter("unread")}
@@ -135,7 +137,7 @@ function Notifications() {
                 : "bg-(--color-surface) text-(--color-text)"
             }`}
           >
-            Unread ({unreadCount})
+            {t("notifications.unread")} ({unreadCount})
           </button>
         </div>
 
@@ -148,8 +150,8 @@ function Notifications() {
             />
             <p className="text-xl text-(--color-text-muted)">
               {filter === "unread"
-                ? "No unread notifications"
-                : "No notifications yet"}
+                ? t("notifications.noUnread")
+                : t("notifications.empty")}
             </p>
           </div>
         ) : (
@@ -182,7 +184,7 @@ function Notifications() {
                       <button
                         onClick={() => handleMarkAsRead(notif.id)}
                         className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-all"
-                        title="Mark as read"
+                        title={t("notifications.markRead")}
                       >
                         <FontAwesomeIcon icon={faCheck} />
                       </button>
@@ -190,7 +192,7 @@ function Notifications() {
                     <button
                       onClick={() => handleDelete(notif.id)}
                       className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-all"
-                      title="Delete"
+                      title={t("notifications.delete")}
                     >
                       <FontAwesomeIcon icon={faTrash} />
                     </button>

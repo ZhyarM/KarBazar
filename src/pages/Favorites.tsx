@@ -10,8 +10,10 @@ import { Link } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getImageUrl, getAvatarUrl } from "../utils/imageUrl";
 import { faHeart, faStar, faUser } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Favorites() {
+  const { t, direction } = useLanguage();
   const [gigs, setGigs] = useState<FavoriteGig[]>([]);
   const [freelancers, setFreelancers] = useState<FavoriteFreelancer[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,11 +65,11 @@ function Favorites() {
   }
 
   return (
-    <div className="min-h-screen bg-(--color-bg) py-8 px-4">
+    <div className="min-h-screen bg-(--color-bg) py-8 px-4" dir={direction}>
       <div className="max-w-7xl mx-auto">
         <h1 className="text-3xl font-bold text-(--color-text) mb-8 flex items-center gap-2">
           <FontAwesomeIcon icon={faHeart} className="text-(--color-primary)" />
-          My Favorites
+          {t("favorites.title")}
         </h1>
 
         {/* Tabs */}
@@ -80,7 +82,7 @@ function Favorites() {
                 : "bg-(--color-surface) text-(--color-text)"
             }`}
           >
-            Gigs ({gigs.length})
+            {t("favorites.gigs")} ({gigs.length})
           </button>
           <button
             onClick={() => setTab("freelancers")}
@@ -90,7 +92,7 @@ function Favorites() {
                 : "bg-(--color-surface) text-(--color-text)"
             }`}
           >
-            Businesses ({freelancers.length})
+            {t("favorites.businesses")} ({freelancers.length})
           </button>
         </div>
 
@@ -104,13 +106,13 @@ function Favorites() {
                   className="text-6xl text-(--color-text-muted) mb-4"
                 />
                 <p className="text-xl text-(--color-text-muted) mb-4">
-                  No favorite gigs yet
+                  {t("favorites.noGigs")}
                 </p>
                 <Link
                   to="/browse-gigs"
                   className="inline-block px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                 >
-                  Browse Gigs
+                  {t("favorites.browseGigs")}
                 </Link>
               </div>
             ) : (
@@ -170,7 +172,7 @@ function Favorites() {
                           to={`/gigs/${gig.id}`}
                           className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                         >
-                          View Gig
+                          {t("favorites.viewGig")}
                         </Link>
                       </div>
                     </div>
@@ -191,13 +193,13 @@ function Favorites() {
                   className="text-6xl text-(--color-text-muted) mb-4"
                 />
                 <p className="text-xl text-(--color-text-muted) mb-4">
-                  No favorite businesses yet
+                  {t("favorites.noBusinesses")}
                 </p>
                 <Link
                   to="/browse-gigs"
                   className="inline-block px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                 >
-                  Browse Businesses
+                  {t("favorites.browseBusinesses")}
                 </Link>
               </div>
             ) : (
@@ -242,7 +244,7 @@ function Favorites() {
                         />
                         <span>{freelancer.profile.rating}</span>
                         <span>
-                          ({freelancer.profile.total_reviews} reviews)
+                          ({freelancer.profile.total_reviews} {t("favorites.reviews")})
                         </span>
                       </div>
 
@@ -265,7 +267,7 @@ function Favorites() {
                         to={`/profile/${freelancer.profile.username}`}
                         className="w-full px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all text-center"
                       >
-                        View Profile
+                        {t("favorites.viewProfile")}
                       </Link>
                     </div>
                   </div>

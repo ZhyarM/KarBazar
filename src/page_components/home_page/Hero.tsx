@@ -2,8 +2,20 @@ import { faArrowRight, faCheck } from "@fortawesome/free-solid-svg-icons";
 import Button from "../../components/btns/Button.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Link } from "react-router-dom";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function Hero() {
+  const { t } = useLanguage();
+
+  const professionals = [
+    t("hero.profession.plumbers"),
+    t("hero.profession.programmers"),
+    t("hero.profession.electricians"),
+    t("hero.profession.designers"),
+    t("hero.profession.singers"),
+    t("hero.profession.more"),
+  ];
+
   return (
     <>
       <section
@@ -28,7 +40,7 @@ function Hero() {
              leading-normal md:leading-[90px] 
             w-full  text-(--color-text)"
           >
-            Discover nation-wide <br /> services
+            {t("hero.title")}
           </h1>
 
           <p
@@ -38,8 +50,7 @@ function Hero() {
              leading-normal sm:leading-normal md:leading-normal
              transition-all duration-300 text-(--color-text-muted) opacity-55 "
           >
-            Connect with talented professionals and get your work done with
-            quality and speed
+            {t("hero.subtitle")}
           </p>
 
           <div className="flex flex-row justify-center items-center gap-2">
@@ -48,7 +59,7 @@ function Hero() {
               className="border-2 p-1 rounded-4xl bg-(--color-bg-inverse) text-(--color-text-inverse)"
             >
               <Button
-                text="join for free"
+                text={t("hero.joinFree")}
                 bgColor="bg-transparent"
                 textColor="text-[var(--btn-secondary-text)]"
                 backdropColor=""
@@ -58,7 +69,7 @@ function Hero() {
               <Button
                 text={
                   <>
-                    our services
+                    {t("hero.ourServices")}
                     <div className="ml-1 w-6 h-6 flex items-center rounded-full justify-center bg-(--color-accent)">
                       <FontAwesomeIcon
                         className="text-white"
@@ -76,63 +87,20 @@ function Hero() {
           <section className="hidden md:hidden lg:block">
             <div className="max-w-6xl mx-auto px-4">
               <h2 className="text-center  text-(--color-text-muted)  font-semibold  mb-4">
-                Trusted by professionals from all fields
+                {t("hero.trustedBy")}
               </h2>
 
               <div className="flex flex-wrap justify-center gap-10 opacity-60">
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
-                    <FontAwesomeIcon icon={faCheck} />
+                {professionals.map((professional) => (
+                  <div key={professional} className="flex items-center gap-2">
+                    <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
+                      <FontAwesomeIcon icon={faCheck} />
+                    </div>
+                    <span className="text-gray-500 text-lg font-medium">
+                      {professional}
+                    </span>
                   </div>
-                  <span className="text-gray-500 text-lg font-medium">
-                    Plumbers
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
-                    <FontAwesomeIcon icon={faCheck} />
-                  </div>
-                  <span className="text-gray-500 text-lg font-medium">
-                    Programmers
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
-                    <FontAwesomeIcon icon={faCheck} />
-                  </div>
-                  <span className="text-gray-500 text-lg font-medium">
-                    Electricians
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
-                    <FontAwesomeIcon icon={faCheck} />
-                  </div>
-                  <span className="text-gray-500 text-lg font-medium">
-                    Designers
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
-                    <FontAwesomeIcon icon={faCheck} />
-                  </div>
-                  <span className="text-gray-500 text-lg font-medium">
-                    Singers
-                  </span>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  <div className="w-6 h-6 rounded-full bg-gray-400 flex items-center justify-center ">
-                    <FontAwesomeIcon icon={faCheck} />
-                  </div>
-                  <span className="text-gray-500 text-lg font-medium">
-                    Even more
-                  </span>
-                </div>
+                ))}
               </div>
             </div>
           </section>

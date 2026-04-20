@@ -9,11 +9,13 @@ import {
   faHeart,
   faPlus,
   faPenNib,
+  faShieldAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { logout } from "../../API/LogoutAPI";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import type { AuthResponse } from "../../API/me.tsx";
-import { roleLabel } from "../../utils/roles";
+import { isAdminRole, roleLabel } from "../../utils/roles";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface ProfileDropdownProps {
   user: AuthResponse | null;
@@ -23,9 +25,11 @@ interface ProfileDropdownProps {
 const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+  const { t, direction } = useLanguage();
+  const isRTL = direction === "rtl";
 
   const avatarUrl = getAvatarUrl(user?.data?.profile?.avatar_url);
-  const name = user?.data?.name || "User";
+  const name = user?.data?.name || t("profile.user");
   const role = roleLabel(user?.data?.role);
 
   useEffect(() => {
@@ -53,7 +57,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
       {/* Avatar trigger */}
       <button
         onClick={() => setIsOpen(!isOpen)}
-        className="ml-1 w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-(--color-primary)/40 transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0"
+        className={`${isRTL ? "mr-1" : "ml-1"} w-9 h-9 rounded-full overflow-hidden ring-2 ring-transparent hover:ring-(--color-primary)/40 transition-all duration-200 cursor-pointer flex items-center justify-center shrink-0`}
       >
         {avatarUrl ? (
           <img
@@ -75,7 +79,9 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className="absolute right-0 mt-3 w-56 bg-(--color-surface) rounded-2xl shadow-xl border border-(--color-border) z-50 overflow-hidden">
+          <div
+            className={`absolute ${isRTL ? "left-0" : "right-0"} mt-3 w-56 bg-(--color-surface) rounded-2xl shadow-xl border border-(--color-border) z-50 overflow-hidden`}
+          >
             {/* User info header */}
             <div className="px-4 py-3 border-b border-(--color-border)">
               <div className="flex items-center gap-3">
@@ -114,7 +120,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                   icon={faUser}
                   className="w-4 text-(--color-text-muted)"
                 />
-                My Profile
+                {t("profile.myProfile")}
               </Link>
 
               <Link
@@ -126,7 +132,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                   icon={faTachometerAlt}
                   className="w-4 text-(--color-text-muted)"
                 />
-                Dashboard
+                {t("profile.dashboard")}
               </Link>
 
               <Link
@@ -138,7 +144,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                   icon={faShoppingCart}
                   className="w-4 text-(--color-text-muted)"
                 />
-                Orders
+                {t("profile.orders")}
               </Link>
 
               <Link
@@ -150,7 +156,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                   icon={faHeart}
                   className="w-4 text-(--color-text-muted)"
                 />
-                Favorites
+                {t("profile.favorites")}
               </Link>
             </div>
 
@@ -158,7 +164,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
             {isFreelancer && (
               <div className="border-t border-(--color-border) py-1.5">
                 <p className="px-4 pt-1 pb-1 text-[10px] font-semibold text-(--color-text-muted) uppercase tracking-wider">
-                  Create
+                  {t("profile.create")}
                 </p>
                 <Link
                   to="/create-gig"
@@ -169,7 +175,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                     icon={faPlus}
                     className="w-4 text-(--color-primary)"
                   />
-                  New Gig
+                  {t("profile.newGig")}
                 </Link>
                 <Link
                   to="/create-post"
@@ -180,7 +186,26 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                     icon={faPenNib}
                     className="w-4 text-(--color-primary)"
                   />
-                  New Post
+                  {t("profile.newPost")}
+                </Link>
+              </div>
+            )}
+
+            {isAdminRole(user?.data?.role) && (
+              <div className="border-t border-(--color-border) py-1.5">
+                <p className="px-4 pt-1 pb-1 text-[10px] font-semibold text-(--color-text-muted) uppercase tracking-wider">
+                  {t("profile.admin")}
+                </p>
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-(--color-text) hover:bg-(--color-bg) transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FontAwesomeIcon
+                    icon={faShieldAlt}
+                    className="w-4 text-(--color-primary)"
+                  />
+                  {t("profile.adminPanel")}
                 </Link>
               </div>
             )}
@@ -192,7 +217,7 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                 className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-500 hover:bg-red-500/5 w-full transition-colors cursor-pointer"
               >
                 <FontAwesomeIcon icon={faSignOutAlt} className="w-4" />
-                Sign Out
+                {t("profile.signOut")}
               </button>
             </div>
           </div>

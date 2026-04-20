@@ -1,4 +1,5 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import type { ChangeEvent } from "react";
 import { useParams, useLocation } from "react-router-dom";
 import { getConversations, getMessages, sendMessage } from "../API/MessagesAPI";
 import type { Message, Conversation } from "../API/MessagesAPI";
@@ -8,8 +9,13 @@ import {
   faArrowLeft,
   faSearch,
   faEnvelope,
+  faPaperclip,
+  faXmark,
+  faFileLines,
 } from "@fortawesome/free-solid-svg-icons";
 import { getAvatarUrl } from "../utils/imageUrl";
+import { useLanguage } from "../context/LanguageContext.tsx";
+import { uploadMessageAttachment } from "../API/UploadAPI";
 
 interface SellerInfo {
   id: number;
@@ -19,6 +25,7 @@ interface SellerInfo {
 }
 
 function Messages() {
+  const { t, language, direction } = useLanguage();
   const { userId: urlUserId } = useParams<{ userId?: string }>();
   const location = useLocation();
   const sellerFromState = (location.state as any)?.seller as
@@ -34,13 +41,81 @@ function Messages() {
   >(sellerFromState || null);
   const [messages, setMessages] = useState<Message[]>([]);
   const [newMessage, setNewMessage] = useState("");
+  const [selectedFiles, setSelectedFiles] = useState<File[]>([]);
   const [loading, setLoading] = useState(true);
   const [sending, setSending] = useState(false);
   const [searchQuery, setSearchQuery] = useState("");
   const [isNewConversation, setIsNewConversation] = useState(!!sellerFromState);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   // Get current user from localStorage
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+  const supportedFilePattern =
+    /\.(jpg|jpeg|png|gif|webp|svg|pdf|doc|docx|xls|xlsx|txt|zip|rar|mp4|mov|avi|mp3|wav)$/i;
+
+  const getAttachmentList = (attachments: Message["attachments"]) => {
+    if (!attachments) {
+      return [];
+    }
+
+    return Array.isArray(attachments) ? attachments : [attachments];
+  };
+
+  const isImageAttachment = (attachment: string) =>
+    /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(attachment);
+
+  const resolveAttachmentUrl = (attachment: string) => {
+    if (attachment.startsWith("http")) {
+      return attachment;
+    }
+
+    const apiBase =
+      import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
+    const appBase = apiBase.replace(/\/api\/?$/, "");
+
+    if (attachment.startsWith("/storage/")) {
+      return `${appBase}${attachment}`;
+    }
+
+    if (attachment.startsWith("storage/")) {
+      return `${appBase}/${attachment}`;
+    }
+
+    return `${appBase}/storage/${attachment}`;
+  };
+
+  const handleFileSelection = (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files || []);
+    const validFiles = files.filter((file) => {
+      const isValidType = supportedFilePattern.test(file.name);
+      const isValidSize = file.size <= 5 * 1024 * 1024;
+      return isValidType && isValidSize;
+    });
+
+    if (validFiles.length !== files.length) {
+      alert(t("messages.fileInvalid"));
+    }
+
+    setSelectedFiles((prev) => [...prev, ...validFiles].slice(0, 5));
+    event.target.value = "";
+  };
+
+  const removeSelectedFile = (index: number) => {
+    setSelectedFiles((prev) =>
+      prev.filter((_, fileIndex) => fileIndex !== index),
+    );
+  };
+
+  const uploadSelectedFiles = async () => {
+    const uploadedUrls: string[] = [];
+
+    for (const file of selectedFiles) {
+      const uploadedUrl = await uploadMessageAttachment(file);
+      uploadedUrls.push(uploadedUrl);
+    }
+
+    return uploadedUrls;
+  };
 
   // Initial load of conversations
   useEffect(() => {
@@ -100,7 +175,7 @@ function Messages() {
   const handleSendMessage = async (e: React.FormEvent) => {
     e.preventDefault();
     if (
-      !newMessage.trim() ||
+      (!newMessage.trim() && selectedFiles.length === 0) ||
       !selectedUserId ||
       selectedUserId === 0 ||
       sending
@@ -109,8 +184,12 @@ function Messages() {
 
     setSending(true);
     try {
-      await sendMessage(selectedUserId, newMessage);
+      const attachmentUrls =
+        selectedFiles.length > 0 ? await uploadSelectedFiles() : [];
+
+      await sendMessage(selectedUserId, newMessage, attachmentUrls);
       setNewMessage("");
+      setSelectedFiles([]);
       setIsNewConversation(false);
 
       // Reload messages and conversations
@@ -131,6 +210,7 @@ function Messages() {
       }
     } catch (error) {
       console.error("Failed to send message:", error);
+      alert(error instanceof Error ? error.message : t("messages.sendFailed"));
     } finally {
       setSending(false);
     }
@@ -148,16 +228,16 @@ function Messages() {
     const days = Math.floor(diff / (1000 * 60 * 60 * 24));
 
     if (days === 0) {
-      return date.toLocaleTimeString("en-US", {
+      return date.toLocaleTimeString(language === "ku" ? "ku" : "en-US", {
         hour: "2-digit",
         minute: "2-digit",
       });
     } else if (days === 1) {
-      return "Yesterday";
+      return t("messages.yesterday");
     } else if (days < 7) {
       return `${days}d`;
     } else {
-      return date.toLocaleDateString("en-US", {
+      return date.toLocaleDateString(language === "ku" ? "ku" : "en-US", {
         month: "short",
         day: "numeric",
       });
@@ -173,7 +253,7 @@ function Messages() {
   }
 
   return (
-    <div className="flex h-screen bg-(--color-bg)">
+    <div className="flex h-screen bg-(--color-bg)" dir={direction}>
       {/* Sidebar - Conversations List */}
       <div
         className={`${selectedUserId ? "hidden md:flex" : "flex"} w-full md:w-80 flex-col border-r border-(--color-border) bg-(--color-surface)`}
@@ -181,7 +261,7 @@ function Messages() {
         {/* Header */}
         <div className="p-4 border-b border-(--color-border)">
           <h1 className="text-xl font-bold text-(--color-text) mb-4">
-            Messages
+            {t("messages.title")}
           </h1>
 
           {/* Search */}
@@ -192,7 +272,7 @@ function Messages() {
             />
             <input
               type="text"
-              placeholder="Search messages..."
+              placeholder={t("messages.search")}
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full pl-10 pr-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-primary)"
@@ -206,8 +286,8 @@ function Messages() {
             <div className="p-8 text-center text-(--color-text-muted)">
               <p className="text-sm">
                 {searchQuery
-                  ? "No conversations match your search"
-                  : "No conversations yet. Start messaging sellers!"}
+                  ? t("messages.noSearch")
+                  : t("messages.noConversations")}
               </p>
             </div>
           ) : (
@@ -265,9 +345,7 @@ function Messages() {
         {!selectedUserId ? (
           <div className="flex-1 flex items-center justify-center bg-(--color-bg)">
             <div className="text-center text-(--color-text-muted)">
-              <p className="text-lg">
-                Select a conversation to start messaging
-              </p>
+              <p className="text-lg">{t("messages.selectConversation")}</p>
             </div>
           </div>
         ) : (
@@ -342,7 +420,7 @@ function Messages() {
                         ? selectedUserInfo.user.name
                         : selectedUserInfo && "name" in selectedUserInfo
                           ? selectedUserInfo.name
-                          : "Start a conversation"}
+                          : t("messages.startConversation")}
                     </h2>
                     {selectedUserInfo && (
                       <p className="text-(--color-text-muted) text-sm">
@@ -356,26 +434,24 @@ function Messages() {
                   </div>
                   <div className="bg-(--color-surface) border border-(--color-border) rounded-lg p-6 max-w-md w-full">
                     <p className="text-(--color-text) text-sm mb-4">
-                      This is the beginning of your direct message with{" "}
+                      {t("messages.dmBeginning")}{" "}
                       {selectedUserInfo && "user" in selectedUserInfo
                         ? selectedUserInfo.user.name
                         : selectedUserInfo && "name" in selectedUserInfo
                           ? selectedUserInfo.name
-                          : "this user"}
-                      . Send a message to start the conversation!
+                          : t("messages.thisUser")}
+                      . {t("messages.sendToStart")}
                     </p>
                     <div className="space-y-3">
                       <p className="text-(--color-text-muted) text-xs">
-                        💡 Tip: Be clear about what you're inquiring about
+                        {t("messages.tip")}
                       </p>
                     </div>
                   </div>
                 </div>
               ) : messages.length === 0 ? (
                 <div className="text-center text-(--color-text-muted)">
-                  <p className="text-sm">
-                    No messages yet. Start the conversation!
-                  </p>
+                  <p className="text-sm">{t("messages.noMessages")}</p>
                 </div>
               ) : (
                 messages.map((msg) => {
@@ -393,37 +469,46 @@ function Messages() {
                         }`}
                       >
                         <p className="wrap-break-word text-sm">{msg.content}</p>
-                        {msg.attachments &&
-                          (() => {
-                            const attachmentUrl = msg.attachments.startsWith(
-                              "http",
-                            )
-                              ? msg.attachments
-                              : `http://localhost:8000/storage/${msg.attachments}`;
-                            const isImage =
-                              /\.(jpg|jpeg|png|gif|webp|svg)$/i.test(
-                                msg.attachments,
-                              );
-                            return isImage ? (
-                              <img
-                                src={attachmentUrl}
-                                alt="Attachment"
-                                className="mt-2 max-w-full rounded-md max-h-48 object-cover cursor-pointer"
-                                onClick={() =>
-                                  window.open(attachmentUrl, "_blank")
-                                }
-                              />
-                            ) : (
-                              <a
-                                href={attachmentUrl}
-                                target="_blank"
-                                rel="noopener noreferrer"
-                                className="text-xs underline mt-1 block"
-                              >
-                                📎 View Attachment
-                              </a>
-                            );
-                          })()}
+                        {getAttachmentList(msg.attachments).length > 0 && (
+                          <div className="mt-2 space-y-2">
+                            {getAttachmentList(msg.attachments).map(
+                              (attachment) => {
+                                const attachmentUrl =
+                                  resolveAttachmentUrl(attachment);
+                                const imageAttachment =
+                                  isImageAttachment(attachment);
+
+                                return imageAttachment ? (
+                                  <button
+                                    key={attachment}
+                                    type="button"
+                                    onClick={() =>
+                                      window.open(attachmentUrl, "_blank")
+                                    }
+                                    className="block w-full text-left"
+                                  >
+                                    <img
+                                      src={attachmentUrl}
+                                      alt={t("messages.attachmentImage")}
+                                      className="max-w-full rounded-md max-h-48 object-cover cursor-pointer"
+                                    />
+                                  </button>
+                                ) : (
+                                  <a
+                                    key={attachment}
+                                    href={attachmentUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="inline-flex items-center gap-2 text-xs underline break-all"
+                                  >
+                                    <FontAwesomeIcon icon={faFileLines} />
+                                    <span>{t("messages.viewAttachment")}</span>
+                                  </a>
+                                );
+                              },
+                            )}
+                          </div>
+                        )}
                         <p
                           className={`text-xs mt-1 ${
                             isOwnMessage
@@ -445,25 +530,88 @@ function Messages() {
               onSubmit={handleSendMessage}
               className="p-4 border-t border-(--color-border) bg-(--color-surface)"
             >
-              <div className="flex gap-2">
+              {selectedFiles.length > 0 && (
+                <div className="mb-3 flex flex-wrap gap-2">
+                  {selectedFiles.map((file, index) => {
+                    const previewUrl = URL.createObjectURL(file);
+                    const fileIsImage = file.type.startsWith("image/");
+
+                    return (
+                      <div
+                        key={`${file.name}-${index}`}
+                        className="flex items-center gap-2 rounded-lg border border-(--color-border) bg-(--color-bg) px-2 py-1 max-w-full"
+                      >
+                        {fileIsImage ? (
+                          <img
+                            src={previewUrl}
+                            alt={file.name}
+                            className="w-10 h-10 rounded-md object-cover"
+                          />
+                        ) : (
+                          <div className="w-10 h-10 rounded-md bg-(--color-primary)/10 flex items-center justify-center text-(--color-primary)">
+                            <FontAwesomeIcon icon={faFileLines} />
+                          </div>
+                        )}
+                        <div className="min-w-0 max-w-[220px]">
+                          <p className="text-xs text-(--color-text) truncate">
+                            {file.name}
+                          </p>
+                          <p className="text-[10px] text-(--color-text-muted)">
+                            {(file.size / (1024 * 1024)).toFixed(1)} MB
+                          </p>
+                        </div>
+                        <button
+                          type="button"
+                          onClick={() => removeSelectedFile(index)}
+                          className="w-6 h-6 rounded-full flex items-center justify-center text-(--color-text-muted) hover:text-red-500 hover:bg-red-500/10"
+                        >
+                          <FontAwesomeIcon icon={faXmark} className="text-xs" />
+                        </button>
+                      </div>
+                    );
+                  })}
+                </div>
+              )}
+
+              <div className="flex gap-2 items-end">
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  multiple
+                  accept="image/*,.pdf,.doc,.docx,.xls,.xlsx,.txt,.zip,.rar,.mp4,.mov,.avi,.mp3,.wav"
+                  onChange={handleFileSelection}
+                  className="hidden"
+                />
+                <button
+                  type="button"
+                  onClick={() => fileInputRef.current?.click()}
+                  className="h-11 w-11 shrink-0 rounded-lg border border-(--color-border) bg-(--color-bg) text-(--color-text) hover:border-(--color-primary) hover:text-(--color-primary) transition-colors flex items-center justify-center"
+                  aria-label={t("messages.attachFile")}
+                >
+                  <FontAwesomeIcon icon={faPaperclip} />
+                </button>
                 <input
                   type="text"
                   value={newMessage}
                   onChange={(e) => setNewMessage(e.target.value)}
-                  placeholder="Type a message..."
+                  placeholder={t("messages.typeMessage")}
                   className="flex-1 px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-primary)"
                 />
                 <button
                   type="submit"
                   disabled={
                     sending ||
-                    !newMessage.trim() ||
+                    (!newMessage.trim() && selectedFiles.length === 0) ||
                     !selectedUserId ||
                     selectedUserId === 0
                   }
                   className="px-6 py-2 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 disabled:opacity-50 disabled:cursor-not-allowed transition-all"
                 >
-                  <FontAwesomeIcon icon={faPaperPlane} />
+                  {sending ? (
+                    <span>{t("messages.sending")}</span>
+                  ) : (
+                    <FontAwesomeIcon icon={faPaperPlane} />
+                  )}
                 </button>
               </div>
             </form>

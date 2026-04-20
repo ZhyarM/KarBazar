@@ -4,8 +4,10 @@ import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchGigs, type Gig } from "../../API/gigs/getGigs.tsx";
 import { getAvatarUrl, getImageUrl } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function TrendingServices() {
+  const { t } = useLanguage();
   const [trendingGigs, setTrendingGigs] = useState<Gig[]>([]);
 
   useEffect(() => {
@@ -54,14 +56,14 @@ function TrendingServices() {
     <article className="flex justify-center items-center flex-wrap gap-4 bg-(--color-bg) p-2.5">
       <section className="w-full flex justify-between items-center pl-6 pr-6 mb-6">
         <div className="flex flex-col justify-start items-start gap-2">
-          <p className="section-title text-(--color-text)">Trending Services</p>
+          <p className="section-title text-(--color-text)">{t("trending.title")}</p>
           <span className="small-title text-(--color-text)">
-            Most popular gigs this week
+            {t("trending.subtitle")}
           </span>
         </div>
         <Link to="/browse-gigs">
           <Button
-            text="View all >"
+            text={t("trending.viewAll")}
             bgColor="bg-(--color-primary)"
             textColor="text-[var(--color-text)]"
             backdropColor=""

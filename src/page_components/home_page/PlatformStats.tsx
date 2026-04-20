@@ -8,8 +8,11 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type { ReactNode } from "react";
 import { useEffect, useState } from "react";
 import { getPublicStats, type PublicStats } from "../../API/StatsAPI";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function PlatformStats() {
+  const { t } = useLanguage();
+
   type Stats = {
     icon: ReactNode;
     numbers: string;
@@ -40,22 +43,22 @@ function PlatformStats() {
     {
       icon: <FontAwesomeIcon icon={faUsers} />,
       numbers: formatCount(statsData?.active_businesses),
-      text: "Active Businesses",
+      text: t("stats.activeBusinesses"),
     },
     {
       icon: <FontAwesomeIcon icon={faBriefcase} />,
       numbers: formatCount(statsData?.projects_completed),
-      text: "Projects Completed",
+      text: t("stats.projectsCompleted"),
     },
     {
       icon: <FontAwesomeIcon icon={faDollarSign} />,
       numbers: formatCount(statsData?.projects_live),
-      text: "Projects Live on Website",
+      text: t("stats.projectsLive"),
     },
     {
       icon: <FontAwesomeIcon icon={faStar} />,
       numbers: `${statsData?.average_rating ?? 0}/5`,
-      text: "Average Rating",
+      text: t("stats.averageRating"),
     },
   ];
 

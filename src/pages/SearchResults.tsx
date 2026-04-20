@@ -5,6 +5,7 @@ import { fetchGigs, type Gig } from "../API/gigs/getGigs";
 import { getAccounts, type Profile } from "../API/ProfileAPI";
 import { getPosts, type Post } from "../API/PostsAPI";
 import { getAvatarUrl, getImageUrl } from "../utils/imageUrl";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 type CategoryResult = {
   id: number;
@@ -15,6 +16,7 @@ type CategoryResult = {
 };
 
 function SearchResults() {
+  const { t, direction } = useLanguage();
   const [searchParams] = useSearchParams();
   const query = (searchParams.get("q") ?? "").trim();
   const requestRef = useRef(0);
@@ -92,7 +94,7 @@ function SearchResults() {
           return;
         }
         console.error("Combined search failed:", searchError);
-        setError("Search failed. Please try again.");
+        setError(t("searchResults.failed"));
       } finally {
         if (requestRef.current === requestId) {
           setLoading(false);
@@ -124,14 +126,14 @@ function SearchResults() {
   );
 
   return (
-    <section className="bg-(--color-bg) min-h-screen px-4 py-6 md:px-8">
+    <section className="bg-(--color-bg) min-h-screen px-4 py-6 md:px-8" dir={direction}>
       <div className="max-w-6xl mx-auto flex flex-col gap-6">
         <header className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-5">
           <h1 className="text-2xl font-bold text-(--color-text)">
-            Search Results
+            {t("searchResults.title")}
           </h1>
           <p className="text-sm text-(--color-text-muted) mt-1">
-            Showing combined results for
+            {t("searchResults.showing")}
             <span className="font-semibold text-(--color-text)">
               {" "}
               {query || "..."}
@@ -141,7 +143,7 @@ function SearchResults() {
 
         {loading && (
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-6 text-sm text-(--color-text-muted)">
-            Searching categories, accounts, and gigs...
+            {t("searchResults.searching")}
           </div>
         )}
 
@@ -153,20 +155,20 @@ function SearchResults() {
 
         {!loading && !error && !query && (
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-6 text-sm text-(--color-text-muted)">
-            Enter a search term in the navbar to see combined results.
+            {t("searchResults.enterTerm")}
           </div>
         )}
 
         {!loading && !error && query && !hasAnyResults && (
           <div className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-6 text-sm text-(--color-text-muted)">
-            No matches found for this query.
+            {t("searchResults.noMatch")}
           </div>
         )}
 
         {categories.length > 0 && (
           <article className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-5">
             <h2 className="text-lg font-semibold text-(--color-text) mb-3">
-              Categories
+              {t("searchResults.categories")}
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {categories.map((category) => (
@@ -179,10 +181,10 @@ function SearchResults() {
                     {category.name}
                   </p>
                   <p className="text-xs text-(--color-text-muted) mt-1 line-clamp-2">
-                    {category.description || "Browse gigs in this category"}
+                    {category.description || t("searchResults.browseInCategory")}
                   </p>
                   <p className="text-xs text-(--color-primary) mt-2 font-medium">
-                    {category.gig_count} gigs
+                    {category.gig_count} {t("searchResults.gigs")}
                   </p>
                 </Link>
               ))}
@@ -193,7 +195,7 @@ function SearchResults() {
         {accounts.length > 0 && (
           <article className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-5">
             <h2 className="text-lg font-semibold text-(--color-text) mb-3">
-              Accounts
+              {t("searchResults.accounts")}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {accounts.map((account) => (
@@ -218,7 +220,7 @@ function SearchResults() {
                       {account.user?.name || account.username}
                     </p>
                     <p className="text-xs text-(--color-text-muted) truncate">
-                      @{account.username} • {account.user?.role || "user"}
+                      @{account.username} • {account.user?.role || t("searchResults.user")}
                     </p>
                     {account.title && (
                       <p className="text-xs text-(--color-text-muted) truncate mt-0.5">
@@ -235,7 +237,7 @@ function SearchResults() {
         {posts.length > 0 && (
           <article className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-5">
             <h2 className="text-lg font-semibold text-(--color-text) mb-3">
-              Posts
+              {t("searchResults.posts")}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {posts.map((post) => (
@@ -251,7 +253,7 @@ function SearchResults() {
                     {post.description}
                   </p>
                   <p className="text-xs text-(--color-text-muted) mt-2">
-                    {post.user?.name || "Unknown author"}
+                    {post.user?.name || t("searchResults.unknownAuthor")}
                   </p>
                 </Link>
               ))}
@@ -262,7 +264,7 @@ function SearchResults() {
         {gigs.length > 0 && (
           <article className="rounded-2xl border border-(--color-border) bg-(--color-surface) p-5">
             <h2 className="text-lg font-semibold text-(--color-text) mb-3">
-              Gigs
+              {t("searchResults.gigsTitle")}
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {gigs.map((gig) => (
@@ -281,10 +283,10 @@ function SearchResults() {
                       {gig.title}
                     </p>
                     <p className="text-xs text-(--color-text-muted) mt-1 truncate">
-                      {gig.category?.name || "Category"}
+                      {gig.category?.name || t("searchResults.category")}
                     </p>
                     <p className="text-xs text-(--color-text-muted)">
-                      by {gig.seller?.name}
+                      {t("searchResults.by")} {gig.seller?.name}
                     </p>
                     <p className="text-sm font-semibold text-(--color-primary) mt-1">
                       ${gig.price}

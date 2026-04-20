@@ -20,6 +20,7 @@ use App\Http\Controllers\Api\AdRequestController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\AdminUserController;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -41,6 +42,7 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 // Public gigs browsing
 Route::get('/gigs', [GigController::class, 'index']);
 Route::get('/gigs/{id}', [GigController::class, 'show'])->where('id', '[0-9]+');
+Route::get('/deals', [GigController::class, 'deals']);
 
 // Public profiles
 Route::get('/profiles/freelancers', [ProfileController::class, 'freelancers']);
@@ -111,6 +113,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('freelancer')->post('/', [GigController::class, 'store']);
         Route::put('/{id}', [GigController::class, 'update']);
         Route::delete('/{id}', [GigController::class, 'destroy']);
+    });
+
+    // Deals management
+    Route::prefix('deals')->group(function () {
+        Route::post('/', [GigController::class, 'storeDiscount']);
+        Route::put('/{id}', [GigController::class, 'updateDiscount']);
+        Route::delete('/{id}', [GigController::class, 'destroyDiscount']);
     });
 
     // Posts (Protected Routes)
@@ -229,6 +238,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [SettingsController::class, 'index']);
         Route::put('/platform-fee', [SettingsController::class, 'updatePlatformFee']);
         Route::post('/update', [SettingsController::class, 'updateSetting']);
+    });
+
+    // Admin user management
+    Route::middleware('admin')->prefix('admin/users')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index']);
+        Route::get('/admins', [AdminUserController::class, 'admins']);
+        Route::post('/admins', [AdminUserController::class, 'storeAdmin']);
+        Route::put('/{id}/status', [AdminUserController::class, 'updateStatus']);
+        Route::put('/{id}/role', [AdminUserController::class, 'updateRole']);
+        Route::delete('/{id}', [AdminUserController::class, 'destroy']);
+    });
+
+    // Admin review moderation
+    Route::middleware('admin')->prefix('admin/reviews')->group(function () {
+        Route::get('/', [ReviewController::class, 'adminIndex']);
     });
 
     // Payments

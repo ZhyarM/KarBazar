@@ -2,6 +2,19 @@
 @import url(assets/svg-light.svg);
 @import url(assets/svg-dark.svg);
 
+html.dir-transition,
+html.dir-transition body,
+html.dir-transition body * {
+  transition:
+    margin 220ms ease,
+    padding 220ms ease,
+    left 220ms ease,
+    right 220ms ease,
+    transform 220ms ease,
+    text-align 220ms ease,
+    border-radius 220ms ease;
+}
+
 /* ============================
    GLOBAL VARIABLES (shared)
 ============================ */

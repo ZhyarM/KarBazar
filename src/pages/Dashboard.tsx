@@ -17,8 +17,10 @@ import {
   faPlus,
 } from "@fortawesome/free-solid-svg-icons";
 import { isSellerRole } from "../utils/roles";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Dashboard() {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<Order[]>([]);
   const [gigs, setGigs] = useState<Gig[]>([]);
   const [unreadNotifications, setUnreadNotifications] = useState(0);
@@ -78,11 +80,10 @@ function Dashboard() {
         {/* Welcome Header */}
         <div className="mb-8">
           <h1 className="text-3xl font-bold text-(--color-text) mb-2">
-            Welcome back, {currentUser.name}!
+            {t("dashboard.welcomeBack")}, {currentUser.name}!
           </h1>
           <p className="text-(--color-text-muted)">
-            Here's what's happening with your {isSeller ? "business" : "orders"}{" "}
-            today.
+            {t("dashboard.whatsHappening")} {isSeller ? t("dashboard.business") : t("dashboard.orders")} {t("dashboard.today")}
           </p>
         </div>
 
@@ -99,7 +100,7 @@ function Dashboard() {
               </span>
             </div>
             <h3 className="text-(--color-text-muted) font-semibold">
-              Active Orders
+              {t("dashboard.activeOrders")}
             </h3>
           </div>
 
@@ -116,7 +117,7 @@ function Dashboard() {
                   </span>
                 </div>
                 <h3 className="text-(--color-text-muted) font-semibold">
-                  Total Gigs
+                  {t("dashboard.totalGigs")}
                 </h3>
               </div>
 
@@ -131,7 +132,7 @@ function Dashboard() {
                   </span>
                 </div>
                 <h3 className="text-(--color-text-muted) font-semibold">
-                  Total Earnings
+                  {t("dashboard.totalEarnings")}
                 </h3>
               </div>
             </>
@@ -156,7 +157,7 @@ function Dashboard() {
         {/* Quick Actions */}
         <div className="bg-(--color-surface) rounded-lg p-6 shadow-md mb-8">
           <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-            Quick Actions
+            {t("dashboard.quickActions")}
           </h2>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
             {isSeller && (
@@ -168,7 +169,7 @@ function Dashboard() {
                   icon={faPlus}
                   className="text-2xl group-hover:text-white"
                 />
-                <span className="font-semibold">Create New Gig</span>
+                <span className="font-semibold">{t("dashboard.createNewGig")}</span>
               </Link>
             )}
             <Link
@@ -179,7 +180,7 @@ function Dashboard() {
                 icon={faBriefcase}
                 className="text-2xl group-hover:text-white"
               />
-              <span className="font-semibold">Browse Gigs</span>
+              <span className="font-semibold">{t("nav.browseGigs")}</span>
             </Link>
             <Link
               to="/messages"
@@ -189,7 +190,7 @@ function Dashboard() {
                 icon={faEnvelope}
                 className="text-2xl group-hover:text-white"
               />
-              <span className="font-semibold">Messages</span>
+              <span className="font-semibold">{t("nav.messages")}</span>
             </Link>
             <Link
               to="/orders"
@@ -199,7 +200,7 @@ function Dashboard() {
                 icon={faShoppingCart}
                 className="text-2xl group-hover:text-white"
               />
-              <span className="font-semibold">View Orders</span>
+              <span className="font-semibold">{t("dashboard.viewOrders")}</span>
             </Link>
           </div>
         </div>
@@ -209,19 +210,19 @@ function Dashboard() {
           <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-2xl font-bold text-(--color-text)">
-                Recent Orders
+                {t("dashboard.recentOrders")}
               </h2>
               <Link
                 to="/orders"
                 className="text-(--color-primary) hover:underline"
               >
-                View All
+                {t("dashboard.viewAll")}
               </Link>
             </div>
 
             {orders.length === 0 ? (
               <div className="text-center py-8 text-(--color-text-muted)">
-                <p>No orders yet</p>
+                <p>{t("dashboard.noOrdersYet")}</p>
               </div>
             ) : (
               <div className="space-y-4">
@@ -241,8 +242,8 @@ function Dashboard() {
                       </h3>
                       <p className="text-sm text-(--color-text-muted)">
                         {order.buyer_id === currentUser.id
-                          ? "Buying"
-                          : "Selling"}{" "}
+                          ? t("dashboard.buying")
+                          : t("dashboard.selling")}{" "}
                         • ${order.price}
                       </p>
                     </div>
@@ -268,26 +269,26 @@ function Dashboard() {
             <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
               <div className="flex justify-between items-center mb-4">
                 <h2 className="text-2xl font-bold text-(--color-text)">
-                  My Gigs
+                  {t("dashboard.myGigs")}
                 </h2>
                 <Link
                   to="/my-gigs"
                   className="text-(--color-primary) hover:underline"
                 >
-                  View All
+                  {t("dashboard.viewAll")}
                 </Link>
               </div>
 
               {gigs.length === 0 ? (
                 <div className="text-center py-8">
                   <p className="text-(--color-text-muted) mb-4">
-                    You haven't created any gigs yet
+                    {t("dashboard.noGigsYet")}
                   </p>
                   <Link
                     to="/create-gig"
                     className="inline-block px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
                   >
-                    Create Your First Gig
+                    {t("dashboard.createFirstGig")}
                   </Link>
                 </div>
               ) : (
@@ -314,7 +315,7 @@ function Dashboard() {
                             />
                             {gig.rating}
                           </span>
-                          <span>{gig.total_orders} orders</span>
+                          <span>{gig.total_orders} {t("dashboard.ordersSuffix")}</span>
                         </div>
                       </div>
                       <div className="text-right">
@@ -322,7 +323,7 @@ function Dashboard() {
                           ${gig.starting_price}
                         </p>
                         <p className="text-xs text-(--color-text-muted)">
-                          starting at
+                          {t("dashboard.startingAt")}
                         </p>
                       </div>
                     </div>
@@ -333,12 +334,12 @@ function Dashboard() {
           ) : (
             <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
               <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-                Performance Stats
+                {t("dashboard.performanceStats")}
               </h2>
               <div className="space-y-6">
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-(--color-text)">Orders Placed</span>
+                    <span className="text-(--color-text)">{t("dashboard.ordersPlaced")}</span>
                     <span className="font-bold text-(--color-text)">
                       {buyingOrders.length}
                     </span>
@@ -353,7 +354,7 @@ function Dashboard() {
                 <div>
                   <div className="flex justify-between items-center mb-2">
                     <span className="text-(--color-text)">
-                      Completed Orders
+                      {t("dashboard.completedOrders")}
                     </span>
                     <span className="font-bold text-(--color-text)">
                       {
@@ -371,7 +372,7 @@ function Dashboard() {
                 </div>
                 <div>
                   <div className="flex justify-between items-center mb-2">
-                    <span className="text-(--color-text)">Active Orders</span>
+                    <span className="text-(--color-text)">{t("dashboard.activeOrders")}</span>
                     <span className="font-bold text-(--color-text)">
                       {
                         buyingOrders.filter((o) => o.status === "in_progress")

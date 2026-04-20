@@ -1,9 +1,9 @@
-
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function ErrorPage() {
-  return (
-    <div>ErrorPage</div>
-  )
+  const { t } = useLanguage();
+
+  return <div>{t("error.page")}</div>;
 }
 
-export default ErrorPage
+export default ErrorPage;

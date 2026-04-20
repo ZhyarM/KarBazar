@@ -10,6 +10,7 @@ import Testimonials from "../page_components/home_page/Testimonials.tsx";
 import TrustStrip from "../page_components/home_page/TrustStrip.tsx";
 import HomeFAQ from "../page_components/home_page/HomeFAQ.tsx";
 import PostFeed from "../page_components/home_page/PostFeed.tsx";
+import HomeAnnouncements from "../page_components/home_page/HomeAnnouncements.tsx";
 import { isAuthenticated } from "../API/apiClient.ts";
 import { fetchCategories } from "../API/CategoriesAPI.tsx";
 import { Link } from "react-router-dom";
@@ -26,8 +27,10 @@ import {
   faArrowRight,
 } from "@fortawesome/free-solid-svg-icons";
 import { isSellerRole } from "../utils/roles";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Home() {
+  const { t } = useLanguage();
   const [loggedIn, setLoggedIn] = useState(false);
   const [currentUser, setCurrentUser] = useState<any>(null);
   const [trendingCategories, setTrendingCategories] = useState<
@@ -104,7 +107,7 @@ function Home() {
                       className="flex-1 flex items-center justify-center gap-1.5 py-3 text-xs font-medium text-(--color-text-muted) hover:text-(--color-primary) hover:bg-(--color-bg) transition-colors"
                     >
                       <FontAwesomeIcon icon={faUser} className="text-[10px]" />
-                      Profile
+                      {t("profile.myProfile")}
                     </Link>
                     <div className="w-px bg-(--color-border)" />
                     <Link
@@ -115,7 +118,7 @@ function Home() {
                         icon={faTachometerAlt}
                         className="text-[10px]"
                       />
-                      Dashboard
+                      {t("profile.dashboard")}
                     </Link>
                   </div>
                 </div>
@@ -133,7 +136,7 @@ function Home() {
                           className="text-xs text-(--color-primary)"
                         />
                       </div>
-                      <span className="font-medium">Create Post</span>
+                      <span className="font-medium">{t("nav.createPost")}</span>
                     </Link>
                   )}
                   <Link
@@ -146,7 +149,7 @@ function Home() {
                         className="text-xs text-amber-500"
                       />
                     </div>
-                    <span className="font-medium">Saved</span>
+                    <span className="font-medium">{t("nav.saved")}</span>
                   </Link>
                   <Link
                     to="/browse-gigs"
@@ -158,14 +161,14 @@ function Home() {
                         className="text-xs text-emerald-500"
                       />
                     </div>
-                    <span className="font-medium">Browse Gigs</span>
+                    <span className="font-medium">{t("nav.browseGigs")}</span>
                   </Link>
                 </nav>
 
                 {/* Footer links */}
                 <div className="px-4">
                   <p className="text-[10px] text-(--color-text-muted)/50 leading-relaxed">
-                    About · Help · Terms · Privacy
+                    {t("home.footerLinks")}
                     <br />
                     &copy; 2026 KarBazar
                   </p>
@@ -183,7 +186,7 @@ function Home() {
                       {currentUser?.name?.charAt(0).toUpperCase() || "?"}
                     </div>
                     <div className="flex-1 px-4 py-2.5 bg-(--color-bg) rounded-xl text-(--color-text-muted) text-sm cursor-text">
-                      Share your latest work or insights...
+                      {t("home.sharePrompt")}
                     </div>
                     <div className="flex items-center gap-2 shrink-0">
                       <div className="w-9 h-9 rounded-xl bg-(--color-bg) flex items-center justify-center text-(--color-text-muted) hover:text-(--color-primary) hover:bg-(--color-primary)/5 transition-colors">
@@ -198,10 +201,12 @@ function Home() {
               )}
 
               {/* Feed header */}
+              <HomeAnnouncements />
+
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2.5">
                   <h2 className="text-xl font-bold text-(--color-text)">
-                    Your Feed
+                    {t("home.yourFeed")}
                   </h2>
                   <div className="h-1.5 w-1.5 rounded-full bg-(--color-primary) animate-pulse" />
                 </div>
@@ -221,7 +226,7 @@ function Home() {
                       className="text-sm text-orange-500"
                     />
                     <h3 className="font-semibold text-(--color-text) text-sm">
-                      Trending Categories
+                      {t("home.trendingCategories")}
                     </h3>
                   </div>
                   <div className="flex flex-col gap-1">
@@ -236,7 +241,7 @@ function Home() {
                             {category.name}
                           </p>
                           <p className="text-[11px] text-(--color-text-muted)">
-                            Browse gigs in this category
+                            {t("home.browseInCategory")}
                           </p>
                         </div>
                         <span className="text-xs text-(--color-text-muted) font-medium">
@@ -247,7 +252,7 @@ function Home() {
 
                     {trendingCategories.length === 0 && (
                       <p className="px-3 py-2 text-xs text-(--color-text-muted)">
-                        No categories available right now.
+                        {t("home.noCategories")}
                       </p>
                     )}
                   </div>
@@ -256,16 +261,16 @@ function Home() {
                 {/* Explore CTA */}
                 <div className="bg-linear-to-br from-[#315bb5] to-[#6D28D9] rounded-2xl p-5 text-white">
                   <h3 className="font-semibold text-sm mb-1">
-                    Discover Talent
+                    {t("home.discoverTalent")}
                   </h3>
                   <p className="text-xs text-white/70 mb-4 leading-relaxed">
-                    Find skilled businesses for your next project
+                    {t("home.discoverTalentDesc")}
                   </p>
                   <Link
                     to="/browse-gigs"
                     className="inline-flex items-center gap-2 px-4 py-2 bg-white/15 hover:bg-white/25 backdrop-blur-sm rounded-xl text-xs font-semibold transition-colors"
                   >
-                    Explore
+                    {t("home.explore")}
                     <FontAwesomeIcon
                       icon={faArrowRight}
                       className="text-[10px]"
@@ -284,6 +289,9 @@ function Home() {
   return (
     <div className="home-background">
       <Hero />
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <HomeAnnouncements />
+      </div>
       <Features />
       <TrendingServices />
       <HowItWorks />

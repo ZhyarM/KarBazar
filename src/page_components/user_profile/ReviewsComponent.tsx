@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getGigReviews, createReview } from "../../API/ReviewsAPI";
 import type { Review } from "../../API/ReviewsAPI";
 import { getAvatarUrl } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface ReviewsProps {
   gigId: number;
@@ -25,6 +26,7 @@ function Reviews({
   completedOrder,
   onReviewSubmitted,
 }: ReviewsProps) {
+  const { t } = useLanguage();
   const [reviews, setReviews] = useState<Review[]>([]);
   const [loading, setLoading] = useState(true);
   const [totalReviews, setTotalReviews] = useState(reviewCount ?? 0);
@@ -82,7 +84,7 @@ function Reviews({
       const msg =
         err?.response?.data?.message ||
         err?.message ||
-        "Failed to submit review";
+        t("reviews.submitFailed");
       setSubmitError(msg);
     } finally {
       setSubmitting(false);
@@ -94,22 +96,26 @@ function Reviews({
     const now = new Date();
     const diffMs = now.getTime() - date.getTime();
     const diffMins = Math.floor(diffMs / 60000);
-    if (diffMins < 1) return "Just now";
-    if (diffMins < 60) return `${diffMins} min ago`;
+    if (diffMins < 1) return t("time.justNow");
+    if (diffMins < 60) return `${diffMins} ${t("time.minAgo")}`;
     const diffHours = Math.floor(diffMins / 60);
-    if (diffHours < 24) return `${diffHours}h ago`;
+    if (diffHours < 24) return `${diffHours} ${t("time.hourAgo")}`;
     const diffDays = Math.floor(diffHours / 24);
-    if (diffDays < 7) return `${diffDays}d ago`;
-    if (diffDays < 30) return `${Math.floor(diffDays / 7)}w ago`;
-    if (diffDays < 365) return `${Math.floor(diffDays / 30)}mo ago`;
-    return `${Math.floor(diffDays / 365)}y ago`;
+    if (diffDays < 7) return `${diffDays} ${t("time.dayAgo")}`;
+    if (diffDays < 30)
+      return `${Math.floor(diffDays / 7)} ${t("time.weekAgo")}`;
+    if (diffDays < 365)
+      return `${Math.floor(diffDays / 30)} ${t("time.monthAgo")}`;
+    return `${Math.floor(diffDays / 365)} ${t("time.yearAgo")}`;
   };
 
   return (
     <section className="flex flex-col gap-6">
       {/* Header */}
       <div className="flex justify-between items-center">
-        <h2 className="text-xl font-bold text-(--color-text)">Reviews</h2>
+        <h2 className="text-xl font-bold text-(--color-text)">
+          {t("reviews.title")}
+        </h2>
         <div className="flex items-center gap-2">
           <span className="text-(--color-warning) text-lg">
             <FontAwesomeIcon icon={faStar} />
@@ -118,7 +124,7 @@ function Reviews({
             {avgRating.toFixed(1)}
           </span>
           <span className="text-(--color-text-muted)">
-            ({totalReviews} review{totalReviews !== 1 ? "s" : ""})
+            ({totalReviews} {t("reviews.count")})
           </span>
         </div>
       </div>
@@ -131,12 +137,12 @@ function Reviews({
               onClick={() => setShowForm(true)}
               className="w-full py-3 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 transition"
             >
-              Write a Review
+              {t("reviews.write")}
             </button>
           ) : (
             <div className="flex flex-col gap-4">
               <h3 className="font-bold text-(--color-text)">
-                Rate your experience
+                {t("reviews.rateExperience")}
               </h3>
               {/* Star Rating Picker */}
               <div className="flex gap-1">
@@ -166,7 +172,7 @@ function Reviews({
               <textarea
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
-                placeholder="Share your experience with this seller..."
+                placeholder={t("reviews.placeholder")}
                 rows={3}
                 className="w-full px-4 py-3 rounded-lg bg-(--color-surface) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary) resize-none"
               />
@@ -179,7 +185,7 @@ function Reviews({
                   disabled={submitting}
                   className="px-6 py-2 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition"
                 >
-                  {submitting ? "Submitting..." : "Submit Review"}
+                  {submitting ? t("reviews.submitting") : t("reviews.submit")}
                 </button>
                 <button
                   onClick={() => {
@@ -188,7 +194,7 @@ function Reviews({
                   }}
                   className="px-6 py-2 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:opacity-80 transition"
                 >
-                  Cancel
+                  {t("reviews.cancel")}
                 </button>
               </div>
             </div>
@@ -198,7 +204,7 @@ function Reviews({
 
       {submitSuccess && (
         <div className="bg-green-50 border border-green-200 rounded-xl p-4 text-green-700 font-medium">
-          Your review has been submitted successfully!
+          {t("reviews.success")}
         </div>
       )}
 
@@ -209,7 +215,7 @@ function Reviews({
         </div>
       ) : reviews.length === 0 ? (
         <div className="text-center py-8 text-(--color-text-muted)">
-          No reviews yet. Be the first to review!
+          {t("reviews.empty")}
         </div>
       ) : (
         <div className="flex flex-col divide-y divide-(--color-border)">
@@ -230,7 +236,7 @@ function Reviews({
                   )}
                   <div>
                     <p className="font-semibold text-(--color-text)">
-                      {review.reviewer?.name || "Anonymous"}
+                      {review.reviewer?.name || t("reviews.anonymous")}
                     </p>
                     <div className="flex items-center gap-1">
                       {Array.from({ length: 5 }).map((_, i) => (

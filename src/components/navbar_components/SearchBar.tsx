@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { handleSearchSubmit } from "../../utils/HandleFormSearch";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
@@ -8,6 +9,8 @@ interface SearchBarProps {
 
 function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
   const [query, setQuery] = useState("");
+  const { direction, t } = useLanguage();
+  const isRTL = direction === "rtl";
 
   useEffect(() => {
     if (!onInputChange) {
@@ -35,7 +38,7 @@ function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
     >
       <svg
         xmlns="http://www.w3.org/2000/svg"
-        className="pointer-events-none absolute left-3 h-4 w-4 text-(--color-text)"
+        className={`pointer-events-none absolute ${isRTL ? "right-3" : "left-3"} h-4 w-4 text-(--color-text)`}
         fill="none"
         viewBox="0 0 24 24"
         stroke="currentColor"
@@ -52,13 +55,14 @@ function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
       <input
         type="search"
         name="q"
+        dir={direction}
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        placeholder="Search for services..."
-        className="
+        placeholder={t("search.placeholder")}
+        className={`
     h-11
     w-1/4 sm:w-64 md:w-80 lg:w-[400px] 
-    pl-9 pr-3 text-sm
+      ${isRTL ? "pr-9 pl-3" : "pl-9 pr-3"} text-sm
     rounded-4xl 
     bg-(--color-surface)
     placeholder-gray-400
@@ -67,7 +71,7 @@ function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
    
     focus:outline-none focus:ring-2 focus:ring-(--color-primary)
     transition-all duration-300 hover:shadow-md
-  "
+  `}
       />
     </form>
   );

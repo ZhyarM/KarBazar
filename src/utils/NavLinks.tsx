@@ -1,9 +1,12 @@
-export type NavLinkItem = { label: string; to: string };
- 
-const navLinks: NavLinkItem[] = [ 
-    { label: "Home", to: "/" }, 
-    { label: "BrowseGigs", to: "/browsegigs" }, 
-    { label: "Categories", to: "/categories" }, 
-    { label: "About", to: "/about" },
+import type { TranslationKey } from "../i18n/translations";
+
+type NavLinkItem = { labelKey: TranslationKey; to: string };
+
+const navLinks: NavLinkItem[] = [
+  { labelKey: "nav.home", to: "/" },
+  { labelKey: "nav.browseGigs", to: "/browse-gigs" },
+  { labelKey: "nav.deals", to: "/deals" },
+  { labelKey: "nav.categories", to: "/categories" },
+  { labelKey: "nav.about", to: "/about" },
 ];
 export default navLinks;

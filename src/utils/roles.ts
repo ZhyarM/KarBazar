@@ -33,6 +33,10 @@ export const isBusinessRole = (role: RoleLike): boolean => {
   return normalizeRoleForUi(role) === "business";
 };
 
+export const isAdminRole = (role: RoleLike): boolean => {
+  return normalizeRoleForUi(role) === "admin";
+};
+
 export const roleLabel = (role: RoleLike): string => {
   return normalizeRoleForUi(role);
 };

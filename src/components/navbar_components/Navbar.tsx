@@ -3,7 +3,13 @@ import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { faBars, faBell, faEnvelope } from "@fortawesome/free-solid-svg-icons";
+import {
+  faBars,
+  faBell,
+  faEnvelope,
+  faToggleOff,
+  faToggleOn,
+} from "@fortawesome/free-solid-svg-icons";
 import NavLinks from "../../utils/NavLinks.tsx";
 import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
 import { useEffect, useState } from "react";
@@ -14,6 +20,7 @@ import me, { type AuthResponse } from "../../API/me.tsx";
 import { getUnreadCount } from "../../API/NotificationsAPI.ts";
 import { isAuthenticated } from "../../API/apiClient.ts";
 import { isSellerRole } from "../../utils/roles";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 const getUser = async () => {
   const user = await me();
@@ -28,9 +35,11 @@ const getUser = async () => {
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
+  const { language, toggleLanguage, direction, t } = useLanguage();
   const navigate = useNavigate();
   const [user, setUser] = useState<AuthResponse | null>(null);
   const [unreadCount, setUnreadCount] = useState(0);
+  const isRTL = direction === "rtl";
 
   useEffect(() => {
     const fetchUser = async () => {
@@ -79,7 +88,7 @@ function Navbar() {
           <span className="lg:hidden md:block" onClick={toggleCollapse}>
             <FontAwesomeIcon
               icon={faBars}
-              className="text-2xl cursor-pointer mr-2"
+              className={`text-2xl cursor-pointer ${isRTL ? "ml-2" : "mr-2"}`}
             />
           </span>
 
@@ -102,7 +111,7 @@ function Navbar() {
                     }`
                   }
                 >
-                  {link.label}
+                  {t(link.labelKey)}
                 </NavLink>
               </li>
             ))}
@@ -134,6 +143,20 @@ function Navbar() {
         {/* RIGHT */}
         <div className="flex items-center gap-1.5 shrink-0 p-2 rounded-3xl animated shadow-(--color-shadow) shadow-md">
           <button
+            onClick={toggleLanguage}
+            className="cursor-pointer nav p-1.5 text-(--color-text) rounded-full hover:bg-(--color-surface) transition-colors"
+            aria-label={t("navbar.toggleLanguage")}
+            title={
+              language === "en" ? t("language.kurdish") : t("language.english")
+            }
+          >
+            <FontAwesomeIcon
+              icon={language === "ku" ? faToggleOn : faToggleOff}
+              className={`text-lg ${language === "ku" ? "text-(--color-primary)" : "text-(--color-text-muted)"}`}
+            />
+          </button>
+
+          <button
             onClick={toggleTheme}
             className="cursor-pointer nav p-1.5 text-(--color-text) rounded-full hover:bg-(--color-surface) transition-colors"
           >
@@ -148,7 +171,7 @@ function Navbar() {
             <>
               <Link to="/sign-in">
                 <Button
-                  text="Sign In"
+                  text={t("auth.signIn")}
                   bgColor="bg-[var(--color-bg-inverse)]"
                   textColor="text-[var(--color-text-inverse)]"
                 />
@@ -156,7 +179,7 @@ function Navbar() {
 
               <Link to="/sign-up">
                 <Button
-                  text="Sign Up"
+                  text={t("auth.signUp")}
                   bgColor="bg-(--color-primary)"
                   textColor="text-[var(--color-text)]"
                 />
@@ -168,7 +191,7 @@ function Navbar() {
               <Link
                 to="/messages"
                 className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
-                title="Messages"
+                title={t("nav.messages")}
               >
                 <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
               </Link>
@@ -177,11 +200,13 @@ function Navbar() {
               <Link
                 to="/notifications"
                 className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
-                title="Notifications"
+                title={t("nav.notifications")}
               >
                 <FontAwesomeIcon icon={faBell} className="text-lg" />
                 {unreadCount > 0 && (
-                  <span className="absolute top-0.5 right-0.5 bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none">
+                  <span
+                    className={`absolute top-0.5 ${isRTL ? "left-0.5" : "right-0.5"} bg-red-500 text-white text-[10px] rounded-full w-4 h-4 flex items-center justify-center font-bold leading-none`}
+                  >
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}

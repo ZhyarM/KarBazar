@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { fetchCategories } from "../../API/CategoriesAPI.tsx";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface CategoryData {
   id: number;
@@ -12,6 +13,7 @@ interface CategoryData {
 }
 
 function Features() {
+  const { t } = useLanguage();
   const [categories, setCategories] = useState<CategoryData[]>([]);
 
   useEffect(() => {
@@ -42,10 +44,10 @@ function Features() {
               
               `}
           >
-            Explore by Category
+            {t("features.title")}
           </p>
           <p className="text-[oklch(0.65_0_0)] text-lg text-center">
-            Browse through our diverse range of services
+            {t("features.subtitle")}
           </p>
         </section>
 
@@ -63,10 +65,10 @@ function Features() {
                 {category.name}
               </p>
               <p className="text-sm text-(--color-text-muted) line-clamp-2">
-                {category.description || `${category.gig_count} gigs available`}
+                {category.description || `${category.gig_count} ${t("features.gigsAvailable")}`}
               </p>
               <p className="text-xs text-(--color-primary) font-semibold">
-                {category.gig_count} gigs available
+                {category.gig_count} {t("features.gigsAvailable")}
               </p>
             </Link>
           ))}
@@ -74,7 +76,7 @@ function Features() {
 
         {categories.length === 0 && (
           <p className="text-sm text-(--color-text-muted)">
-            No categories are available yet.
+            {t("features.noCategories")}
           </p>
         )}
       </article>

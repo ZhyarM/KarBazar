@@ -26,8 +26,10 @@ import type { Post, PostComment } from "../API/PostsAPI";
 import { toggleFollow } from "../API/FollowAPI";
 import { isAuthenticated } from "../API/apiClient";
 import { getAvatarUrl } from "../utils/imageUrl";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function PostDetail() {
+  const { t, language, direction } = useLanguage();
   const { id } = useParams();
   const [post, setPost] = useState<Post | null>(null);
   const [comments, setComments] = useState<PostComment[]>([]);
@@ -145,7 +147,7 @@ function PostDetail() {
   if (!post) {
     return (
       <div className="flex flex-col items-center justify-center py-20">
-        <p className="text-(--color-text-muted) text-lg">Post not found</p>
+        <p className="text-(--color-text-muted) text-lg">{t("post.notFound")}</p>
       </div>
     );
   }
@@ -153,13 +155,13 @@ function PostDetail() {
   const isOwner = currentUser?.id === post.user?.id;
 
   return (
-    <div className="max-w-3xl mx-auto py-6 px-4">
+    <div className="max-w-3xl mx-auto py-6 px-4" dir={direction}>
       {/* Back button */}
       <Link
         to="/"
         className="inline-flex items-center gap-2 text-(--color-text-muted) hover:text-(--color-text) mb-6 transition-colors"
       >
-        <FontAwesomeIcon icon={faArrowLeft} /> Back to Feed
+        <FontAwesomeIcon icon={faArrowLeft} /> {t("post.backToFeed")}
       </Link>
 
       <div className="bg-(--color-surface) rounded-2xl shadow-md border border-(--color-border) overflow-hidden">
@@ -199,7 +201,7 @@ function PostDetail() {
               <p className="text-sm text-(--color-text-muted)">
                 {post.user?.profile?.title || post.user?.role}
                 {" · "}
-                {new Date(post.created_at).toLocaleDateString("en-US", {
+                {new Date(post.created_at).toLocaleDateString(language === "ku" ? "ku" : "en-US", {
                   year: "numeric",
                   month: "short",
                   day: "numeric",
@@ -217,7 +219,7 @@ function PostDetail() {
                   : "bg-(--color-primary) text-white"
               }`}
             >
-              {following ? "Following" : "Follow"}
+              {following ? t("post.following") : t("post.follow")}
             </button>
           )}
         </div>
@@ -299,12 +301,12 @@ function PostDetail() {
               icon={liked ? faHeartSolid : faHeartRegular}
               className="text-xl"
             />
-            <span className="font-medium">{likesCount} likes</span>
+            <span className="font-medium">{likesCount} {t("post.likes")}</span>
           </button>
 
           <span className="flex items-center gap-2 text-(--color-text-muted)">
             <FontAwesomeIcon icon={faComment} className="text-xl" />
-            <span className="font-medium">{post.comments_count} comments</span>
+            <span className="font-medium">{post.comments_count} {t("post.comments")}</span>
           </span>
 
           <button
@@ -332,7 +334,7 @@ function PostDetail() {
               type="text"
               value={commentText}
               onChange={(e) => setCommentText(e.target.value)}
-              placeholder="Write a comment..."
+              placeholder={t("post.writeComment")}
               className="flex-1 px-4 py-2 rounded-full bg-(--color-bg) border border-(--color-border) text-(--color-text) text-sm focus:outline-none focus:ring-2 focus:ring-(--color-primary)"
             />
             <button
@@ -352,7 +354,7 @@ function PostDetail() {
         <div className="px-5 pb-5">
           {comments.length === 0 ? (
             <p className="text-(--color-text-muted) text-sm py-4 text-center">
-              No comments yet. Be the first to comment!
+              {t("post.noComments")}
             </p>
           ) : (
             <div className="flex flex-col gap-3 mt-2">
@@ -387,7 +389,7 @@ function PostDetail() {
                           onClick={() => handleDeleteComment(comment.id)}
                           className="text-xs text-red-400 hover:text-red-600"
                         >
-                          <FontAwesomeIcon icon={faTrash} /> Delete
+                          <FontAwesomeIcon icon={faTrash} /> {t("post.delete")}
                         </button>
                       )}
                     </div>

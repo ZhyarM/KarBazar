@@ -11,6 +11,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import Button from "../btns/Button";
 import type { PrcingPlanTypes } from "../../utils/PricingPlans";
 import { toggleGigFavorite, checkGigFavorite } from "../../API/FavoritesAPI";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface PricingCardProps {
   pricing?: PrcingPlanTypes[];
@@ -37,6 +38,7 @@ function PricingCard({
   onContinue,
   onContactSeller,
 }: PricingCardProps) {
+  const { t } = useLanguage();
   const [isFavorited, setIsFavorited] = useState(false);
   const [shareMessage, setShareMessage] = useState("");
 
@@ -61,7 +63,9 @@ function PricingCard({
       const result = await toggleGigFavorite(gigId);
       setIsFavorited(result);
       setShareMessage(
-        result ? "Added to favorites!" : "Removed from favorites!",
+        result
+          ? t("pricingCard.addedToFavorites")
+          : t("pricingCard.removedFromFavorites"),
       );
       setTimeout(() => setShareMessage(""), 2000);
     } catch (error) {
@@ -71,7 +75,7 @@ function PricingCard({
 
   const handleShareGig = () => {
     if (!gigTitle) return;
-    const shareText = `Check out this gig: ${gigTitle}`;
+    const shareText = `${t("pricingCard.checkOutGig")} ${gigTitle}`;
     const shareUrl = window.location.href;
 
     // Try to use native share API if available
@@ -89,7 +93,7 @@ function PricingCard({
       navigator.clipboard
         .writeText(fullText)
         .then(() => {
-          setShareMessage("Copied to clipboard!");
+          setShareMessage(t("pricingCard.copiedToClipboard"));
           setTimeout(() => setShareMessage(""), 2000);
         })
         .catch((error) => console.error("Copy error:", error));
@@ -113,9 +117,9 @@ function PricingCard({
           price: pkg.price,
           packageType:
             pkg.description ||
-            `${tier.charAt(0).toUpperCase() + tier.slice(1)} Package`,
+            `${tier.charAt(0).toUpperCase() + tier.slice(1)} ${t("pricingCard.package")}`,
           deliveryDays: pkg.delivery_time || 0,
-          revisions: "Unlimited",
+          revisions: t("pricingCard.unlimited"),
           features: pkg.features || [],
         };
       })
@@ -140,7 +144,7 @@ function PricingCard({
             }`}
             onClick={() => setPlanSelector(plan.name)}
           >
-            {plan.name}
+            {t(`pricingCard.tier.${plan.name.toLowerCase()}`)}
           </button>
         ))}
       </div>
@@ -155,13 +159,13 @@ function PricingCard({
                 {gigRating}
               </span>
               <span className="text-(--color-text-muted)">
-                ({gigReviewCount} reviews)
+                ({gigReviewCount} {t("pricingCard.reviews")})
               </span>
             </div>
             <div className="flex items-center gap-2">
               <span className="text-(--color-text)">📦</span>
               <span className="text-(--color-text-muted)">
-                {gigOrderCount} orders
+                {gigOrderCount} {t("pricingCard.orders")}
               </span>
             </div>
           </div>
@@ -171,7 +175,7 @@ function PricingCard({
         {gigRequirements && (
           <div className="py-3 px-2 border-b border-(--color-border) mb-3">
             <p className="text-sm font-semibold text-(--color-text) mb-2">
-              Requirements:
+              {t("pricingCard.requirements")}:
             </p>
             <p className="text-sm text-(--color-text-muted)">
               {gigRequirements}
@@ -191,7 +195,7 @@ function PricingCard({
           <div className="flex justify-start gap-2 py-3 text-sm">
             <span className="text-(--color-text)">
               <FontAwesomeIcon icon={faClock} />{" "}
-              {`${selectedPlan?.deliveryDays} days delivery`}
+              {`${selectedPlan?.deliveryDays} ${t("pricingCard.daysDelivery")}`}
             </span>
             <span className="text-(--color-text)">
               <FontAwesomeIcon icon={faArrowRotateRight} />{" "}
@@ -216,14 +220,14 @@ function PricingCard({
 
         <div className="flex flex-col gap-2.5 mt-3 px-5">
           <Button
-            text={`Continue (${selectedPlan?.price}$)`}
+            text={`${t("pricingCard.continue")} (${selectedPlan?.price}$)`}
             textColor="text-(--color-text-inverse)"
             bgColor="bg-(--color-primary)"
             backdropColor=""
             onClick={() => onContinue && onContinue(planSelecter.toLowerCase())}
           />
           <Button
-            text="Contact Seller"
+            text={t("pricingCard.contactSeller")}
             textColor="text-(--color-text-inverse)"
             bgColor="bg-(--color-primary)"
             backdropColor=""
@@ -232,7 +236,7 @@ function PricingCard({
           />
           <div className="flex gap-2.5 relative">
             <Button
-              text="Save"
+              text={t("pricingCard.save")}
               icon={
                 <FontAwesomeIcon
                   icon={faHeart}
@@ -244,7 +248,7 @@ function PricingCard({
               onClick={handleSaveGig}
             />
             <Button
-              text="Share"
+              text={t("pricingCard.share")}
               icon={<FontAwesomeIcon icon={faShareNodes} />}
               textColor="text-(--color-text-inverse)"
               bgColor="bg-(--color-bg-inverse)"

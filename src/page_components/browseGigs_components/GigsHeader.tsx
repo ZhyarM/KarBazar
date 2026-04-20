@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faSearch } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface GigsHeaderProps {
   searchQuery?: string;
@@ -16,6 +17,7 @@ function GigsHeader({
   onSort,
 }: GigsHeaderProps) {
   const [localSearch, setLocalSearch] = useState(searchQuery);
+  const { t } = useLanguage();
 
   const handleSearchSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -27,10 +29,10 @@ function GigsHeader({
       <header className="flex flex-col gap-4 mx-6 mb-4 py-4 bg-(--color-bg)">
         <div className="flex flex-col gap-1">
           <h1 className="text-4xl text-(--color-text) font-bold">
-            Browse Gigs
+            {t("browseGigs.title")}
           </h1>
           <span className="text-md text-(--color-text-muted) font-medium">
-            Discover talented businesses for your project
+            {t("browseGigs.subtitle")}
           </span>
         </div>
 
@@ -45,7 +47,7 @@ function GigsHeader({
               type="text"
               value={localSearch}
               onChange={(e) => setLocalSearch(e.target.value)}
-              placeholder="Search gigs..."
+              placeholder={t("browseGigs.searchPlaceholder")}
               className="w-full pl-10 pr-4 py-2.5 rounded-lg bg-(--color-surface) border border-(--color-border) text-(--color-text) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-primary) focus:ring-1 focus:ring-(--color-primary) transition-all"
             />
           </form>
@@ -56,12 +58,12 @@ function GigsHeader({
             onChange={(e) => onSort?.(e.target.value)}
             className="px-4 py-2.5 rounded-lg bg-(--color-surface) border border-(--color-border) text-(--color-text) text-sm focus:outline-none focus:border-(--color-primary) cursor-pointer min-w-[160px]"
           >
-            <option value="">Sort by</option>
-            <option value="newest">Newest First</option>
-            <option value="price_low">Price: Low to High</option>
-            <option value="price_high">Price: High to Low</option>
-            <option value="rating">Highest Rated</option>
-            <option value="popular">Most Popular</option>
+            <option value="">{t("browseGigs.sort.placeholder")}</option>
+            <option value="newest">{t("browseGigs.sort.newest")}</option>
+            <option value="price_low">{t("browseGigs.sort.priceLow")}</option>
+            <option value="price_high">{t("browseGigs.sort.priceHigh")}</option>
+            <option value="rating">{t("browseGigs.sort.rating")}</option>
+            <option value="popular">{t("browseGigs.sort.popular")}</option>
           </select>
         </div>
       </header>

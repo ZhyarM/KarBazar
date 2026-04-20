@@ -6,6 +6,7 @@ import { Link, useNavigate } from "react-router";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { loginuser } from "../../API/LoginAPI";
 import MessageToast from "../../utils/message";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function isLogedIn() {
   if (localStorage.getItem("auth_token")) {
@@ -16,6 +17,8 @@ function isLogedIn() {
 }
 
 function SignIn() {
+  const { t } = useLanguage();
+
   if (isLogedIn()) {
     window.location.href = "/";
   }
@@ -82,7 +85,7 @@ function SignIn() {
       }
     } catch (error: any) {
       setSuccess(false);
-      setMessage(error.message || "Login failed");
+      setMessage(error.message || t("auth.validation.loginFailed"));
     } finally {
       setLoading(false);
     }
@@ -112,7 +115,7 @@ function SignIn() {
              leading-normal md:leading-[90px] 
               text-(--color-text-inverse)"
             >
-              Sign In
+              {t("auth.signInTitle")}
               <FontAwesomeIcon
                 className="mr-2 text-(--color-accent)"
                 icon={faSignIn}
@@ -123,7 +126,7 @@ function SignIn() {
             tracking-tight font-bold font-sans pb-14
               text-(--color-text-inverse)"
             >
-              Welcome back we are happy to have you again
+              {t("auth.welcomeBack")}
             </h2>
 
             <div className="fade-up flex flex-col gap-10 mt-8">
@@ -132,8 +135,8 @@ function SignIn() {
                 onChange={(value) => updateForm("email", value)}
                 value={form.email}
                 icon=""
-                label="Email Address"
-                placeholder="Example@gmail.com"
+                label={t("auth.emailAddress")}
+                placeholder={t("auth.placeholder.email")}
                 size="full"
                 error={fieldErrors.email}
               ></Input>
@@ -144,8 +147,8 @@ function SignIn() {
                   onChange={(value) => updateForm("password", value)}
                   value={form.password}
                   icon=""
-                  label="Password"
-                  placeholder="d$bb*****"
+                  label={t("auth.password")}
+                  placeholder={t("auth.placeholder.password")}
                   size="full"
                   error={fieldErrors.password}
                 ></Input>
@@ -164,13 +167,13 @@ function SignIn() {
                 className="fade-up 
            SingUpBtn w-full h-full disabled:opacity-70"
               >
-                {loading ? "Signing In..." : "Sign In"}
+                {loading ? t("auth.signingIn") : t("auth.signIn")}
               </button>
             </div>
             <div className="fade-up flex gap-1 items-center justify-center mt-4 text-(--color-text-inverse)">
-              Don't have an account?
+              {t("auth.dontHaveAccount")}
               <Link className="text-blue-600 font-bold" to={"/sign-up"}>
-                Sign Up
+                {t("auth.signUpAction")}
               </Link>
             </div>
           </div>
@@ -195,39 +198,38 @@ function SignIn() {
              leading-normal md:leading-[90px] 
               text-(--color-text)"
             >
-              Start Your Online Service
+              {t("auth.startOnlineService")}
             </h1>
             <h2
               className="  font-inter text-2xl sm:text-5xl md:text-xl
             tracking-tight font-bold font-sans
               text-(--color-text)"
             >
-              Join KarBazar and connect with clients Nation-wide. <br /> Turn
-              your skills into income.
+              {t("auth.joinKarBazar")}
             </h2>
             <ul className="fade-up label-heading mt-10 flex flex-col gap-5">
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  create your professional profile
+                  {t("auth.benefit.profile")}
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  showcase your portfolio
+                  {t("auth.benefit.portfolio")}
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  Increase your income
+                  {t("auth.benefit.income")}
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  Build your reputation
+                  {t("auth.benefit.reputation")}
                 </p>
               </li>
             </ul>

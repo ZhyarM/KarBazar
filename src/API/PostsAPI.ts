@@ -139,6 +139,7 @@ export const getPosts = async (params?: {
   tag?: string;
   category_id?: number;
   sort_by?: string;
+  sort_order?: "asc" | "desc";
   page?: number;
   per_page?: number;
 }): Promise<PostsResponse> => {
@@ -153,6 +154,20 @@ export const getPosts = async (params?: {
   const queryString = queryParams.toString();
   const endpoint = queryString ? `/posts?${queryString}` : "/posts";
   return await apiCall<PostsResponse>(endpoint);
+};
+
+// Get platform announcements for Home section
+export const getAnnouncements = async (
+  page = 1,
+  perPage = 4,
+): Promise<PostsResponse> => {
+  return await getPosts({
+    tag: "announcement",
+    sort_by: "created_at",
+    sort_order: "desc",
+    page,
+    per_page: perPage,
+  });
 };
 
 // Get single post

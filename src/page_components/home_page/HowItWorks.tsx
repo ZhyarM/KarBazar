@@ -1,21 +1,22 @@
+import { useLanguage } from "../../context/LanguageContext.tsx";
+
 function HowItWorks() {
+  const { t } = useLanguage();
+
   const steps = [
     {
-      title: "Post Your Need",
-      description:
-        "Describe your project and budget in minutes so businesses can respond quickly.",
+      title: t("howItWorks.step1.title"),
+      description: t("howItWorks.step1.desc"),
       index: "01",
     },
     {
-      title: "Compare Offers",
-      description:
-        "Review ratings, delivery time, and pricing options to pick the best fit.",
+      title: t("howItWorks.step2.title"),
+      description: t("howItWorks.step2.desc"),
       index: "02",
     },
     {
-      title: "Launch & Track",
-      description:
-        "Start your project, chat in real-time, and track progress from one dashboard.",
+      title: t("howItWorks.step3.title"),
+      description: t("howItWorks.step3.desc"),
       index: "03",
     },
   ];
@@ -25,10 +26,10 @@ function HowItWorks() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="section-title text-(--color-text)">
-            How KarBazar Works
+            {t("howItWorks.title")}
           </h2>
           <p className="small-title text-(--color-text-muted)">
-            A simple flow designed for fast, reliable project delivery.
+            {t("howItWorks.subtitle")}
           </p>
         </div>
         <div className="grid grid-cols-1 md:grid-cols-3 gap-5">
@@ -38,7 +39,7 @@ function HowItWorks() {
               className="bg-(--color-surface) border border-(--color-border) rounded-2xl p-6 shadow-sm"
             >
               <p className="text-xs font-bold text-(--color-primary) mb-3">
-                STEP {step.index}
+                {t("howItWorks.step")} {step.index}
               </p>
               <h3 className="text-xl font-semibold text-(--color-text) mb-2">
                 {step.title}

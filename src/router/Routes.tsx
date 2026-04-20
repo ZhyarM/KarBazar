@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "./../pages/Home.tsx";
 import Categories from "./../pages/Categories.tsx";
 import BrowseGigs from "../pages/BrowseGigs.tsx";
+import Deals from "../pages/Deals.tsx";
 import About from "./../pages/About.tsx";
 import SignIn from "./../pages/auth/SignIn.tsx";
 import SignUp from "./../pages/auth/SignUp.tsx";
@@ -23,6 +24,17 @@ import Notifications from "../pages/Notifications.tsx";
 import Favorites from "../pages/Favorites.tsx";
 import Checkout from "../pages/Checkout.tsx";
 import SearchResults from "../pages/SearchResults.tsx";
+import ProtectedAdminRoute from "../components/ProtectedAdminRoute.tsx";
+import AdminLayout from "../pages/admin/AdminLayout.tsx";
+import AdminOverviewPage from "../pages/admin/AdminOverview.tsx";
+import AdminUsersPage from "../pages/admin/AdminUsers.tsx";
+import AdminControlPage from "../pages/admin/AdminControl.tsx";
+import AdminListingsPage from "../pages/admin/AdminListings.tsx";
+import AdminCategoriesPage from "../pages/admin/AdminCategories.tsx";
+import AdminOrdersPage from "../pages/admin/AdminOrders.tsx";
+import AdminReviewsPage from "../pages/admin/AdminReviews.tsx";
+import AdminNewsPage from "../pages/admin/AdminNews.tsx";
+import AdminSettingsPage from "../pages/admin/AdminSettings.tsx";
 
 // Post Pages
 import CreatePost from "../pages/CreatePost.tsx";
@@ -36,6 +48,7 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "browseGigs", element: <BrowseGigs /> },
       { path: "browse-gigs", element: <BrowseGigs /> },
+      { path: "deals", element: <Deals /> },
       { path: "search", element: <SearchResults /> },
       { path: "/user/:userId", element: <UserDetails /> },
       { path: "/gig/:id", element: <UserDetails /> },
@@ -71,7 +84,27 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { path: "create-post", element: <CreatePost /> },
       { path: "edit-post/:id", element: <CreatePost /> },
       { path: "posts/:id", element: <PostDetail /> },
-      adminRoutes,
+
+      // Admin Panel
+      {
+        path: "admin",
+        element: (
+          <ProtectedAdminRoute>
+            <AdminLayout />
+          </ProtectedAdminRoute>
+        ),
+        children: [
+          { index: true, element: <AdminOverviewPage /> },
+          { path: "users", element: <AdminUsersPage /> },
+          { path: "control", element: <AdminControlPage /> },
+          { path: "listings", element: <AdminListingsPage /> },
+          { path: "categories", element: <AdminCategoriesPage /> },
+          { path: "orders", element: <AdminOrdersPage /> },
+          { path: "reviews", element: <AdminReviewsPage /> },
+          { path: "news", element: <AdminNewsPage /> },
+          { path: "settings", element: <AdminSettingsPage /> },
+        ],
+      },
     ],
   },
 ]);

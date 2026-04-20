@@ -26,13 +26,15 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $category) {
-            Category::create([
-                'name' => $category['name'],
-                'slug' => Str::slug($category['name']),
-                'icon' => $category['icon'],
-                'description' => $category['description'],
-                'gig_count' => rand(50, 500),
-            ]);
+            Category::updateOrCreate(
+                ['name' => $category['name']],
+                [
+                    'slug' => Str::slug($category['name']),
+                    'icon' => $category['icon'],
+                    'description' => $category['description'],
+                    'gig_count' => rand(50, 500),
+                ],
+            );
         }
 
         $this->command->info('✅ Categories seeded successfully!');

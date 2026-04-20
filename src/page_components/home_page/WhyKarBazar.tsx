@@ -1,20 +1,24 @@
+import { useLanguage } from "../../context/LanguageContext.tsx";
+
 function WhyKarBazar() {
+  const { t } = useLanguage();
+
   const items = [
     {
-      title: "Transparent Pricing",
-      text: "See clear pricing upfront with no hidden surprises.",
+      title: t("why.item1.title"),
+      text: t("why.item1.desc"),
     },
     {
-      title: "Verified Businesses",
-      text: "Work with trusted providers backed by real reviews.",
+      title: t("why.item2.title"),
+      text: t("why.item2.desc"),
     },
     {
-      title: "Secure Collaboration",
-      text: "Keep communication, files, and delivery in one place.",
+      title: t("why.item3.title"),
+      text: t("why.item3.desc"),
     },
     {
-      title: "Reliable Delivery",
-      text: "Milestones and deadlines help keep every project on track.",
+      title: t("why.item4.title"),
+      text: t("why.item4.desc"),
     },
   ];
 
@@ -23,10 +27,10 @@ function WhyKarBazar() {
       <div className="max-w-6xl mx-auto">
         <div className="text-center mb-10">
           <h2 className="section-title text-(--color-text)">
-            Why Choose KarBazar
+            {t("why.title")}
           </h2>
           <p className="small-title text-(--color-text-muted)">
-            Built for speed, trust, and better project outcomes.
+            {t("why.subtitle")}
           </p>
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">

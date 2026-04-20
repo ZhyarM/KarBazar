@@ -12,6 +12,45 @@ use Illuminate\Http\Request;
 
 class ReviewController extends Controller
 {
+    // Get all reviews (Admin only)
+    public function adminIndex(Request $request)
+    {
+        $query = Review::with(['reviewer.profile', 'reviewee.profile', 'gig', 'order'])
+            ->orderBy('created_at', 'desc');
+
+        if ($request->has('rating')) {
+            $query->where('rating', (int) $request->rating);
+        }
+
+        if ($request->filled('search')) {
+            $search = trim((string) $request->search);
+            $query->where(function ($innerQuery) use ($search) {
+                $innerQuery->where('comment', 'like', "%{$search}%")
+                    ->orWhereHas('reviewer', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    })
+                    ->orWhereHas('reviewee', function ($q) use ($search) {
+                        $q->where('name', 'like', "%{$search}%")
+                            ->orWhere('email', 'like', "%{$search}%");
+                    });
+            });
+        }
+
+        $reviews = $query->paginate(20);
+
+        return response()->json([
+            'success' => true,
+            'data' => ReviewResource::collection($reviews),
+            'meta' => [
+                'current_page' => $reviews->currentPage(),
+                'last_page' => $reviews->lastPage(),
+                'per_page' => $reviews->perPage(),
+                'total' => $reviews->total(),
+            ],
+        ]);
+    }
+
     // Get all reviews for a gig
     public function gigReviews($gigId)
     {
@@ -99,14 +138,14 @@ class ReviewController extends Controller
         // Update gig rating and review count
         $gig = Gig::find($order->gig_id);
         $gig->increment('review_count');
-        
+
         $avgRating = Review::where('gig_id', $gig->id)->avg('rating');
         $gig->update(['rating' => round($avgRating, 2)]);
 
         // Update seller profile rating
         $sellerProfile = $order->seller->profile;
         $sellerProfile->increment('total_reviews');
-        
+
         $avgSellerRating = Review::where('reviewee_id', $order->seller_id)->avg('rating');
         $sellerProfile->update(['rating' => round($avgSellerRating, 2)]);
 
@@ -181,7 +220,7 @@ class ReviewController extends Controller
         // Update gig stats
         $gig = Gig::find($review->gig_id);
         $gig->decrement('review_count');
-        
+
         // Recalculate average rating
         $avgRating = Review::where('gig_id', $gig->id)
             ->where('id', '!=', $review->id)
@@ -191,7 +230,7 @@ class ReviewController extends Controller
         // Update seller profile stats
         $sellerProfile = $review->reviewee->profile;
         $sellerProfile->decrement('total_reviews');
-        
+
         $avgSellerRating = Review::where('reviewee_id', $review->reviewee_id)
             ->where('id', '!=', $review->id)
             ->avg('rating');

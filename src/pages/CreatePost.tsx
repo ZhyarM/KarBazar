@@ -13,6 +13,7 @@ import { createPost, updatePost, getPost } from "../API/PostsAPI";
 import type { CreatePostData } from "../API/PostsAPI";
 import { apiCall } from "../API/apiClient";
 import MessageToast from "../utils/message";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 interface Category {
   id: number;
@@ -21,6 +22,7 @@ interface Category {
 }
 
 function CreatePost() {
+  const { t, direction } = useLanguage();
   const navigate = useNavigate();
   const { id } = useParams();
   const isEditing = !!id;
@@ -96,17 +98,17 @@ function CreatePost() {
       if (isEditing && id) {
         await updatePost(Number(id), data);
         setSuccess(true);
-        setMessage("Post updated successfully!");
+        setMessage(t("post.editSuccess"));
       } else {
         await createPost(data);
         setSuccess(true);
-        setMessage("Post created successfully!");
+        setMessage(t("post.createSuccess"));
       }
 
       setTimeout(() => navigate("/"), 1500);
     } catch (err: any) {
       setSuccess(false);
-      setMessage(err.message || "Failed to create post");
+      setMessage(err.message || t("post.createFailed"));
     } finally {
       setLoading(false);
     }
@@ -124,7 +126,7 @@ function CreatePost() {
         }}
       />
 
-      <div className="max-w-2xl mx-auto py-8 px-4">
+      <div className="max-w-2xl mx-auto py-8 px-4" dir={direction}>
         <div className="flex items-center gap-3 mb-6">
           <button
             onClick={() => navigate(-1)}
@@ -133,7 +135,7 @@ function CreatePost() {
             <FontAwesomeIcon icon={faArrowLeft} />
           </button>
           <h1 className="text-2xl font-bold text-(--color-text)">
-            {isEditing ? "Edit Post" : "Create Post"}
+            {isEditing ? t("post.editPost") : t("post.createPost")}
           </h1>
         </div>
 
@@ -141,13 +143,13 @@ function CreatePost() {
           {/* Title */}
           <div>
             <label className="block text-sm font-semibold text-(--color-text) mb-1.5">
-              Title *
+              {t("post.title")} *
             </label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Give your post a catchy title"
+              placeholder={t("post.titlePlaceholder")}
               required
               className="w-full px-4 py-3 rounded-xl bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition-all"
             />
@@ -156,12 +158,12 @@ function CreatePost() {
           {/* Description */}
           <div>
             <label className="block text-sm font-semibold text-(--color-text) mb-1.5">
-              Description *
+              {t("post.description")} *
             </label>
             <textarea
               value={description}
               onChange={(e) => setDescription(e.target.value)}
-              placeholder="What do you want to share?"
+              placeholder={t("post.descriptionPlaceholder")}
               required
               rows={6}
               className="w-full px-4 py-3 rounded-xl bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition-all resize-none"
@@ -171,7 +173,7 @@ function CreatePost() {
           {/* Category */}
           <div>
             <label className="block text-sm font-semibold text-(--color-text) mb-1.5">
-              Category
+              {t("post.category")}
             </label>
             <select
               value={categoryId || ""}
@@ -182,7 +184,7 @@ function CreatePost() {
               }
               className="w-full px-4 py-3 rounded-xl bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary) transition-all"
             >
-              <option value="">Select a category (optional)</option>
+              <option value="">{t("post.selectCategoryOptional")}</option>
               {categories.map((cat) => (
                 <option key={cat.id} value={cat.id}>
                   {cat.name}
@@ -194,7 +196,7 @@ function CreatePost() {
           {/* Tags */}
           <div>
             <label className="block text-sm font-semibold text-(--color-text) mb-1.5">
-              <FontAwesomeIcon icon={faTags} className="mr-1" /> Tags
+              <FontAwesomeIcon icon={faTags} className="mr-1" /> {t("post.tags")}
             </label>
             <div className="flex flex-wrap gap-2 mb-2">
               {tags.map((tag, i) => (
@@ -215,7 +217,7 @@ function CreatePost() {
                 value={tagInput}
                 onChange={(e) => setTagInput(e.target.value)}
                 onKeyDown={handleTagKeyDown}
-                placeholder="Add a tag and press Enter"
+                placeholder={t("post.addTagPlaceholder")}
                 className="flex-1 px-4 py-2 rounded-xl bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary) text-sm"
               />
               <button
@@ -223,7 +225,7 @@ function CreatePost() {
                 onClick={addTag}
                 className="px-4 py-2 bg-(--color-primary) text-white rounded-xl text-sm font-medium hover:opacity-90 transition-opacity"
               >
-                Add
+                {t("post.add")}
               </button>
             </div>
           </div>
@@ -231,7 +233,7 @@ function CreatePost() {
           {/* Image URLs (simple approach) */}
           <div>
             <label className="block text-sm font-semibold text-(--color-text) mb-1.5">
-              <FontAwesomeIcon icon={faImage} className="mr-1" /> Images
+              <FontAwesomeIcon icon={faImage} className="mr-1" /> {t("post.images")}
             </label>
             {images.length > 0 && (
               <div className="flex flex-wrap gap-2 mb-2">
@@ -258,7 +260,7 @@ function CreatePost() {
             )}
             <input
               type="text"
-              placeholder="Paste image URL and press Enter"
+              placeholder={t("post.imagePlaceholder")}
               onKeyDown={(e) => {
                 if (e.key === "Enter") {
                   e.preventDefault();
@@ -272,7 +274,7 @@ function CreatePost() {
               className="w-full px-4 py-2 rounded-xl bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:ring-2 focus:ring-(--color-primary) text-sm"
             />
             <p className="text-xs text-(--color-text-muted) mt-1">
-              Max 5 images. Press Enter after each URL.
+              {t("post.maxImages")}
             </p>
           </div>
 
@@ -285,12 +287,12 @@ function CreatePost() {
             {loading ? (
               <>
                 <FontAwesomeIcon icon={faSpinner} className="animate-spin" />
-                {isEditing ? "Updating..." : "Creating..."}
+                {isEditing ? t("post.updating") : t("post.creating")}
               </>
             ) : (
               <>
                 <FontAwesomeIcon icon={faPaperPlane} />
-                {isEditing ? "Update Post" : "Publish Post"}
+                {isEditing ? t("post.updatePost") : t("post.publishPost")}
               </>
             )}
           </button>

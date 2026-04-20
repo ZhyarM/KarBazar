@@ -14,6 +14,7 @@ import {
 import MessageToast from "../utils/message";
 import { getImageUrl } from "../utils/imageUrl";
 import { isSellerRole } from "../utils/roles";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 interface Category {
   id: number;
@@ -27,6 +28,7 @@ interface FAQ {
 }
 
 function CreateGig() {
+  const { t, direction } = useLanguage();
   const navigate = useNavigate();
   const { id: editId } = useParams<{ id?: string }>();
   const isEditMode = !!editId;
@@ -101,7 +103,7 @@ function CreateGig() {
       const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
       if (gig.seller_id !== currentUser.id && currentUser.role !== "admin") {
         setSuccess(false);
-        setMessage("You can only edit your own gigs");
+        setMessage(t("createGig.editOwnOnly"));
         setTimeout(() => navigate("/my-gigs"), 2000);
         return;
       }
@@ -161,7 +163,7 @@ function CreateGig() {
     } catch (error) {
       console.error("Failed to load gig:", error);
       setSuccess(false);
-      setMessage("Failed to load gig for editing");
+      setMessage(t("createGig.loadFailed"));
     } finally {
       setLoadingGig(false);
     }
@@ -254,14 +256,14 @@ function CreateGig() {
       if (isEditMode && editId) {
         await updateGig(Number(editId), gigData);
         setSuccess(true);
-        setMessage("Gig updated successfully!");
+        setMessage(t("createGig.updatedSuccess"));
         setTimeout(() => {
           navigate(`/gigs/${editId}`);
         }, 2000);
       } else {
         const createdGig = await createGig(gigData);
         setSuccess(true);
-        setMessage("Gig created successfully!");
+        setMessage(t("createGig.createdSuccess"));
         setTimeout(() => {
           navigate(`/gigs/${createdGig.id}`);
         }, 2000);
@@ -269,9 +271,7 @@ function CreateGig() {
     } catch (error: any) {
       console.error("Gig save error:", error);
       setSuccess(false);
-      setMessage(
-        error.message || `Failed to ${isEditMode ? "update" : "create"} gig`,
-      );
+      setMessage(error.message || t("createGig.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -288,21 +288,23 @@ function CreateGig() {
   // Show unauthorized message
   if (authorized === false) {
     return (
-      <div className="min-h-screen bg-(--color-bg) flex items-center justify-center px-4">
+      <div
+        className="min-h-screen bg-(--color-bg) flex items-center justify-center px-4"
+        dir={direction}
+      >
         <div className="max-w-md text-center bg-(--color-surface) rounded-lg p-8 shadow-md border border-(--color-border)">
           <div className="text-5xl mb-4">🚫</div>
           <h2 className="text-2xl font-bold text-(--color-text) mb-2">
-            Access Denied
+            {t("createGig.accessDenied")}
           </h2>
           <p className="text-(--color-text-muted) mb-6">
-            Only business accounts can create and manage gigs. Please upgrade
-            your account or sign in with a business account.
+            {t("createGig.accessDeniedDesc")}
           </p>
           <button
             onClick={() => navigate("/dashboard")}
             className="px-6 py-2.5 bg-(--color-primary) text-(--color-text-inverse) rounded-lg hover:opacity-90 transition-all cursor-pointer"
           >
-            Go to Dashboard
+            {t("createGig.goDashboard")}
           </button>
         </div>
       </div>
@@ -318,7 +320,7 @@ function CreateGig() {
   }
 
   return (
-    <div className="min-h-screen bg-(--color-bg) py-8 px-4">
+    <div className="min-h-screen bg-(--color-bg) py-8 px-4" dir={direction}>
       <MessageToast
         visible={success !== null}
         message={message}
@@ -331,7 +333,7 @@ function CreateGig() {
 
       <div className="max-w-4xl mx-auto">
         <h1 className="text-3xl font-bold text-(--color-text) mb-8">
-          {isEditMode ? "Edit Gig" : "Create New Gig"}
+          {isEditMode ? t("createGig.editGig") : t("createGig.createNewGig")}
         </h1>
 
         {/* Progress Steps */}
@@ -368,12 +370,12 @@ function CreateGig() {
           {currentStep === 1 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-                Basic Information
+                {t("createGig.basicInfo")}
               </h2>
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Gig Title *
+                  {t("createGig.gigTitle")}
                 </label>
                 <input
                   type="text"
@@ -381,7 +383,7 @@ function CreateGig() {
                   onChange={(e) =>
                     setFormData({ ...formData, title: e.target.value })
                   }
-                  placeholder="I will create a professional website design"
+                  placeholder={t("createGig.gigTitlePlaceholder")}
                   required
                   className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                 />
@@ -389,7 +391,7 @@ function CreateGig() {
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Category *
+                  {t("createGig.category")}
                 </label>
                 <select
                   value={formData.category_id}
@@ -402,7 +404,7 @@ function CreateGig() {
                   required
                   className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                 >
-                  <option value={0}>Select a category</option>
+                  <option value={0}>{t("createGig.selectCategory")}</option>
                   {categories.map((cat) => (
                     <option key={cat.id} value={cat.id}>
                       {cat.name}
@@ -413,7 +415,7 @@ function CreateGig() {
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Description *
+                  {t("createGig.description")}
                 </label>
                 <textarea
                   value={formData.description}
@@ -422,14 +424,14 @@ function CreateGig() {
                   }
                   rows={6}
                   required
-                  placeholder="Describe your service in detail..."
+                  placeholder={t("createGig.descriptionPlaceholder")}
                   className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                 />
               </div>
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Tags (up to 5)
+                  {t("createGig.tags")}
                 </label>
                 <div className="flex gap-2 mb-2">
                   <input
@@ -439,7 +441,7 @@ function CreateGig() {
                     onKeyPress={(e) =>
                       e.key === "Enter" && (e.preventDefault(), addTag())
                     }
-                    placeholder="Add a tag"
+                    placeholder={t("createGig.addTag")}
                     className="flex-1 px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                   />
                   <button
@@ -474,18 +476,18 @@ function CreateGig() {
           {currentStep === 2 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-                Pricing & Packages
+                {t("createGig.pricing")}
               </h2>
 
               {/* Basic Package */}
               <div className="border border-(--color-border) rounded-lg p-4">
                 <h3 className="text-xl font-bold text-(--color-text) mb-4">
-                  Basic Package *
+                  {t("createGig.basicPackage")}
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-(--color-text) mb-2">
-                      Price ($) *
+                      {t("createGig.priceRequired")}
                     </label>
                     <input
                       type="number"
@@ -503,7 +505,7 @@ function CreateGig() {
                   </div>
                   <div>
                     <label className="block text-(--color-text) mb-2">
-                      Delivery Time (days) *
+                      {t("createGig.deliveryDaysRequired")}
                     </label>
                     <input
                       type="number"
@@ -542,12 +544,12 @@ function CreateGig() {
               {/* Standard Package (Optional) */}
               <div className="border border-(--color-border) rounded-lg p-4">
                 <h3 className="text-xl font-bold text-(--color-text) mb-4">
-                  Standard Package (Optional)
+                  {t("createGig.standardPackage")}
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-(--color-text) mb-2">
-                      Price ($)
+                      {t("createGig.price")}
                     </label>
                     <input
                       type="number"
@@ -566,7 +568,7 @@ function CreateGig() {
                   </div>
                   <div>
                     <label className="block text-(--color-text) mb-2">
-                      Delivery Time (days)
+                      {t("createGig.deliveryDays")}
                     </label>
                     <input
                       type="number"
@@ -605,12 +607,12 @@ function CreateGig() {
               {/* Premium Package (Optional) */}
               <div className="border border-(--color-border) rounded-lg p-4">
                 <h3 className="text-xl font-bold text-(--color-text) mb-4">
-                  Premium Package (Optional)
+                  {t("createGig.premiumPackage")}
                 </h3>
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <label className="block text-(--color-text) mb-2">
-                      Price ($)
+                      {t("createGig.price")}
                     </label>
                     <input
                       type="number"
@@ -629,7 +631,7 @@ function CreateGig() {
                   </div>
                   <div>
                     <label className="block text-(--color-text) mb-2">
-                      Delivery Time (days)
+                      {t("createGig.deliveryDays")}
                     </label>
                     <input
                       type="number"
@@ -671,12 +673,12 @@ function CreateGig() {
           {currentStep === 3 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-                Media & Requirements
+                {t("createGig.media")}
               </h2>
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Gig Image *
+                  {t("createGig.gigImage")}
                 </label>
                 <div className="border-2 border-dashed border-(--color-border) rounded-lg p-8 text-center">
                   {imagePreview ? (
@@ -704,7 +706,7 @@ function CreateGig() {
                         className="text-4xl text-(--color-text-muted) mb-4"
                       />
                       <p className="text-(--color-text)">
-                        Click to upload image
+                        {t("createGig.uploadImage")}
                       </p>
                       <input
                         type="file"
@@ -719,7 +721,7 @@ function CreateGig() {
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Gallery Images (Optional)
+                  {t("createGig.gallery")}
                 </label>
                 <div className="border-2 border-dashed border-(--color-border) rounded-lg p-8 text-center">
                   {galleryPreviews.length > 0 ? (
@@ -740,7 +742,7 @@ function CreateGig() {
                         className="text-4xl text-(--color-text-muted) mb-4"
                       />
                       <p className="text-(--color-text)">
-                        Click to upload gallery images
+                        {t("createGig.uploadGallery")}
                       </p>
                       <input
                         type="file"
@@ -756,7 +758,7 @@ function CreateGig() {
 
               <div>
                 <label className="block text-(--color-text) font-semibold mb-2">
-                  Requirements (what you need from buyers)
+                  {t("createGig.requirements")}
                 </label>
                 <textarea
                   value={formData.requirements}
@@ -764,7 +766,7 @@ function CreateGig() {
                     setFormData({ ...formData, requirements: e.target.value })
                   }
                   rows={4}
-                  placeholder="e.g., Please provide your brand colors, logo files, etc."
+                  placeholder={t("createGig.requirementsPlaceholder")}
                   className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                 />
               </div>
@@ -775,7 +777,7 @@ function CreateGig() {
           {currentStep === 4 && (
             <div className="space-y-6">
               <h2 className="text-2xl font-bold text-(--color-text) mb-4">
-                Frequently Asked Questions
+                {t("createGig.faq")}
               </h2>
 
               {faqs.map((faq, index) => (
@@ -802,7 +804,7 @@ function CreateGig() {
                       onChange={(e) =>
                         updateFAQ(index, "question", e.target.value)
                       }
-                      placeholder="Question"
+                      placeholder={t("createGig.question")}
                       className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                     />
                     <textarea
@@ -810,7 +812,7 @@ function CreateGig() {
                       onChange={(e) =>
                         updateFAQ(index, "answer", e.target.value)
                       }
-                      placeholder="Answer"
+                      placeholder={t("createGig.answer")}
                       rows={2}
                       className="w-full px-4 py-2 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary)"
                     />
@@ -824,7 +826,7 @@ function CreateGig() {
                 className="w-full py-3 border-2 border-dashed border-(--color-border) rounded-lg text-(--color-text) hover:bg-(--color-bg) transition-colors"
               >
                 <FontAwesomeIcon icon={faPlus} className="mr-2" />
-                Add FAQ
+                {t("createGig.addFaq")}
               </button>
             </div>
           )}
@@ -837,7 +839,7 @@ function CreateGig() {
                 onClick={prevStep}
                 className="px-6 py-3 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:bg-opacity-80 transition-all"
               >
-                Previous
+                {t("createGig.previous")}
               </button>
             )}
             {currentStep < 4 ? (
@@ -846,7 +848,7 @@ function CreateGig() {
                 onClick={nextStep}
                 className="ml-auto px-6 py-3 bg-(--color-primary) text-white rounded-lg hover:bg-opacity-90 transition-all"
               >
-                Next
+                {t("createGig.next")}
               </button>
             ) : (
               <button
@@ -856,11 +858,11 @@ function CreateGig() {
               >
                 {loading
                   ? isEditMode
-                    ? "Updating..."
-                    : "Creating..."
+                    ? t("createGig.updating")
+                    : t("createGig.creating")
                   : isEditMode
-                    ? "Update Gig"
-                    : "Create Gig"}
+                    ? t("createGig.updateGig")
+                    : t("createGig.createGig")}
               </button>
             )}
           </div>

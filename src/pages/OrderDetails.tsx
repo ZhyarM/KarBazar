@@ -27,6 +27,7 @@ import {
 import { createReview } from "../API/ReviewsAPI";
 import type { Order } from "../API/OrdersAPI";
 import { getImageUrl, getAvatarUrl } from "../utils/imageUrl";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 type OrderStatus =
   | "pending"
@@ -38,40 +39,40 @@ type OrderStatus =
 
 const STATUS_CONFIG: Record<
   OrderStatus,
-  { label: string; color: string; bgColor: string; icon: any }
+  { labelKey: string; color: string; bgColor: string; icon: any }
 > = {
   pending: {
-    label: "Pending",
+    labelKey: "orderDetails.status.pending",
     color: "text-yellow-600",
     bgColor: "bg-yellow-100",
     icon: faClock,
   },
   in_progress: {
-    label: "In Progress",
+    labelKey: "orderDetails.status.inProgress",
     color: "text-blue-600",
     bgColor: "bg-blue-100",
     icon: faPlay,
   },
   delivered: {
-    label: "Delivered",
+    labelKey: "orderDetails.status.delivered",
     color: "text-purple-600",
     bgColor: "bg-purple-100",
     icon: faTruck,
   },
   revision: {
-    label: "Revision Requested",
+    labelKey: "orderDetails.status.revision",
     color: "text-orange-600",
     bgColor: "bg-orange-100",
     icon: faUndo,
   },
   completed: {
-    label: "Completed",
+    labelKey: "orderDetails.status.completed",
     color: "text-green-600",
     bgColor: "bg-green-100",
     icon: faCheckCircle,
   },
   cancelled: {
-    label: "Cancelled",
+    labelKey: "orderDetails.status.cancelled",
     color: "text-red-600",
     bgColor: "bg-red-100",
     icon: faTimesCircle,
@@ -86,6 +87,7 @@ const TIMELINE_STEPS: OrderStatus[] = [
 ];
 
 function OrderDetails() {
+  const { t, language, direction } = useLanguage();
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
@@ -126,7 +128,7 @@ function OrderDetails() {
         setReviewDone(true);
       }
     } catch (err) {
-      setError("Failed to load order details.");
+      setError(t("orderDetails.loadFailed"));
       console.error(err);
     } finally {
       setLoading(false);
@@ -146,7 +148,7 @@ function OrderDetails() {
       await updateOrderStatus(order.id, "in_progress");
       await loadOrder();
     } catch {
-      alert("Failed to start order.");
+      alert(t("orderDetails.startFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -161,7 +163,7 @@ function OrderDetails() {
       setDeliveryNote("");
       await loadOrder();
     } catch {
-      alert("Failed to deliver order.");
+      alert(t("orderDetails.deliverFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -174,7 +176,7 @@ function OrderDetails() {
       await acceptDelivery(order.id);
       await loadOrder();
     } catch {
-      alert("Failed to accept delivery.");
+      alert(t("orderDetails.acceptFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -189,7 +191,7 @@ function OrderDetails() {
       setRevisionReason("");
       await loadOrder();
     } catch {
-      alert("Failed to request revision.");
+      alert(t("orderDetails.revisionFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -211,8 +213,7 @@ function OrderDetails() {
       setShowReviewForm(false);
     } catch (err: any) {
       setReviewError(
-        err?.message ||
-          "Failed to submit review. You may have already reviewed this order.",
+        err?.message || t("orderDetails.reviewFailed"),
       );
     } finally {
       setReviewSubmitting(false);
@@ -226,7 +227,7 @@ function OrderDetails() {
   };
 
   const formatDate = (dateStr: string) =>
-    new Date(dateStr).toLocaleDateString("en-US", {
+    new Date(dateStr).toLocaleDateString(language === "ku" ? "ku" : "en-US", {
       year: "numeric",
       month: "short",
       day: "numeric",
@@ -242,7 +243,7 @@ function OrderDetails() {
             icon={faSpinner}
             className="text-4xl text-(--color-primary) animate-spin"
           />
-          <p className="text-(--color-text-muted)">Loading order details...</p>
+          <p className="text-(--color-text-muted)">{t("orderDetails.loading")}</p>
         </div>
       </div>
     );
@@ -253,13 +254,13 @@ function OrderDetails() {
       <div className="flex items-center justify-center min-h-screen bg-(--color-bg)">
         <div className="text-center">
           <p className="text-red-500 text-lg mb-4">
-            {error || "Order not found"}
+            {error || t("orderDetails.notFound")}
           </p>
           <button
             onClick={() => navigate("/orders")}
             className="px-6 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90"
           >
-            Back to Orders
+            {t("orderDetails.backToOrders")}
           </button>
         </div>
       </div>
@@ -267,7 +268,7 @@ function OrderDetails() {
   }
 
   return (
-    <div className="min-h-screen bg-(--color-bg) py-8 px-4">
+    <div className="min-h-screen bg-(--color-bg) py-8 px-4" dir={direction}>
       <div className="max-w-5xl mx-auto flex flex-col gap-6">
         {/* Header */}
         <div className="flex items-center gap-4">
@@ -279,17 +280,17 @@ function OrderDetails() {
           </button>
           <div className="flex-1">
             <h1 className="text-2xl font-bold text-(--color-text)">
-              Order #{order.id}
+              {t("orderDetails.orderLabel")} #{order.id}
             </h1>
             <p className="text-sm text-(--color-text-muted)">
-              Placed on {formatDate(order.created_at)}
+              {t("orderDetails.placedOn")} {formatDate(order.created_at)}
             </p>
           </div>
           <div
             className={`flex items-center gap-2 px-4 py-2 rounded-full font-semibold text-sm ${statusConfig.bgColor} ${statusConfig.color}`}
           >
             <FontAwesomeIcon icon={statusConfig.icon} />
-            {statusConfig.label}
+            {t(statusConfig.labelKey)}
           </div>
         </div>
 
@@ -297,7 +298,7 @@ function OrderDetails() {
         {status !== "cancelled" && (
           <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-6 shadow-sm">
             <h3 className="text-sm font-semibold text-(--color-text-muted) mb-6 uppercase tracking-wide">
-              Order Progress
+              {t("orderDetails.progress")}
             </h3>
             <div className="flex items-center justify-between relative">
               {/* Background Line */}
@@ -340,7 +341,7 @@ function OrderDetails() {
                           : "text-(--color-text-muted)"
                       }`}
                     >
-                      {stepConfig.label}
+                      {t(stepConfig.labelKey)}
                     </span>
                   </div>
                 );
@@ -349,7 +350,7 @@ function OrderDetails() {
             {status === "revision" && (
               <div className="mt-4 flex items-center gap-2 text-orange-600 text-sm bg-orange-50 border border-orange-200 rounded-lg px-4 py-2">
                 <FontAwesomeIcon icon={faUndo} />
-                <span>Revision requested — seller needs to re-deliver.</span>
+                <span>{t("orderDetails.revisionNotice")}</span>
               </div>
             )}
           </div>
@@ -379,10 +380,10 @@ function OrderDetails() {
                   <div className="flex items-center gap-3 mt-2 text-sm text-(--color-text-muted)">
                     <span className="flex items-center gap-1">
                       <FontAwesomeIcon icon={faCalendar} />
-                      {order.delivery_time} day delivery
+                      {order.delivery_time} {t("orderDetails.dayDelivery")}
                     </span>
                     <span className="text-lg font-bold text-green-500">
-                      Free
+                      {t("orderDetails.free")}
                     </span>
                   </div>
                 </div>
@@ -397,7 +398,7 @@ function OrderDetails() {
                     icon={faFileAlt}
                     className="text-(--color-primary)"
                   />
-                  Requirements
+                  {t("orderDetails.requirements")}
                 </h3>
                 <div className="text-(--color-text) text-sm whitespace-pre-line leading-relaxed bg-(--color-bg) rounded-lg p-4 border border-(--color-border)">
                   {order.requirements}
@@ -410,7 +411,7 @@ function OrderDetails() {
               <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 shadow-sm">
                 <h3 className="font-bold text-(--color-text) mb-3 flex items-center gap-2">
                   <FontAwesomeIcon icon={faTruck} className="text-purple-500" />
-                  Delivery Note
+                  {t("orderDetails.deliveryNote")}
                 </h3>
                 <div className="text-(--color-text) text-sm whitespace-pre-line leading-relaxed bg-(--color-bg) rounded-lg p-4 border border-(--color-border)">
                   {order.delivery_note}
@@ -426,7 +427,7 @@ function OrderDetails() {
                     icon={faFileAlt}
                     className="text-green-500"
                   />
-                  Delivery Files
+                  {t("orderDetails.deliveryFiles")}
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {(typeof order.delivery_files === "string"
@@ -438,7 +439,7 @@ function OrderDetails() {
                     const fileName =
                       typeof file === "object" && file.name
                         ? file.name
-                        : `File ${idx + 1}`;
+                        : `${t("orderDetails.file")} ${idx + 1}`;
                     return (
                       <a
                         key={idx}
@@ -458,7 +459,7 @@ function OrderDetails() {
 
             {/* Actions Section */}
             <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 shadow-sm">
-              <h3 className="font-bold text-(--color-text) mb-4">Actions</h3>
+              <h3 className="font-bold text-(--color-text) mb-4">{t("orderDetails.actions")}</h3>
               <div className="flex flex-wrap gap-3">
                 {/* Seller: Start Order */}
                 {isSeller && status === "pending" && (
@@ -468,7 +469,7 @@ function OrderDetails() {
                     className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center gap-2"
                   >
                     <FontAwesomeIcon icon={faPlay} />
-                    {actionLoading ? "Starting..." : "Start Order"}
+                    {actionLoading ? t("orderDetails.starting") : t("orderDetails.startOrder")}
                   </button>
                 )}
 
@@ -480,7 +481,7 @@ function OrderDetails() {
                       className="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition flex items-center gap-2"
                     >
                       <FontAwesomeIcon icon={faTruck} />
-                      {status === "revision" ? "Re-deliver" : "Deliver Order"}
+                      {status === "revision" ? t("orderDetails.redeliver") : t("orderDetails.deliverOrder")}
                     </button>
                   )}
 
@@ -492,7 +493,7 @@ function OrderDetails() {
                     className="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center gap-2"
                   >
                     <FontAwesomeIcon icon={faCheckCircle} />
-                    {actionLoading ? "Accepting..." : "Accept Delivery"}
+                    {actionLoading ? t("orderDetails.accepting") : t("orderDetails.acceptDelivery")}
                   </button>
                 )}
 
@@ -503,7 +504,7 @@ function OrderDetails() {
                     className="px-5 py-2.5 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 transition flex items-center gap-2"
                   >
                     <FontAwesomeIcon icon={faUndo} />
-                    Request Revision
+                    {t("orderDetails.requestRevision")}
                   </button>
                 )}
 
@@ -513,14 +514,14 @@ function OrderDetails() {
                   className="px-5 py-2.5 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 transition flex items-center gap-2"
                 >
                   <FontAwesomeIcon icon={faMessage} />
-                  Message {isBuyer ? "Seller" : "Buyer"}
+                  {isBuyer ? t("orderDetails.messageSeller") : t("orderDetails.messageBuyer")}
                 </Link>
 
                 {/* No actions for completed/cancelled */}
                 {(status === "completed" || status === "cancelled") &&
                   !isBuyer && (
                     <p className="text-(--color-text-muted) text-sm self-center">
-                      This order is {status}. No further actions available.
+                      {t("orderDetails.noActions")} {t(statusConfig.labelKey)}.
                     </p>
                   )}
               </div>
@@ -531,7 +532,7 @@ function OrderDetails() {
               <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 shadow-sm">
                 <h3 className="font-bold text-(--color-text) mb-4 flex items-center gap-2">
                   <FontAwesomeIcon icon={faStar} className="text-amber-400" />
-                  Review
+                  {t("orderDetails.review")}
                 </h3>
 
                 {reviewDone || (order as any).review ? (
@@ -557,12 +558,12 @@ function OrderDetails() {
                           </p>
                         )}
                         <p className="text-green-700 text-sm font-medium">
-                          Review submitted
+                          {t("orderDetails.reviewSubmitted")}
                         </p>
                       </div>
                     ) : (
                       <p className="text-green-700 font-medium">
-                        Your review has been submitted. Thank you!
+                        {t("orderDetails.reviewThanks")}
                       </p>
                     )}
                   </div>
@@ -571,12 +572,12 @@ function OrderDetails() {
                     onClick={() => setShowReviewForm(true)}
                     className="w-full py-3 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 transition"
                   >
-                    Write a Review
+                    {t("orderDetails.writeReview")}
                   </button>
                 ) : (
                   <div className="flex flex-col gap-4">
                     <p className="text-sm text-(--color-text-muted)">
-                      How was your experience?
+                      {t("orderDetails.howExperience")}
                     </p>
                     {/* Stars */}
                     <div className="flex gap-1">
@@ -605,7 +606,7 @@ function OrderDetails() {
                     <textarea
                       value={reviewComment}
                       onChange={(e) => setReviewComment(e.target.value)}
-                      placeholder="Tell us about your experience..."
+                      placeholder={t("orderDetails.reviewPlaceholder")}
                       rows={3}
                       className="w-full px-4 py-3 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary) resize-none"
                     />
@@ -618,13 +619,13 @@ function OrderDetails() {
                         disabled={reviewSubmitting}
                         className="px-6 py-2.5 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition"
                       >
-                        {reviewSubmitting ? "Submitting..." : "Submit Review"}
+                        {reviewSubmitting ? t("orderDetails.submitting") : t("orderDetails.submitReview")}
                       </button>
                       <button
                         onClick={() => setShowReviewForm(false)}
                         className="px-6 py-2.5 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:opacity-80 transition"
                       >
-                        Cancel
+                        {t("orderDetails.cancel")}
                       </button>
                     </div>
                   </div>
@@ -642,45 +643,45 @@ function OrderDetails() {
                   icon={faShoppingBag}
                   className="text-(--color-primary)"
                 />
-                Order Summary
+                {t("orderDetails.orderSummary")}
               </h3>
               <div className="flex flex-col gap-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">Order ID</span>
+                  <span className="text-(--color-text-muted)">{t("orderDetails.orderId")}</span>
                   <span className="font-semibold text-(--color-text)">
                     #{order.id}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">Status</span>
+                  <span className="text-(--color-text-muted)">{t("orderDetails.status")}</span>
                   <span className={`font-semibold ${statusConfig.color}`}>
-                    {statusConfig.label}
+                    {t(statusConfig.labelKey)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">Price</span>
-                  <span className="font-bold text-green-500 text-lg">Free</span>
+                  <span className="text-(--color-text-muted)">{t("orderDetails.price")}</span>
+                  <span className="font-bold text-green-500 text-lg">{t("orderDetails.free")}</span>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-(--color-text-muted)">
-                    Delivery Time
+                    {t("orderDetails.deliveryTime")}
                   </span>
                   <span className="text-(--color-text)">
-                    {order.delivery_time} days
+                    {order.delivery_time} {t("orderDetails.days")}
                   </span>
                 </div>
                 <hr className="border-(--color-border)" />
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">Ordered</span>
+                  <span className="text-(--color-text-muted)">{t("orderDetails.ordered")}</span>
                   <span className="text-(--color-text)">
-                    {new Date(order.created_at).toLocaleDateString()}
+                    {new Date(order.created_at).toLocaleDateString(language === "ku" ? "ku" : "en-US")}
                   </span>
                 </div>
                 {order.completed_at && (
                   <div className="flex justify-between">
-                    <span className="text-(--color-text-muted)">Completed</span>
+                    <span className="text-(--color-text-muted)">{t("orderDetails.completed")}</span>
                     <span className="text-(--color-text)">
-                      {new Date(order.completed_at).toLocaleDateString()}
+                      {new Date(order.completed_at).toLocaleDateString(language === "ku" ? "ku" : "en-US")}
                     </span>
                   </div>
                 )}
@@ -695,7 +696,7 @@ function OrderDetails() {
                     icon={faUser}
                     className="text-(--color-primary)"
                   />
-                  {isBuyer ? "Seller" : "Buyer"}
+                  {isBuyer ? t("orderDetails.partySeller") : t("orderDetails.partyBuyer")}
                 </h3>
                 <div className="flex items-center gap-3">
                   {otherParty.profile?.avatar_url ? (
@@ -714,7 +715,7 @@ function OrderDetails() {
                       {otherParty.name}
                     </p>
                     <p className="text-sm text-(--color-text-muted) truncate">
-                      @{otherParty.profile?.username || "user"}
+                      @{otherParty.profile?.username || t("orderDetails.user")}
                     </p>
                   </div>
                 </div>
@@ -723,13 +724,13 @@ function OrderDetails() {
                     to={`/profile/${otherParty.profile?.username}`}
                     className="flex-1 text-center px-3 py-2 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg text-sm font-medium hover:opacity-80 transition"
                   >
-                    View Profile
+                    {t("orderDetails.viewProfile")}
                   </Link>
                   <Link
                     to={`/messages/${otherParty.id}`}
                     className="flex-1 text-center px-3 py-2 bg-(--color-primary) text-white rounded-lg text-sm font-medium hover:opacity-90 transition"
                   >
-                    Message
+                    {t("orderDetails.message")}
                   </Link>
                 </div>
               </div>
@@ -739,7 +740,7 @@ function OrderDetails() {
             {status === "pending" && isBuyer && (
               <div className="bg-yellow-50 border border-yellow-200 rounded-xl p-4 text-sm text-yellow-800">
                 <FontAwesomeIcon icon={faClock} className="mr-2" />
-                Waiting for the seller to start working on your order.
+                {t("orderDetails.info.pendingBuyer")}
               </div>
             )}
             {status === "pending" && isSeller && (
@@ -748,27 +749,25 @@ function OrderDetails() {
                   icon={faExclamationTriangle}
                   className="mr-2"
                 />
-                You have a new order! Start working on it to begin the delivery
-                countdown.
+                {t("orderDetails.info.pendingSeller")}
               </div>
             )}
             {status === "in_progress" && isSeller && (
               <div className="bg-blue-50 border border-blue-200 rounded-xl p-4 text-sm text-blue-800">
                 <FontAwesomeIcon icon={faPlay} className="mr-2" />
-                You're working on this order. Deliver when ready.
+                {t("orderDetails.info.inProgressSeller")}
               </div>
             )}
             {status === "delivered" && isBuyer && (
               <div className="bg-purple-50 border border-purple-200 rounded-xl p-4 text-sm text-purple-800">
                 <FontAwesomeIcon icon={faTruck} className="mr-2" />
-                The seller has delivered! Review it and accept or request a
-                revision.
+                {t("orderDetails.info.deliveredBuyer")}
               </div>
             )}
             {status === "revision" && isSeller && (
               <div className="bg-orange-50 border border-orange-200 rounded-xl p-4 text-sm text-orange-800">
                 <FontAwesomeIcon icon={faUndo} className="mr-2" />
-                The buyer requested a revision. Please re-deliver when ready.
+                {t("orderDetails.info.revisionSeller")}
               </div>
             )}
           </div>
@@ -780,12 +779,12 @@ function OrderDetails() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-xl p-6 max-w-md w-full shadow-2xl">
             <h2 className="text-xl font-bold text-(--color-text) mb-4">
-              {status === "revision" ? "Re-deliver Order" : "Deliver Order"}
+              {status === "revision" ? t("orderDetails.redeliverOrder") : t("orderDetails.deliverOrder")}
             </h2>
             <textarea
               value={deliveryNote}
               onChange={(e) => setDeliveryNote(e.target.value)}
-              placeholder="Add delivery notes for the buyer..."
+              placeholder={t("orderDetails.deliverPlaceholder")}
               rows={4}
               className="w-full px-4 py-3 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary) mb-4 resize-none"
             />
@@ -795,7 +794,7 @@ function OrderDetails() {
                 disabled={actionLoading || !deliveryNote.trim()}
                 className="flex-1 px-4 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
               >
-                {actionLoading ? "Delivering..." : "Deliver"}
+                {actionLoading ? t("orderDetails.delivering") : t("orderDetails.deliver")}
               </button>
               <button
                 onClick={() => {
@@ -804,7 +803,7 @@ function OrderDetails() {
                 }}
                 className="flex-1 px-4 py-2.5 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:opacity-80 transition"
               >
-                Cancel
+                {t("orderDetails.cancel")}
               </button>
             </div>
           </div>
@@ -816,12 +815,12 @@ function OrderDetails() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-xl p-6 max-w-md w-full shadow-2xl">
             <h2 className="text-xl font-bold text-(--color-text) mb-4">
-              Request Revision
+              {t("orderDetails.requestRevision")}
             </h2>
             <textarea
               value={revisionReason}
               onChange={(e) => setRevisionReason(e.target.value)}
-              placeholder="Explain what needs to be revised..."
+              placeholder={t("orderDetails.revisionPlaceholder")}
               rows={4}
               className="w-full px-4 py-3 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) focus:outline-none focus:border-(--color-primary) mb-4 resize-none"
             />
@@ -831,7 +830,7 @@ function OrderDetails() {
                 disabled={actionLoading || !revisionReason.trim()}
                 className="flex-1 px-4 py-2.5 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 disabled:opacity-50 transition"
               >
-                {actionLoading ? "Requesting..." : "Request Revision"}
+                {actionLoading ? t("orderDetails.requesting") : t("orderDetails.requestRevision")}
               </button>
               <button
                 onClick={() => {
@@ -840,7 +839,7 @@ function OrderDetails() {
                 }}
                 className="flex-1 px-4 py-2.5 bg-(--color-bg) text-(--color-text) border border-(--color-border) rounded-lg hover:opacity-80 transition"
               >
-                Cancel
+                {t("orderDetails.cancel")}
               </button>
             </div>
           </div>

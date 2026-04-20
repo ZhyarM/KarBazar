@@ -7,8 +7,11 @@ import {
   faLinkedinIn,
   faDribbble,
 } from "@fortawesome/free-brands-svg-icons";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Footer(): JSX.Element {
+  const { t } = useLanguage();
+
   return (
     <footer className="bg-(--color-bg) text-(--color-text) border-t border-t-(--color-text)">
       <div className="mx-auto flex max-w-6xl flex-col gap-10 px-4 py-10 md:px-6 lg:flex-row lg:justify-between lg:py-14">
@@ -23,9 +26,7 @@ function Footer(): JSX.Element {
           </div>
 
           <p className="text-sm leading-relaxed text-(--color-text-muted)">
-            Connect with talented businesses worldwide. Find the perfect
-            professional for your project or offer your skills to clients
-            globally.
+            {t("footer.description")}
           </p>
 
           <div className="flex gap-3">
@@ -69,65 +70,32 @@ function Footer(): JSX.Element {
         <div className="grid flex-1 grid-cols-1 gap-8 sm:grid-cols-2 lg:grid-cols-3">
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-(--color-text-muted)">
-              Categories
+              {t("footer.section.categories")}
             </h3>
             <ul className="space-y-2 text-sm text-(--color-text-muted)">
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Graphics &amp; Design
+                  {t("footer.categories.graphicsDesign")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Digital Marketing
+                  {t("footer.categories.digitalMarketing")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Writing &amp; Translation
+                  {t("footer.categories.writingTranslation")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Video &amp; Animation
+                  {t("footer.categories.videoAnimation")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Programming &amp; Tech
-                </a>
-              </li>
-            </ul>
-          </div>
-
-          <div>
-            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-(--color-primary-muted)">
-              About
-            </h3>
-            <ul className="space-y-2 text-sm text-(--color-primary-muted)">
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  About Us
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  Contact
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  FAQ
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  Careers
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  Press &amp; News
+                  {t("footer.categories.programmingTech")}
                 </a>
               </li>
             </ul>
@@ -135,32 +103,65 @@ function Footer(): JSX.Element {
 
           <div>
             <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-(--color-primary-muted)">
-              Support
+              {t("footer.section.about")}
             </h3>
             <ul className="space-y-2 text-sm text-(--color-primary-muted)">
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Help &amp; Support
+                  {t("footer.about.aboutUs")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Trust &amp; Safety
+                  {t("footer.about.contact")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Selling on KarBazar
+                  {t("footer.about.faq")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Buying on KarBazar
+                  {t("footer.about.careers")}
                 </a>
               </li>
               <li>
                 <a href="#" className="transition hover:text-(--color-primary)">
-                  Terms of Service
+                  {t("footer.about.pressNews")}
+                </a>
+              </li>
+            </ul>
+          </div>
+
+          <div>
+            <h3 className="mb-4 text-sm font-semibold uppercase tracking-wide text-(--color-primary-muted)">
+              {t("footer.section.support")}
+            </h3>
+            <ul className="space-y-2 text-sm text-(--color-primary-muted)">
+              <li>
+                <a href="#" className="transition hover:text-(--color-primary)">
+                  {t("footer.support.helpSupport")}
+                </a>
+              </li>
+              <li>
+                <a href="#" className="transition hover:text-(--color-primary)">
+                  {t("footer.support.trustSafety")}
+                </a>
+              </li>
+              <li>
+                <a href="#" className="transition hover:text-(--color-primary)">
+                  {t("footer.support.selling")}
+                </a>
+              </li>
+              <li>
+                <a href="#" className="transition hover:text-(--color-primary)">
+                  {t("footer.support.buying")}
+                </a>
+              </li>
+              <li>
+                <a href="#" className="transition hover:text-(--color-primary)">
+                  {t("footer.support.termsService")}
                 </a>
               </li>
             </ul>
@@ -170,16 +171,19 @@ function Footer(): JSX.Element {
 
       <div className="border-t border-(--color-border)">
         <div className="mx-auto flex max-w-6xl flex-col gap-4 px-4 py-5 text-xs text-(--color-primary-muted) md:flex-row md:items-center md:justify-between md:px-6">
-          <p>© {new Date().getFullYear()} KarBazar. All rights reserved.</p>
+          <p>
+            © {new Date().getFullYear()} KarBazar.{" "}
+            {t("footer.bottom.rightsReserved")}
+          </p>
           <div className="flex flex-wrap gap-5">
             <a href="#" className="transition hover:text-(--color-primary)">
-              Terms
+              {t("footer.bottom.terms")}
             </a>
             <a href="#" className="transition hover:text-(--color-primary)">
-              Privacy
+              {t("footer.bottom.privacy")}
             </a>
             <a href="#" className="transition hover:text-(--color-primary)">
-              Cookies
+              {t("footer.bottom.cookies")}
             </a>
           </div>
         </div>

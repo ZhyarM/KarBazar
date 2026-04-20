@@ -6,8 +6,10 @@ import LoadingCircle from "../utils/loading";
 import type { GigresponseByID } from "../API/gigs/getGigByID";
 import { getImageUrl, getAvatarUrl } from "../utils/imageUrl";
 import MessageToast from "../utils/message";
+import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Checkout() {
+  const { t, direction } = useLanguage();
   const { gigId } = useParams<{ gigId?: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -46,14 +48,14 @@ function Checkout() {
     try {
       await createOrder(Number(gigId), packageTier, requirements || undefined);
       setSuccess(true);
-      setMessage("Order placed successfully!");
+      setMessage(t("checkout.success"));
       setTimeout(() => {
         navigate("/orders");
       }, 2000);
     } catch (error: any) {
       console.error("Error placing order:", error);
       setSuccess(false);
-      setMessage(error.message || "Failed to place order");
+      setMessage(error.message || t("checkout.failed"));
     } finally {
       setPlacing(false);
     }
@@ -68,7 +70,7 @@ function Checkout() {
     packageTier.charAt(0).toUpperCase() + packageTier.slice(1);
 
   return (
-    <div className="w-full min-h-screen bg-(--color-bg) py-8 px-6">
+    <div className="w-full min-h-screen bg-(--color-bg) py-8 px-6" dir={direction}>
       <MessageToast
         visible={success !== null}
         message={message}
@@ -81,17 +83,17 @@ function Checkout() {
 
       <div className="max-w-3xl mx-auto">
         <h1 className="text-3xl font-bold text-(--color-text) mb-2">
-          Place Order
+          {t("checkout.placeOrder")}
         </h1>
         <p className="text-(--color-text-muted) mb-8">
-          This service is completely free for clients
+          {t("checkout.freeForClients")}
         </p>
 
         <div className="flex flex-col gap-6">
           {/* Gig Summary */}
           <div className="bg-(--color-surface) border border-(--color-border) rounded-lg p-6">
             <h2 className="text-lg font-bold text-(--color-text) mb-4">
-              Order Summary
+              {t("checkout.orderSummary")}
             </h2>
 
             <div className="flex gap-4 pb-4 border-b border-(--color-border) mb-4">
@@ -105,10 +107,10 @@ function Checkout() {
                   {gig.data.title}
                 </h3>
                 <p className="text-sm text-(--color-text-muted) mb-2">
-                  by {gig.data.seller.name}
+                  {t("checkout.by")} {gig.data.seller.name}
                 </p>
                 <span className="text-xs bg-(--color-primary) text-(--color-text-inverse) px-2 py-1 rounded font-medium">
-                  {packageName} Package
+                  {packageName} {t("checkout.package")}
                 </span>
               </div>
             </div>
@@ -117,18 +119,18 @@ function Checkout() {
             {selectedPackage && (
               <div className="space-y-3">
                 <p className="text-sm text-(--color-text)">
-                  <span className="font-semibold">Description:</span>{" "}
+                  <span className="font-semibold">{t("checkout.description")}:</span>{" "}
                   {selectedPackage.description}
                 </p>
                 <p className="text-sm text-(--color-text)">
-                  <span className="font-semibold">Delivery:</span>{" "}
+                  <span className="font-semibold">{t("checkout.delivery")}:</span>{" "}
                   {selectedPackage.delivery_time} days
                 </p>
                 {Array.isArray(selectedPackage.features) &&
                   selectedPackage.features.length > 0 && (
                     <div>
                       <p className="font-semibold text-sm text-(--color-text) mb-1">
-                        Includes:
+                        {t("checkout.includes")}:
                       </p>
                       <ul className="space-y-1">
                         {selectedPackage.features.map(
@@ -152,7 +154,7 @@ function Checkout() {
           {/* Seller Info */}
           <div className="bg-(--color-surface) border border-(--color-border) rounded-lg p-6">
             <h2 className="text-lg font-bold text-(--color-text) mb-4">
-              Seller
+              {t("checkout.seller")}
             </h2>
             <div className="flex items-center gap-4">
               {gig.data.seller.profile.avatar_url ? (
@@ -184,17 +186,16 @@ function Checkout() {
           {/* Requirements */}
           <div className="bg-(--color-surface) border border-(--color-border) rounded-lg p-6">
             <h2 className="text-lg font-bold text-(--color-text) mb-2">
-              Your Requirements
+              {t("checkout.requirements")}
             </h2>
             <p className="text-sm text-(--color-text-muted) mb-3">
-              Provide details about what you need so the seller can deliver the
-              best work.
+              {t("checkout.requirementsDesc")}
             </p>
             <textarea
               value={requirements}
               onChange={(e) => setRequirements(e.target.value)}
               rows={5}
-              placeholder="Describe your project requirements..."
+              placeholder={t("checkout.requirementsPlaceholder")}
               className="w-full px-4 py-3 rounded-lg bg-(--color-bg) border border-(--color-border) text-(--color-text) placeholder:text-(--color-text-muted) focus:outline-none focus:border-(--color-primary) focus:ring-1 focus:ring-(--color-primary) transition-all"
             />
           </div>
@@ -203,12 +204,12 @@ function Checkout() {
           <div className="bg-(--color-surface) border border-(--color-border) rounded-lg p-6">
             <div className="flex justify-between items-center mb-4">
               <span className="text-lg font-bold text-(--color-text)">
-                Total
+                {t("checkout.total")}
               </span>
-              <span className="text-2xl font-bold text-green-500">FREE</span>
+              <span className="text-2xl font-bold text-green-500">{t("checkout.free")}</span>
             </div>
             <p className="text-sm text-(--color-text-muted) mb-6">
-              No payment required. This platform is free for clients.
+              {t("checkout.noPayment")}
             </p>
 
             <button
@@ -216,14 +217,14 @@ function Checkout() {
               disabled={placing}
               className="w-full py-3 rounded-lg bg-(--color-primary) text-(--color-text-inverse) font-semibold text-lg hover:opacity-90 disabled:opacity-50 transition-all cursor-pointer"
             >
-              {placing ? "Placing Order..." : "Place Order"}
+              {placing ? t("checkout.placing") : t("checkout.placeOrder")}
             </button>
 
             <button
               onClick={() => navigate(`/gig/${gigId}`)}
               className="w-full py-3 mt-2 rounded-lg bg-(--color-bg-muted) text-(--color-text) font-medium hover:bg-(--color-border) transition-all cursor-pointer"
             >
-              Back to Gig
+              {t("checkout.backToGig")}
             </button>
           </div>
         </div>

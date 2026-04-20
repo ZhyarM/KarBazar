@@ -12,10 +12,12 @@ import { Link, useNavigate } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import MessageToast from "../../utils/message";
 import { categoriesData } from "../../utils/CategoriesData";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 type StepType = 1 | 2 | 3;
 
 function SignUp() {
+  const { t } = useLanguage();
   const [message, setMessage] = useState<string | null>(null);
   const [fieldErrors, setFieldErrors] = useState<Record<string, string>>({});
   const navigate = useNavigate();
@@ -76,7 +78,7 @@ function SignUp() {
   const goToNextStep = () => {
     if (currentStep === 1 && !form.Type) {
       setSuccess(false);
-      setMessage("Please select an account type.");
+      setMessage(t("auth.validation.selectAccountType"));
       return;
     }
     if (currentStep === 2) {
@@ -88,12 +90,12 @@ function SignUp() {
         !form.confirm_password
       ) {
         setSuccess(false);
-        setMessage("Please fill all required fields.");
+        setMessage(t("auth.validation.fillRequired"));
         return;
       }
       if (form.password !== form.confirm_password) {
         setSuccess(false);
-        setMessage("Passwords do not match.");
+        setMessage(t("auth.validation.passwordMismatch"));
         return;
       }
     }
@@ -111,13 +113,13 @@ function SignUp() {
     if (form.Type === "client") {
       if (!form.location) {
         setSuccess(false);
-        setMessage("Please enter your location.");
+        setMessage(t("auth.validation.enterLocation"));
         return;
       }
     } else if (form.Type === "business") {
       if (!form.company_name || !form.business_category || !form.hourly_rate) {
         setSuccess(false);
-        setMessage("Please fill all business details.");
+        setMessage(t("auth.validation.businessDetails"));
         return;
       }
     }
@@ -145,7 +147,7 @@ function SignUp() {
       }, 1500);
     } else {
       setSuccess(false);
-      setMessage(res.message || "Registration failed. Please try again.");
+      setMessage(res.message || t("auth.validation.registrationFailed"));
     }
 
     console.log(res);
@@ -185,39 +187,38 @@ function SignUp() {
              leading-normal md:leading-[90px] 
               text-(--color-text)"
             >
-              Start Your Online Service
+              {t("auth.startOnlineService")}
             </h1>
             <h2
               className="  font-inter text-2xl sm:text-5xl md:text-xl
             tracking-tight font-bold font-sans
               text-(--color-text)"
             >
-              Join KarBazar and connect with clients Nation-wide. <br /> Turn
-              your skills into income.
+              {t("auth.joinKarBazar")}
             </h2>
             <ul className="fade-up label-heading mt-10 flex flex-col gap-5">
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  create your professional profile
+                  {t("auth.benefit.profile")}
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  showcase your portfolio
+                  {t("auth.benefit.portfolio")}
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  Increase your income
+                  {t("auth.benefit.income")}
                 </p>
               </li>
               <li className="fade-up flex  gap-1  ">
                 <CheckMark bg_color="bg-gray-400" mark_color="text-gray-200" />
                 <p className="font-semibold text-lg fade-up flex flex-col self-center text-(--color-text)">
-                  Build your reputation
+                  {t("auth.benefit.reputation")}
                 </p>
               </li>
             </ul>
@@ -238,7 +239,7 @@ function SignUp() {
                 className="mr-2 text-(--color-accent)"
                 icon={faUserPlus}
               />
-              Create your Account
+              {t("auth.signUpTitle")}
             </h1>
 
             {/* Progress Steps */}
@@ -282,7 +283,7 @@ function SignUp() {
             {currentStep === 1 && (
               <div className="fade-up">
                 <h2 className="text-lg font-bold text-(--color-text-inverse) mb-4">
-                  What type of account do you want?
+                  {t("auth.selectAccountType")}
                 </h2>
                 <div className="fade-up flex gap-4 mt-4">
                   <div
@@ -294,10 +295,10 @@ function SignUp() {
                     }`}
                   >
                     <h3 className="font-bold text-(--color-text-inverse) text-center">
-                      Regular User
+                      {t("auth.accountType.client")}
                     </h3>
                     <p className="text-sm text-(--color-text-inverse) text-center mt-2">
-                      Find and hire talented service providers
+                      {t("auth.accountType.clientDesc")}
                     </p>
                   </div>
                   <div
@@ -309,10 +310,10 @@ function SignUp() {
                     }`}
                   >
                     <h3 className="font-bold text-(--color-text-inverse) text-center">
-                      Business
+                      {t("auth.accountType.business")}
                     </h3>
                     <p className="text-sm text-(--color-text-inverse) text-center mt-2">
-                      Offer your services and build your business
+                      {t("auth.accountType.businessDesc")}
                     </p>
                   </div>
                 </div>
@@ -323,7 +324,7 @@ function SignUp() {
             {currentStep === 2 && (
               <div className="fade-up">
                 <h2 className="text-lg font-bold text-(--color-text-inverse) mb-4">
-                  Tell us about yourself
+                  {t("auth.tellUsAboutYourself")}
                 </h2>
                 <div className="fade-up flex flex-col gap-10 mt-8">
                   <div className="fade-up flex flex-row gap-4">
@@ -332,8 +333,8 @@ function SignUp() {
                       onChange={(value) => updateForm("first_name", value)}
                       value={form.first_name}
                       icon=""
-                      label="First Name"
-                      placeholder="John"
+                      label={t("auth.firstName")}
+                      placeholder={t("auth.placeholder.firstName")}
                       size="1/2"
                       error={fieldErrors.first_name}
                     />
@@ -342,8 +343,8 @@ function SignUp() {
                       onChange={(value) => updateForm("last_name", value)}
                       value={form.last_name}
                       icon=""
-                      label="Last Name"
-                      placeholder="Doe"
+                      label={t("auth.lastName")}
+                      placeholder={t("auth.placeholder.lastName")}
                       size="1/2"
                       error={fieldErrors.last_name}
                     />
@@ -353,8 +354,8 @@ function SignUp() {
                     onChange={(value) => updateForm("email", value)}
                     value={form.email}
                     icon=""
-                    label="Email Address"
-                    placeholder="john@example.com"
+                    label={t("auth.emailAddress")}
+                    placeholder={t("auth.placeholder.email")}
                     size="full"
                     error={fieldErrors.email}
                   />
@@ -364,7 +365,7 @@ function SignUp() {
                       onChange={(value) => updateForm("password", value)}
                       value={form.password}
                       icon=""
-                      label="Password"
+                      label={t("auth.password")}
                       placeholder="••••••••"
                       size="full"
                       error={fieldErrors.password}
@@ -383,7 +384,7 @@ function SignUp() {
                       }
                       value={form.confirm_password}
                       icon=""
-                      label="Confirm Password"
+                      label={t("auth.confirmPassword")}
                       placeholder="••••••••"
                       size="full"
                       error={fieldErrors.confirm_password}
@@ -404,7 +405,7 @@ function SignUp() {
                 {form.Type === "client" && (
                   <>
                     <h2 className="text-lg font-bold text-(--color-text-inverse) mb-4">
-                      Where are you located?
+                      {t("auth.whereLocated")}
                     </h2>
                     <div className="fade-up flex flex-col gap-10 mt-8">
                       <Input
@@ -412,8 +413,8 @@ function SignUp() {
                         onChange={(value) => updateForm("location", value)}
                         value={form.location}
                         icon=""
-                        label="Your Location"
-                        placeholder="City, Country"
+                        label={t("auth.yourLocation")}
+                        placeholder={t("auth.placeholder.location")}
                         size="full"
                         error={fieldErrors.location}
                       />
@@ -423,7 +424,7 @@ function SignUp() {
                           onChange={(value) => updateForm("budget_min", value)}
                           value={form.budget_min}
                           icon=""
-                          label="Min Budget"
+                          label={t("auth.minBudget")}
                           placeholder="100"
                           size="1/2"
                           error={fieldErrors.budget_min}
@@ -434,7 +435,7 @@ function SignUp() {
                           onChange={(value) => updateForm("budget_max", value)}
                           value={form.budget_max}
                           icon=""
-                          label="Max Budget"
+                          label={t("auth.maxBudget")}
                           placeholder="10000"
                           size="1/2"
                           error={fieldErrors.budget_max}
@@ -448,7 +449,7 @@ function SignUp() {
                 {form.Type === "business" && (
                   <>
                     <h2 className="text-lg font-bold text-(--color-text-inverse) mb-4">
-                      Tell us about your business
+                      {t("auth.businessDetails")}
                     </h2>
                     <div className="fade-up flex flex-col gap-10 mt-8">
                       <Input
@@ -456,15 +457,15 @@ function SignUp() {
                         onChange={(value) => updateForm("company_name", value)}
                         value={form.company_name}
                         icon=""
-                        label="Company Name"
-                        placeholder="Acme Corp"
+                        label={t("auth.companyName")}
+                        placeholder={t("auth.placeholder.companyName")}
                         size="full"
                         error={fieldErrors.company_name}
                       />
                       <div className="flex flex-col">
                         <div className="flex flex-col align-baseline relative p-2 font-bold text-md pl-2 border w-full input-focus rounded-xl transition-colors border-(--color-border)">
                           <label className="bg-transparent absolute -top-6 label text-(--color-text-inverse) opacity-80">
-                            Business Category
+                            {t("auth.businessCategory")}
                           </label>
                           <select
                             className="focus:outline-none placeholder-gray-400 text-(--color-text-inverse) bg-transparent w-full"
@@ -474,7 +475,7 @@ function SignUp() {
                             }
                           >
                             <option value="" className="text-black">
-                              Select a category
+                              {t("auth.selectCategory")}
                             </option>
                             {businessCategories.map((category) => (
                               <option
@@ -498,7 +499,7 @@ function SignUp() {
                         onChange={(value) => updateForm("hourly_rate", value)}
                         value={form.hourly_rate}
                         icon=""
-                        label="Hourly Rate"
+                        label={t("auth.hourlyRate")}
                         placeholder="75"
                         size="full"
                         error={fieldErrors.hourly_rate}
@@ -518,7 +519,7 @@ function SignUp() {
                   onClick={goToPrevStep}
                   className="flex-1 py-2.5 px-4 bg-(--color-surface) text-(--color-text) font-bold rounded-lg hover:bg-opacity-80 transition-all"
                 >
-                  Back
+                  {t("auth.back")}
                 </button>
               )}
               {currentStep < 3 && (
@@ -528,7 +529,7 @@ function SignUp() {
                   disabled={loading}
                   className="flex-1 py-2.5 px-4 bg-(--color-primary) text-white font-bold rounded-lg hover:bg-opacity-90 transition-all disabled:opacity-70"
                 >
-                  Next
+                  {t("auth.next")}
                 </button>
               )}
             </div>
@@ -540,14 +541,16 @@ function SignUp() {
                   disabled={loading}
                   className="fade-up SingUpBtn w-full h-full disabled:opacity-70"
                 >
-                  {loading ? "Creating Account..." : "Create Account"}
+                  {loading
+                    ? t("auth.creatingAccount")
+                    : t("auth.createAccount")}
                 </button>
               </div>
             )}
             <div className="fade-up flex gap-1 items-center justify-center mt-4 text-(--color-text-inverse)">
-              already have an
+              {t("auth.alreadyHave")}
               <Link className="text-blue-600 font-bold" to={"/sign-in"}>
-                Account
+                {t("auth.account")}
               </Link>
             </div>
           </form>

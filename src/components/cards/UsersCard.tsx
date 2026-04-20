@@ -1,5 +1,6 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faStar } from "@fortawesome/free-solid-svg-icons";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface UserCardProps {
   user_id: string;
@@ -10,6 +11,12 @@ interface UserCardProps {
   rating_number: string;
   star_icon?: string | React.ReactNode;
   charge: string;
+  originalCharge?: string | null;
+  discountBadge?: string | null;
+  packageDiscounts?: Array<{
+    packageLabel: string;
+    discountLabel: string;
+  }>;
   user_background_img?: string;
   user_profile_img?: string;
   category?: string;
@@ -23,10 +30,15 @@ function UsersCard({
   star_icon,
   rating_number,
   charge,
+  originalCharge,
+  discountBadge,
+  packageDiscounts,
   user_background_img,
   user_profile_img,
   category,
 }: UserCardProps) {
+  const { t } = useLanguage();
+
   return (
     <div
       className="
@@ -40,17 +52,25 @@ function UsersCard({
         hover:bg-(--color-card-hover) hover:-translate-y-1 hover:shadow-xl"
     >
       {/* Gig Image */}
-      {user_background_img ? (
-        <img
-          src={user_background_img}
-          className="w-full h-44 object-cover"
-          alt={description}
-        />
-      ) : (
-        <div className="w-full h-44 flex justify-center items-center bg-(image:--gradient-secondary) text-3xl">
-          <FontAwesomeIcon icon={faCode} />
-        </div>
-      )}
+      <div className="relative">
+        {user_background_img ? (
+          <img
+            src={user_background_img}
+            className="w-full h-44 object-cover"
+            alt={description}
+          />
+        ) : (
+          <div className="w-full h-44 flex justify-center items-center bg-(image:--gradient-secondary) text-3xl">
+            <FontAwesomeIcon icon={faCode} />
+          </div>
+        )}
+
+        {discountBadge && (
+          <span className="absolute top-3 left-3 rounded-full bg-red-500 px-3 py-1 text-xs font-bold text-white shadow-md">
+            {discountBadge}
+          </span>
+        )}
+      </div>
 
       <div className="flex flex-col gap-3 p-4">
         {/* Seller Info */}
@@ -98,6 +118,19 @@ function UsersCard({
           </span>
         )}
 
+        {packageDiscounts && packageDiscounts.length > 0 && (
+          <div className="flex flex-wrap gap-1.5">
+            {packageDiscounts.map((pkgDiscount, index) => (
+              <span
+                key={`${pkgDiscount.packageLabel}-${index}`}
+                className="rounded-full border border-red-500/30 bg-red-500/10 px-2 py-0.5 text-[11px] font-semibold text-red-600"
+              >
+                {pkgDiscount.packageLabel}: {pkgDiscount.discountLabel}
+              </span>
+            ))}
+          </div>
+        )}
+
         {/* Rating & Price */}
         <div className="flex justify-between items-center pt-2 border-t border-(--color-border)">
           <div className="flex items-center gap-1">
@@ -111,9 +144,17 @@ function UsersCard({
               ({rating_number})
             </span>
           </div>
-          <p className="text-sm font-bold text-(--color-text)">
-            Starting at <span className="text-(--color-primary)">{charge}</span>
-          </p>
+          <div className="text-right">
+            {originalCharge && (
+              <p className="text-xs text-(--color-text-muted) line-through">
+                {originalCharge}
+              </p>
+            )}
+            <p className="text-sm font-bold text-(--color-text)">
+              {t("gigCard.startingAt")}{" "}
+              <span className="text-(--color-primary)">{charge}</span>
+            </p>
+          </div>
         </div>
       </div>
     </div>

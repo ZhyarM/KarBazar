@@ -76,6 +76,11 @@ class User extends Authenticatable
         return $this->hasMany(Notification::class);
     }
 
+    public function adminAuditLogs()
+    {
+        return $this->hasMany(AdminAuditLog::class, 'admin_id');
+    }
+
     public function favorites()
     {
         return $this->hasMany(Favorite::class);
