@@ -12,9 +12,6 @@ interface CategoryData {
 }
 
 function Features() {
-<<<<<<< HEAD
- 
-=======
   const [categories, setCategories] = useState<CategoryData[]>([]);
 
   useEffect(() => {
@@ -35,7 +32,6 @@ function Features() {
     loadCategories();
   }, []);
 
->>>>>>> 90fc087e2e453ecc2d05235ca463e90f236ee2ea
   return (
     <>
       <article className="flex flex-col justify-center items-center py-3.5 gap-6 bg-(--color-bg) ">
@@ -53,16 +49,6 @@ function Features() {
           </p>
         </section>
 
-<<<<<<< HEAD
-        <section className="flex flex-row justify-center items-center flex-wrap m-auto gap-4">
-          {cardContent.map((el) => (
-            <Cards
-    key={el.text}
-    logo={el.logo}
-    text={el.text}
-    category={el.category}
-  />
-=======
         <section className="w-full max-w-[1200px] grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 px-4">
           {categories.map((category) => (
             <Link
@@ -83,7 +69,6 @@ function Features() {
                 {category.gig_count} gigs available
               </p>
             </Link>
->>>>>>> 90fc087e2e453ecc2d05235ca463e90f236ee2ea
           ))}
         </section>
 

@@ -6,7 +6,7 @@ import About from "./../pages/About.tsx";
 import SignIn from "./../pages/auth/SignIn.tsx";
 import SignUp from "./../pages/auth/SignUp.tsx";
 import ErrorPage from "./../pages/ErrorPages/ErrorPage.tsx";
-/* import Root from "./Root.tsx"; */
+import Root from "./Root.tsx";
 import UserDetails from "./../page_components/user_profile/UserDetails";
 import { adminRoutes } from "./admin.routes.tsx";
 import UserProfile from "../page_components/user/userProfile.tsx";
@@ -30,6 +30,7 @@ import PostDetail from "../pages/PostDetail.tsx";
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
+    element: <Root />,
     errorElement: <ErrorPage />,
     children: [
       { index: true, element: <Home /> },
@@ -40,14 +41,11 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { path: "/gig/:id", element: <UserDetails /> },
       { path: "/gigs/:id", element: <UserDetails /> },
       { path: "categories", element: <Categories /> },
-          { path: "about", element: <About /> },
-          { path: "sign-in", element: <SignIn /> },
-          { path: "auth/signin", element: <SignIn /> },
+      { path: "about", element: <About /> },
+      { path: "sign-in", element: <SignIn /> },
+      { path: "auth/signin", element: <SignIn /> },
       { path: "auth/login", element: <SignIn /> },
       { path: "sign-up", element: <SignUp /> },
-        ],
-      },
-      adminRoutes,
       { path: "auth/register", element: <SignUp /> },
       { path: "sampleProfile", element: <FreelancerProfile /> },
       { path: "profile", element: <UserProfile /> },
@@ -73,6 +71,7 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { path: "create-post", element: <CreatePost /> },
       { path: "edit-post/:id", element: <CreatePost /> },
       { path: "posts/:id", element: <PostDetail /> },
+      adminRoutes,
     ],
   },
 ]);

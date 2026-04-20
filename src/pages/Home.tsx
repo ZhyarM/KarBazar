@@ -291,12 +291,8 @@ function Home() {
       <Testimonials />
       <TrustStrip />
       <PlatformStats />
-<<<<<<< HEAD
-      {/* <CallToActionSection /> */}
-=======
       <HomeFAQ />
       <CallToActionSection />
->>>>>>> 90fc087e2e453ecc2d05235ca463e90f236ee2ea
     </div>
   );
 }
