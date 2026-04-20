@@ -25,7 +25,9 @@ export interface Gig {
   delivery_time: number;
   rating: string;
   total_reviews: number;
+  review_count: number;
   total_orders: number;
+  order_count: number;
   is_active: boolean;
   created_at: string;
   updated_at: string;

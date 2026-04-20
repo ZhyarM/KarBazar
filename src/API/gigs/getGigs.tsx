@@ -16,6 +16,15 @@ export interface Gig {
   title: string;
   description: string;
   price: number;
+  starting_price: number;
+  discounted_starting_price: number;
+  has_active_discount: boolean;
+  max_discount_percentage: number | null;
+  active_package_discounts: {
+    basic?: GigPackageDiscountSummary;
+    standard?: GigPackageDiscountSummary;
+    premium?: GigPackageDiscountSummary;
+  };
   delivery_time: number;
   image_url: string | null;
   gallery: string[] | null;
@@ -38,6 +47,12 @@ export interface Gig {
   updated_at: string;
   seller: Seller;
   category: Category;
+}
+
+export interface GigPackageDiscountSummary {
+  discount_percentage: number;
+  expires_at: string | null;
+  discounted_price: number | null;
 }
 
 export interface PackageTier {

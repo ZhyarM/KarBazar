@@ -82,25 +82,67 @@ function GigCard({
       {gigs.length > 0 ? (
         <>
           <section className="w-full flex flex-wrap justify-center gap-4">
-            {gigs.map((gig) => (
-              <Link to={`/gig/${gig.id}`} key={gig.id}>
-                <UserCard
-                  username={gig.seller.name}
-                  sellerUsername={gig.seller.profile?.username}
-                  description={gig.title}
-                  rating={gig.rating}
-                  rating_number={gig.review_count.toString()}
-                  charge={`$${gig.price}`}
-                  user_background_img={getImageUrl(gig.image_url)}
-                  user_profile_img={getAvatarUrl(
-                    gig.seller.profile?.avatar_url || gig.seller.image,
-                  )}
-                  user_id={gig.seller_id.toString()}
-                  star_icon="⭐"
-                  category={gig.category?.name}
-                />
-              </Link>
-            ))}
+            {gigs.map((gig) =>
+              (() => {
+                const packageOrder: Array<"basic" | "standard" | "premium"> = [
+                  "basic",
+                  "standard",
+                  "premium",
+                ];
+
+                const packageDiscounts = packageOrder
+                  .filter(
+                    (packageKey) =>
+                      !!gig.active_package_discounts?.[packageKey],
+                  )
+                  .map((packageKey) => {
+                    const discount = gig.active_package_discounts[packageKey]!;
+                    return {
+                      packageLabel: t(`deals.package.${packageKey}`),
+                      discountLabel: `${discount.discount_percentage}% ${t("deals.off")}`,
+                    };
+                  });
+
+                const discountedStartingPrice =
+                  gig.discounted_starting_price ??
+                  gig.starting_price ??
+                  gig.price;
+                const originalStartingPrice = gig.starting_price ?? gig.price;
+                const hasVisibleDiscount =
+                  gig.has_active_discount &&
+                  gig.max_discount_percentage != null &&
+                  discountedStartingPrice < originalStartingPrice;
+
+                return (
+                  <Link to={`/gig/${gig.id}`} key={gig.id}>
+                    <UserCard
+                      username={gig.seller.name}
+                      sellerUsername={gig.seller.profile?.username}
+                      description={gig.title}
+                      rating={gig.rating}
+                      rating_number={gig.review_count.toString()}
+                      charge={`$${discountedStartingPrice}`}
+                      originalCharge={
+                        hasVisibleDiscount ? `$${originalStartingPrice}` : null
+                      }
+                      discountBadge={
+                        hasVisibleDiscount
+                          ? `${gig.max_discount_percentage}% ${t("deals.off")}`
+                          : null
+                      }
+                      packageDiscounts={packageDiscounts}
+                      user_background_img={getImageUrl(gig.image_url)}
+                      user_profile_img={getAvatarUrl(
+                        gig.seller.profile?.avatar_url || gig.seller.image,
+                      )}
+                      user_id={gig.seller_id.toString()}
+                      star_icon="⭐"
+                      category={gig.category?.name}
+                    />
+                  </Link>
+                );
+              })(),
+            )}
           </section>
 
           {totalPages > 1 && (

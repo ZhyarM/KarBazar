@@ -2,6 +2,7 @@ import { createBrowserRouter } from "react-router-dom";
 import Home from "./../pages/Home.tsx";
 import Categories from "./../pages/Categories.tsx";
 import BrowseGigs from "../pages/BrowseGigs.tsx";
+import Deals from "../pages/Deals.tsx";
 import About from "./../pages/About.tsx";
 import SignIn from "./../pages/auth/SignIn.tsx";
 import SignUp from "./../pages/auth/SignUp.tsx";
@@ -47,6 +48,7 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { index: true, element: <Home /> },
       { path: "browseGigs", element: <BrowseGigs /> },
       { path: "browse-gigs", element: <BrowseGigs /> },
+      { path: "deals", element: <Deals /> },
       { path: "search", element: <SearchResults /> },
       { path: "/user/:userId", element: <UserDetails /> },
       { path: "/gig/:id", element: <UserDetails /> },

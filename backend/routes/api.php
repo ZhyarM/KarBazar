@@ -41,6 +41,7 @@ Route::get('/categories/{id}', [CategoryController::class, 'show']);
 // Public gigs browsing
 Route::get('/gigs', [GigController::class, 'index']);
 Route::get('/gigs/{id}', [GigController::class, 'show'])->where('id', '[0-9]+');
+Route::get('/deals', [GigController::class, 'deals']);
 
 // Public profiles
 Route::get('/profiles/freelancers', [ProfileController::class, 'freelancers']);
@@ -111,6 +112,13 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::middleware('freelancer')->post('/', [GigController::class, 'store']);
         Route::put('/{id}', [GigController::class, 'update']);
         Route::delete('/{id}', [GigController::class, 'destroy']);
+    });
+
+    // Deals management
+    Route::prefix('deals')->group(function () {
+        Route::post('/', [GigController::class, 'storeDiscount']);
+        Route::put('/{id}', [GigController::class, 'updateDiscount']);
+        Route::delete('/{id}', [GigController::class, 'destroyDiscount']);
     });
 
     // Posts (Protected Routes)

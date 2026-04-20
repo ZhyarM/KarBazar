@@ -67,6 +67,11 @@ class Gig extends Model
         return $this->hasMany(Review::class);
     }
 
+    public function packageDiscounts()
+    {
+        return $this->hasMany(GigPackageDiscount::class);
+    }
+
     public function favoritedBy()
     {
         return $this->morphToMany(User::class, 'favoritable', 'favorites');

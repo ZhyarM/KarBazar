@@ -271,9 +271,7 @@ function CreateGig() {
     } catch (error: any) {
       console.error("Gig save error:", error);
       setSuccess(false);
-      setMessage(
-        error.message || t("createGig.saveFailed"),
-      );
+      setMessage(error.message || t("createGig.saveFailed"));
     } finally {
       setLoading(false);
     }
@@ -290,7 +288,10 @@ function CreateGig() {
   // Show unauthorized message
   if (authorized === false) {
     return (
-      <div className="min-h-screen bg-(--color-bg) flex items-center justify-center px-4" dir={direction}>
+      <div
+        className="min-h-screen bg-(--color-bg) flex items-center justify-center px-4"
+        dir={direction}
+      >
         <div className="max-w-md text-center bg-(--color-surface) rounded-lg p-8 shadow-md border border-(--color-border)">
           <div className="text-5xl mb-4">🚫</div>
           <h2 className="text-2xl font-bold text-(--color-text) mb-2">
