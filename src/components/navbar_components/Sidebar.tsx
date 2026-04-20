@@ -12,6 +12,7 @@ import {
   faHeart,
   faBriefcase,
   faPlus,
+  faShieldAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useEffect, useState } from "react";
@@ -157,6 +158,34 @@ export default function Sidebar(): JSX.Element {
                     </NavLink>
                   </li>
                 ))}
+              </>
+            )}
+
+            {userRole === "admin" && (
+              <>
+                <li className="mt-4 px-3 py-2 text-xs font-semibold text-(--color-text-muted) uppercase">
+                  {t("sidebar.admin")}
+                </li>
+                <li>
+                  <NavLink
+                    to="/admin"
+                    className={({ isActive }) =>
+                      `
+                        flex items-center gap-3 px-3 py-2 rounded-md transition-all duration-200
+                        ${isBgLight ? "hover:bg-black/5" : "hover:bg-white/10"}
+                        ${
+                          isActive
+                            ? "text-(--color-primary-active) bg-opacity-10"
+                            : "text-(--color-text) hover:text-(--color-primary-hover)"
+                        }
+                      `
+                    }
+                    onClick={toggleCollapse}
+                  >
+                    <FontAwesomeIcon icon={faShieldAlt} />
+                    {t("sidebar.adminPanel")}
+                  </NavLink>
+                </li>
               </>
             )}
           </>

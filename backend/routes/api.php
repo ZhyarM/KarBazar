@@ -19,6 +19,7 @@ use App\Http\Controllers\Api\AdRequestController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\PostController;
 use App\Http\Controllers\Api\FollowController;
+use App\Http\Controllers\Api\AdminUserController;
 use Illuminate\Support\Facades\Broadcast;
 
 /*
@@ -226,6 +227,21 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/', [SettingsController::class, 'index']);
         Route::put('/platform-fee', [SettingsController::class, 'updatePlatformFee']);
         Route::post('/update', [SettingsController::class, 'updateSetting']);
+    });
+
+    // Admin user management
+    Route::middleware('admin')->prefix('admin/users')->group(function () {
+        Route::get('/', [AdminUserController::class, 'index']);
+        Route::get('/admins', [AdminUserController::class, 'admins']);
+        Route::post('/admins', [AdminUserController::class, 'storeAdmin']);
+        Route::put('/{id}/status', [AdminUserController::class, 'updateStatus']);
+        Route::put('/{id}/role', [AdminUserController::class, 'updateRole']);
+        Route::delete('/{id}', [AdminUserController::class, 'destroy']);
+    });
+
+    // Admin review moderation
+    Route::middleware('admin')->prefix('admin/reviews')->group(function () {
+        Route::get('/', [ReviewController::class, 'adminIndex']);
     });
 
     // Payments

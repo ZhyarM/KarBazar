@@ -10,6 +10,7 @@ import Testimonials from "../page_components/home_page/Testimonials.tsx";
 import TrustStrip from "../page_components/home_page/TrustStrip.tsx";
 import HomeFAQ from "../page_components/home_page/HomeFAQ.tsx";
 import PostFeed from "../page_components/home_page/PostFeed.tsx";
+import HomeAnnouncements from "../page_components/home_page/HomeAnnouncements.tsx";
 import { isAuthenticated } from "../API/apiClient.ts";
 import { fetchCategories } from "../API/CategoriesAPI.tsx";
 import { Link } from "react-router-dom";
@@ -200,6 +201,8 @@ function Home() {
               )}
 
               {/* Feed header */}
+              <HomeAnnouncements />
+
               <div className="flex items-center justify-between mb-5">
                 <div className="flex items-center gap-2.5">
                   <h2 className="text-xl font-bold text-(--color-text)">
@@ -286,6 +289,9 @@ function Home() {
   return (
     <div className="home-background">
       <Hero />
+      <div className="max-w-6xl mx-auto px-4 py-6">
+        <HomeAnnouncements />
+      </div>
       <Features />
       <TrendingServices />
       <HowItWorks />

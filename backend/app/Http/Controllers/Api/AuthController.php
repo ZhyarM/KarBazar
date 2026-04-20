@@ -24,14 +24,16 @@ class AuthController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|in:client,freelancer,business,admin',
+            'role' => 'required|in:client,freelancer,business',
         ]);
+
+        $normalizedRole = $request->role === 'business' ? 'freelancer' : $request->role;
 
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'role' => $request->role,
+            'role' => $normalizedRole,
         ]);
 
         // Create profile

@@ -9,11 +9,12 @@ import {
   faHeart,
   faPlus,
   faPenNib,
+  faShieldAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { logout } from "../../API/LogoutAPI";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import type { AuthResponse } from "../../API/me.tsx";
-import { roleLabel } from "../../utils/roles";
+import { isAdminRole, roleLabel } from "../../utils/roles";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 
 interface ProfileDropdownProps {
@@ -78,7 +79,9 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
             className="fixed inset-0 z-40"
             onClick={() => setIsOpen(false)}
           />
-          <div className={`absolute ${isRTL ? "left-0" : "right-0"} mt-3 w-56 bg-(--color-surface) rounded-2xl shadow-xl border border-(--color-border) z-50 overflow-hidden`}>
+          <div
+            className={`absolute ${isRTL ? "left-0" : "right-0"} mt-3 w-56 bg-(--color-surface) rounded-2xl shadow-xl border border-(--color-border) z-50 overflow-hidden`}
+          >
             {/* User info header */}
             <div className="px-4 py-3 border-b border-(--color-border)">
               <div className="flex items-center gap-3">
@@ -184,6 +187,25 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                     className="w-4 text-(--color-primary)"
                   />
                   {t("profile.newPost")}
+                </Link>
+              </div>
+            )}
+
+            {isAdminRole(user?.data?.role) && (
+              <div className="border-t border-(--color-border) py-1.5">
+                <p className="px-4 pt-1 pb-1 text-[10px] font-semibold text-(--color-text-muted) uppercase tracking-wider">
+                  {t("profile.admin")}
+                </p>
+                <Link
+                  to="/admin"
+                  className="flex items-center gap-3 px-4 py-2.5 text-sm text-(--color-text) hover:bg-(--color-bg) transition-colors"
+                  onClick={() => setIsOpen(false)}
+                >
+                  <FontAwesomeIcon
+                    icon={faShieldAlt}
+                    className="w-4 text-(--color-primary)"
+                  />
+                  {t("profile.adminPanel")}
                 </Link>
               </div>
             )}

@@ -12,22 +12,27 @@ class UserSeeder extends Seeder
     public function run(): void
     {
         // Admin user
-        $admin = User::create([
-            'name' => 'Admin User',
-            'email' => 'admin@karbazar.com',
-            'password' => Hash::make('password123'),
-            'role' => 'admin',
-            'email_verified_at' => now(),
-        ]);
+        $admin = User::updateOrCreate(
+            ['email' => 'admin@karbazar.com'],
+            [
+                'name' => 'Admin User',
+                'password' => Hash::make('password123'),
+                'role' => 'admin',
+                'email_verified_at' => now(),
+                'is_active' => true,
+            ],
+        );
 
-        Profile::create([
-            'user_id' => $admin->id,
-            'username' => 'admin',
-            'bio' => 'KarBazar Platform Administrator',
-            'title' => 'Platform Admin',
-        ]);
+        Profile::updateOrCreate(
+            ['user_id' => $admin->id],
+            [
+                'username' => 'admin',
+                'bio' => 'KarBazar Platform Administrator',
+                'title' => 'Platform Admin',
+            ],
+        );
 
-        $this->command->info('✅ Admin user created: admin@karbazar.com / password123');
+        $this->command->info('✅ Admin user ready: admin@karbazar.com / password123');
 
         // Sample Clients
         $clients = [

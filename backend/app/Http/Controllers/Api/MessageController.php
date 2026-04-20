@@ -94,7 +94,8 @@ class MessageController extends Controller
         $request->validate([
             'receiver_id' => 'required|exists:users,id',
             'content' => 'required|string',
-            'attachments' => 'nullable|array',
+            'attachments' => 'nullable|array|max:5',
+            'attachments.*' => 'string|max:2048',
         ]);
 
         // Check if trying to message self

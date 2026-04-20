@@ -6,7 +6,7 @@ export interface Message {
   sender_id: number;
   receiver_id: number;
   content: string;
-  attachments: string | null;
+  attachments: string[] | string | null;
   is_read: boolean;
   created_at: string;
   updated_at?: string;
@@ -90,14 +90,17 @@ export const getMessages = async (userId: number): Promise<Message[]> => {
 export const sendMessage = async (
   receiverId: number,
   message: string,
-  attachmentUrl?: string,
+  attachmentUrls?: string[],
 ): Promise<Message> => {
   const response = await apiCall<MessageResponse>("/messages", {
     method: "POST",
     body: JSON.stringify({
       receiver_id: receiverId,
       content: message,
-      attachments: attachmentUrl,
+      attachments:
+        attachmentUrls && attachmentUrls.length > 0
+          ? attachmentUrls
+          : undefined,
     }),
   });
   return response.data;

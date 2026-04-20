@@ -237,6 +237,8 @@ class GigController extends Controller
             'requirements' => 'nullable|string',
             'faqs' => 'nullable|array',
             'is_active' => 'sometimes|boolean',
+            'is_featured' => 'sometimes|boolean',
+            'is_trending' => 'sometimes|boolean',
         ]);
 
         // Build packages JSON if package data is provided
@@ -273,7 +275,7 @@ class GigController extends Controller
         }
 
         // Add other fields
-        foreach (['category_id', 'title', 'description', 'image_url', 'gallery', 'tags', 'requirements', 'is_active'] as $field) {
+        foreach (['category_id', 'title', 'description', 'image_url', 'gallery', 'tags', 'requirements', 'is_active', 'is_featured', 'is_trending'] as $field) {
             if (isset($validated[$field])) {
                 $updateData[$field] = $validated[$field];
             }
