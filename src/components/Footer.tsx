@@ -7,10 +7,33 @@ import {
   faLinkedinIn,
   faDribbble,
 } from "@fortawesome/free-brands-svg-icons";
+import { Link } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Footer(): JSX.Element {
   const { t } = useLanguage();
+  const categoryLinks = [
+    {
+      label: t("footer.categories.graphicsDesign"),
+      category: "Graphics & Design",
+    },
+    {
+      label: t("footer.categories.digitalMarketing"),
+      category: "Digital Marketing",
+    },
+    {
+      label: t("footer.categories.writingTranslation"),
+      category: "Writing & Translation",
+    },
+    {
+      label: t("footer.categories.videoAnimation"),
+      category: "Video & Animation",
+    },
+    {
+      label: t("footer.categories.programmingTech"),
+      category: "Programming & Tech",
+    },
+  ];
 
   return (
     <footer className="bg-(--color-bg) text-(--color-text) border-t border-t-(--color-text)">
@@ -73,31 +96,16 @@ function Footer(): JSX.Element {
               {t("footer.section.categories")}
             </h3>
             <ul className="space-y-2 text-sm text-(--color-text-muted)">
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  {t("footer.categories.graphicsDesign")}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  {t("footer.categories.digitalMarketing")}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  {t("footer.categories.writingTranslation")}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  {t("footer.categories.videoAnimation")}
-                </a>
-              </li>
-              <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
-                  {t("footer.categories.programmingTech")}
-                </a>
-              </li>
+              {categoryLinks.map((item) => (
+                <li key={item.category}>
+                  <Link
+                    to={`/browse-gigs?category=${encodeURIComponent(item.category)}`}
+                    className="transition hover:text-(--color-primary)"
+                  >
+                    {item.label}
+                  </Link>
+                </li>
+              ))}
             </ul>
           </div>
 
@@ -107,29 +115,44 @@ function Footer(): JSX.Element {
             </h3>
             <ul className="space-y-2 text-sm text-(--color-primary-muted)">
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/about"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.about.aboutUs")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/contact"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.about.contact")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/faq"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.about.faq")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/careers"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.about.careers")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/press-news"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.about.pressNews")}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -140,29 +163,44 @@ function Footer(): JSX.Element {
             </h3>
             <ul className="space-y-2 text-sm text-(--color-primary-muted)">
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/help-support"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.support.helpSupport")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/trust-safety"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.support.trustSafety")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/selling-on-karbazar"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.support.selling")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/buying-on-karbazar"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.support.buying")}
-                </a>
+                </Link>
               </li>
               <li>
-                <a href="#" className="transition hover:text-(--color-primary)">
+                <Link
+                  to="/terms-of-service"
+                  className="transition hover:text-(--color-primary)"
+                >
                   {t("footer.support.termsService")}
-                </a>
+                </Link>
               </li>
             </ul>
           </div>
@@ -176,9 +214,12 @@ function Footer(): JSX.Element {
             {t("footer.bottom.rightsReserved")}
           </p>
           <div className="flex flex-wrap gap-5">
-            <a href="#" className="transition hover:text-(--color-primary)">
+            <Link
+              to="/terms-of-service"
+              className="transition hover:text-(--color-primary)"
+            >
               {t("footer.bottom.terms")}
-            </a>
+            </Link>
             <a href="#" className="transition hover:text-(--color-primary)">
               {t("footer.bottom.privacy")}
             </a>

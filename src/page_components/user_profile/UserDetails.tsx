@@ -11,8 +11,10 @@ import {
   getImageUrl,
   getGalleryImages,
 } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function UserDetails() {
+  const { t } = useLanguage();
   const { id } = useParams<{ id?: string }>();
   const gigId = id;
   const navigate = useNavigate();

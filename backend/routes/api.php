@@ -80,6 +80,9 @@ Route::middleware('platform.maintenance')->group(function () {
     Route::get('/follow/{userId}/stats', [FollowController::class, 'stats']);
     Route::get('/follow/{userId}/followers', [FollowController::class, 'followers']);
     Route::get('/follow/{userId}/following', [FollowController::class, 'following']);
+
+    // Public media fallback endpoint (serves files from storage disk)
+    Route::get('/media/{path}', [UploadController::class, 'servePublicMedia'])->where('path', '.*');
 });
 
 // Protected routes (require authentication)

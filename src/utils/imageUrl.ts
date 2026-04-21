@@ -2,29 +2,90 @@
  * Image URL utility for handling asset URLs
  */
 
-const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:8000";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
+
+const normalizeBackendUrl = (): string => {
+  const envBackendUrl = import.meta.env.VITE_BACKEND_URL as string | undefined;
+  if (envBackendUrl && envBackendUrl.trim().length > 0) {
+    return envBackendUrl.replace(/\/$/, "");
+  }
+
+  try {
+    const apiOrigin = new URL(API_BASE_URL).origin;
+    return apiOrigin.replace(/\/$/, "");
+  } catch {
+    return "http://127.0.0.1:8000";
+  }
+};
+
+const BACKEND_URL = normalizeBackendUrl();
+const API_ORIGIN = (() => {
+  try {
+    return new URL(API_BASE_URL).origin.replace(/\/$/, "");
+  } catch {
+    return BACKEND_URL;
+  }
+})();
 
 /**
  * Convert a relative or database path to a full asset URL
  * Handles various formats: relative paths, storage paths, full URLs
  */
 export const getImageUrl = (path?: string | null): string => {
+  return getImageUrlCandidates(path)[0] || "";
+};
+
+export const getImageUrlCandidates = (path?: string | null): string[] => {
   if (!path) {
-    return "";
+    return [];
   }
 
-  // If already a full URL, return as is
-  if (path.startsWith("http://") || path.startsWith("https://")) {
-    return path;
+  const normalizedPath = path.trim();
+  if (!normalizedPath) {
+    return [];
   }
 
-  // If it starts with /storage/, prepend backend URL
-  if (path.startsWith("/storage/")) {
-    return `${BACKEND_URL}${path}`;
+  const candidates: string[] = [];
+
+  // If already a full URL, keep it but also derive api/media fallback when it targets /storage/
+  if (
+    normalizedPath.startsWith("http://") ||
+    normalizedPath.startsWith("https://")
+  ) {
+    try {
+      const parsed = new URL(normalizedPath);
+      if (parsed.pathname.startsWith("/storage/")) {
+        const mediaPath = parsed.pathname.replace(/^\/storage\//, "");
+        candidates.push(`${parsed.origin}/api/media/${mediaPath}`);
+      }
+    } catch {
+      // ignore parse errors and keep original URL
+    }
+
+    candidates.push(normalizedPath);
+    return [...new Set(candidates)];
   }
 
-  // Otherwise, it's a bare relative path (e.g. "avatars/abc.png") — add /storage/ prefix
-  return `${BACKEND_URL}/storage/${path}`;
+  // If it starts with /storage/ or storage/, prepend backend URL once and add api fallback
+  if (normalizedPath.startsWith("/storage/")) {
+    const mediaPath = normalizedPath.replace(/^\/storage\//, "");
+    candidates.push(`${API_ORIGIN}/api/media/${mediaPath}`);
+    candidates.push(`${BACKEND_URL}${normalizedPath}`);
+    return [...new Set(candidates)];
+  }
+
+  if (normalizedPath.startsWith("storage/")) {
+    const mediaPath = normalizedPath.replace(/^storage\//, "");
+    candidates.push(`${API_ORIGIN}/api/media/${mediaPath}`);
+    candidates.push(`${BACKEND_URL}/${normalizedPath}`);
+    return [...new Set(candidates)];
+  }
+
+  // Otherwise, it's a bare relative path (e.g. "avatars/abc.png")
+  candidates.push(`${API_ORIGIN}/api/media/${normalizedPath}`);
+  candidates.push(`${BACKEND_URL}/storage/${normalizedPath}`);
+
+  return [...new Set(candidates)];
 };
 
 /**

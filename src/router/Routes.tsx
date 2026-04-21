@@ -11,6 +11,19 @@ const Categories = lazy(() => import("./../pages/Categories.tsx"));
 const BrowseGigs = lazy(() => import("../pages/BrowseGigs.tsx"));
 const Deals = lazy(() => import("../pages/Deals.tsx"));
 const About = lazy(() => import("./../pages/About.tsx"));
+const Contact = lazy(() => import("./../pages/Contact.tsx"));
+const FAQ = lazy(() => import("./../pages/FAQ.tsx"));
+const Careers = lazy(() => import("./../pages/Careers.tsx"));
+const PressNews = lazy(() => import("./../pages/PressNews.tsx"));
+const HelpSupport = lazy(() => import("./../pages/HelpSupport.tsx"));
+const TrustSafety = lazy(() => import("./../pages/TrustSafety.tsx"));
+const SellingOnKarBazar = lazy(
+  () => import("./../pages/SellingOnKarBazar.tsx"),
+);
+const BuyingOnKarBazar = lazy(
+  () => import("./../pages/BuyingOnKarBazar.tsx"),
+);
+const TermsOfService = lazy(() => import("./../pages/TermsOfService.tsx"));
 const SignIn = lazy(() => import("./../pages/auth/SignIn.tsx"));
 const SignUp = lazy(() => import("./../pages/auth/SignUp.tsx"));
 const UserDetails = lazy(
@@ -72,6 +85,21 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
       { path: "/gigs/:id", element: withSuspense(<UserDetails />) },
       { path: "categories", element: withSuspense(<Categories />) },
       { path: "about", element: withSuspense(<About />) },
+      { path: "contact", element: withSuspense(<Contact />) },
+      { path: "faq", element: withSuspense(<FAQ />) },
+      { path: "careers", element: withSuspense(<Careers />) },
+      { path: "press-news", element: withSuspense(<PressNews />) },
+      { path: "help-support", element: withSuspense(<HelpSupport />) },
+      { path: "trust-safety", element: withSuspense(<TrustSafety />) },
+      {
+        path: "selling-on-karbazar",
+        element: withSuspense(<SellingOnKarBazar />),
+      },
+      {
+        path: "buying-on-karbazar",
+        element: withSuspense(<BuyingOnKarBazar />),
+      },
+      { path: "terms-of-service", element: withSuspense(<TermsOfService />) },
       { path: "sign-in", element: withSuspense(<SignIn />) },
       { path: "auth/signin", element: withSuspense(<SignIn />) },
       { path: "auth/login", element: withSuspense(<SignIn />) },

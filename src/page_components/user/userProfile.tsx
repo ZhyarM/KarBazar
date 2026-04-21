@@ -23,6 +23,7 @@ import UserCertification from "./userCertification";
 import UserProfileStrength from "./userProfileStrength";
 import UserSocialLinks from "./userSocialLinks";
 import UserPosts from "./UserPosts";
+import UserPrivacySettings from "./UserPrivacySettings";
 import ChangePasswordModal from "./ChangePasswordModal";
 import DeleteAccountModal from "./DeleteAccountModal";
 import {
@@ -50,8 +51,10 @@ function UserProfile() {
   const [isPublicProfile, setIsPublicProfile] = useState<boolean>(true);
   const [saving, setSaving] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [profileImageVersion, setProfileImageVersion] = useState(0);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
+  const [showPrivacySettings, setShowPrivacySettings] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -124,8 +127,18 @@ function UserProfile() {
 
   const handleAvatarUpload = async (file: File) => {
     try {
-      await uploadProfilePicture(file);
-      await fetchProfile(); // Refresh to get new avatar URL
+      const avatarUrl = await uploadProfilePicture(file);
+      const version = Date.now();
+      setProfileImageVersion(version);
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              avatar_url: avatarUrl,
+            }
+          : prev,
+      );
+      await fetchProfile();
       setToast({ message: "Profile picture updated", type: "success" });
     } catch (err) {
       console.error("Error uploading avatar:", err);
@@ -135,8 +148,18 @@ function UserProfile() {
 
   const handleCoverUpload = async (file: File) => {
     try {
-      await uploadCoverPhoto(file);
-      await fetchProfile(); // Refresh to get new cover URL
+      const coverUrl = await uploadCoverPhoto(file);
+      const version = Date.now();
+      setProfileImageVersion(version);
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              cover_url: coverUrl,
+            }
+          : prev,
+      );
+      await fetchProfile();
       setToast({ message: "Cover photo updated", type: "success" });
     } catch (err) {
       console.error("Error uploading cover:", err);
@@ -183,6 +206,11 @@ function UserProfile() {
     const newState = !isPublicProfile;
     setIsPublicProfile(newState);
     await handleUpdateProfile({ is_public: newState });
+  };
+
+  const handlePreviewPublicProfile = () => {
+    if (!profile?.username) return;
+    navigate(`/profile/${profile.username}`);
   };
 
   const handleSendMessage = () => {
@@ -314,6 +342,12 @@ function UserProfile() {
         isOpen={showDeleteAccount}
         onClose={() => setShowDeleteAccount(false)}
       />
+      <UserPrivacySettings
+        isOpen={showPrivacySettings}
+        isPublic={isPublicProfile}
+        onTogglePublicProfile={enablePublicProfile}
+        onClose={() => setShowPrivacySettings(false)}
+      />
 
       <div className="flex flex-col gap-3 w-full max-w-7xl px-4 py-6">
         {/* Back Button */}
@@ -340,6 +374,7 @@ function UserProfile() {
               topRated={profile.rating >= 4.5}
               cover_url={profile.cover_url || ""}
               avatar_url={profile.avatar_url || profile.user?.image || ""}
+              imageVersion={profileImageVersion}
               name={profile.user?.name || "User"}
               username={profile.username}
               title={profile.title || ""}
@@ -583,9 +618,9 @@ function UserProfile() {
             {isOwner ? (
               <>
                 <UserQuickActions
-                  EnablePublicProfile={enablePublicProfile}
                   ProfileLink={`/profile/${profile.username}`}
-                  publicProfile={isPublicProfile ? "active" : ""}
+                  onPreviewPublicProfile={handlePreviewPublicProfile}
+                  onPrivacySettings={() => setShowPrivacySettings(true)}
                   onChangePassword={() => setShowChangePassword(true)}
                   onDeleteAccount={() => setShowDeleteAccount(true)}
                 />

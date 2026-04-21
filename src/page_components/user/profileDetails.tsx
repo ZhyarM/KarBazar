@@ -12,8 +12,8 @@ import {
   faCheck,
 } from "@fortawesome/free-solid-svg-icons";
 import moon from "../../assets/moon.png";
-import { getImageUrl } from "../../utils/imageUrl";
-import { useRef, useState } from "react";
+import { getImageUrlCandidates } from "../../utils/imageUrl";
+import { useEffect, useRef, useState } from "react";
 
 interface ProfileDetailsProps {
   name?: string;
@@ -25,6 +25,7 @@ interface ProfileDetailsProps {
   topRated?: boolean;
   cover_url?: string;
   avatar_url?: string;
+  imageVersion?: number;
   typeOfBussiness: string;
   isOwner?: boolean;
   onAvatarUpload?: (file: File) => Promise<void>;
@@ -47,6 +48,7 @@ function ProfileDetails({
   topRated = false,
   cover_url,
   avatar_url,
+  imageVersion,
   typeOfBussiness,
   isOwner = false,
   onAvatarUpload,
@@ -64,10 +66,36 @@ function ProfileDetails({
   const [editUsername, setEditUsername] = useState(username);
   const [savingInfo, setSavingInfo] = useState(false);
 
-  const finalCover =
-    cover_url && cover_url.trim().length > 0 ? getImageUrl(cover_url) : null;
-  const finalAvatar =
-    avatar_url && avatar_url.trim().length > 0 ? getImageUrl(avatar_url) : moon;
+  const withVersion = (url: string): string => {
+    if (!imageVersion) {
+      return url;
+    }
+    const separator = url.includes("?") ? "&" : "?";
+    return `${url}${separator}v=${imageVersion}`;
+  };
+
+  const coverCandidates =
+    cover_url && cover_url.trim().length > 0
+      ? getImageUrlCandidates(cover_url).map(withVersion)
+      : [];
+  const avatarCandidates =
+    avatar_url && avatar_url.trim().length > 0
+      ? getImageUrlCandidates(avatar_url).map(withVersion)
+      : [];
+
+  const [coverIndex, setCoverIndex] = useState(0);
+  const [avatarIndex, setAvatarIndex] = useState(0);
+
+  useEffect(() => {
+    setCoverIndex(0);
+  }, [cover_url, imageVersion]);
+
+  useEffect(() => {
+    setAvatarIndex(0);
+  }, [avatar_url, imageVersion]);
+
+  const finalCover = coverCandidates[coverIndex] || null;
+  const finalAvatar = avatarCandidates[avatarIndex] || moon;
 
   const handleAvatarChange = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0];
@@ -137,14 +165,26 @@ function ProfileDetails({
         {/* COVER SECTION */}
         <div
           className={`relative h-48 lg:h-3/4 p-4 flex justify-between items-start transition-all ${
-            finalCover
-              ? "bg-cover bg-center"
-              : "bg-linear-to-r from-indigo-500 to-purple-600"
+            finalCover ? "" : "bg-linear-to-r from-indigo-500 to-purple-600"
           }`}
-          style={finalCover ? { backgroundImage: `url(${finalCover})` } : {}}
         >
+          {finalCover && (
+            <img
+              src={finalCover}
+              alt="Profile cover"
+              className="absolute inset-0 w-full h-full object-cover"
+              onError={() => {
+                if (coverIndex < coverCandidates.length - 1) {
+                  setCoverIndex((prev) => prev + 1);
+                  return;
+                }
+
+                setCoverIndex(coverCandidates.length);
+              }}
+            />
+          )}
           {/* Stats Badges */}
-          <div className="px-3 py-2 bg-black/20 backdrop-blur-md border border-white/20 rounded-xl flex items-center gap-3 text-white text-sm lg:text-base">
+          <div className="relative z-10 px-3 py-2 bg-black/20 backdrop-blur-md border border-white/20 rounded-xl flex items-center gap-3 text-white text-sm lg:text-base">
             <div className="flex items-center gap-1.5">
               <FontAwesomeIcon icon={faEye} />
               <span className="font-semibold">{views}</span>
@@ -157,7 +197,7 @@ function ProfileDetails({
 
           {/* Action Buttons */}
           {isOwner && (
-            <div className="flex gap-2">
+            <div className="relative z-10 flex gap-2">
               <button
                 onClick={() => setIsEditingInfo(true)}
                 title="Edit profile info"
@@ -189,6 +229,14 @@ function ProfileDetails({
               src={finalAvatar}
               alt={name}
               className="w-24 h-24 lg:w-32 lg:h-32 rounded-full object-cover border-4 border-(--color-border) shadow-lg bg-(--color-card)"
+              onError={() => {
+                if (avatarIndex < avatarCandidates.length - 1) {
+                  setAvatarIndex((prev) => prev + 1);
+                  return;
+                }
+
+                setAvatarIndex(avatarCandidates.length);
+              }}
             />
             {isOwner && (
               <button

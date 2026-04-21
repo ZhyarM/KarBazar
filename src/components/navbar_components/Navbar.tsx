@@ -1,4 +1,4 @@
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
@@ -18,17 +18,34 @@ import theme from "../../assets/theme.png";
 import { isSellerRole } from "../../utils/roles";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 import { useUserData } from "../../context/UserDataContext.tsx";
+import { useSearch } from "../../context/SearchContext.tsx";
+import { useEffect, useRef } from "react";
 
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
   const { language, toggleLanguage, direction, t } = useLanguage();
   const { user, unreadCount } = useUserData();
+  const { clearSearch } = useSearch();
   const navigate = useNavigate();
+  const location = useLocation();
+  const previousPathRef = useRef(location.pathname);
   const isRTL = direction === "rtl";
   const isLoggedIn = Boolean(user?.data);
 
   const isSeller = isSellerRole(user?.data?.role);
+
+  // Clear search only when leaving /search to another page
+  useEffect(() => {
+    const previousPath = previousPathRef.current;
+    const currentPath = location.pathname;
+
+    if (previousPath === "/search" && currentPath !== "/search") {
+      clearSearch();
+    }
+
+    previousPathRef.current = currentPath;
+  }, [location.pathname, clearSearch]);
 
   return (
     <>

@@ -10,17 +10,17 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 
 interface UserQuickActionsProps {
-  privacySettings?: JSON;
-  publicProfile: string;
   ProfileLink: string;
-  EnablePublicProfile: () => void;
+  onPreviewPublicProfile?: () => void;
+  onPrivacySettings?: () => void;
   onChangePassword?: () => void;
   onDeleteAccount?: () => void;
 }
 
 function UserQuickActions({
   ProfileLink,
-  EnablePublicProfile,
+  onPreviewPublicProfile,
+  onPrivacySettings,
   onChangePassword,
   onDeleteAccount,
 }: UserQuickActionsProps) {
@@ -46,38 +46,46 @@ function UserQuickActions({
         <FontAwesomeIcon icon={faStar} />
         <p>Quick Actions</p>
       </div>
-      <div
-        onClick={() => EnablePublicProfile()}
+      <button
+        type="button"
+        onClick={onPreviewPublicProfile}
         className="flex items-center gap-2 bg-white/20 backdrop-blur-md border p-4 rounded-2xl cursor-pointer hover:bg-white/30 transition-colors"
       >
         <FontAwesomeIcon icon={faEye} />
         <p>Preview Public Profile</p>
-      </div>
-      <div
+      </button>
+      <button
+        type="button"
         onClick={() => handleCopy(ProfileLink)}
         className="flex items-center gap-2 bg-white/20 backdrop-blur-md border p-4 rounded-2xl cursor-pointer hover:bg-white/30 transition-colors"
       >
         <FontAwesomeIcon icon={faShare} />
         <p>{copied ? "Link Copied!" : "Share Profile Link"}</p>
-      </div>
-      <div
+      </button>
+      <button
+        type="button"
         className="flex items-center gap-2 bg-white/20 backdrop-blur-md border p-4 rounded-2xl cursor-pointer hover:bg-white/30 transition-colors"
         onClick={onChangePassword}
       >
         <FontAwesomeIcon icon={faLock} />
         <p>Change Password</p>
-      </div>
-      <div className="flex items-center gap-2 bg-white/20 backdrop-blur-md border p-4 rounded-2xl cursor-pointer hover:bg-white/30 transition-colors">
+      </button>
+      <button
+        type="button"
+        onClick={onPrivacySettings}
+        className="flex items-center gap-2 bg-white/20 backdrop-blur-md border p-4 rounded-2xl cursor-pointer hover:bg-white/30 transition-colors"
+      >
         <FontAwesomeIcon icon={faGear} />
         <p>Privacy Settings</p>
-      </div>
-      <div
+      </button>
+      <button
+        type="button"
         onClick={onDeleteAccount}
         className="flex items-center gap-2 bg-red-100/50 backdrop-blur-md border border-red-200 p-4 rounded-2xl cursor-pointer hover:bg-red-100 transition-colors text-red-700"
       >
         <FontAwesomeIcon icon={faTrash} />
         <p>Delete Account</p>
-      </div>
+      </button>
     </div>
   );
 }
