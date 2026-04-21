@@ -1,12 +1,19 @@
 import rise from "../../assets/rise.png";
 import ProgressSuggestions from "./progressSuggestions";
 
+type CompletionSection = "basicInfo" | "bio" | "skills" | "portfolio" | "work";
+
 interface ProfileProgressProps {
-  // Added a prop so you can control this from the parent UserProfile page
   initialProgress?: number;
+  suggestions: Array<{ section: CompletionSection; text: string }>;
+  onSuggestionClick?: (section: CompletionSection) => void;
 }
 
-function ProfileProgress({ initialProgress = 50 }: ProfileProgressProps) {
+function ProfileProgress({
+  initialProgress = 50,
+  suggestions,
+  onSuggestionClick,
+}: ProfileProgressProps) {
   const progressValue = initialProgress;
 
   return (
@@ -36,22 +43,27 @@ function ProfileProgress({ initialProgress = 50 }: ProfileProgressProps) {
         <div className="flex items-center gap-3">
           <div className="w-full bg-orange-200 rounded-full h-3 overflow-hidden">
             <div
-              className="h-full rounded-full bg-gradient-to-r from-orange-400 to-red-500 transition-all duration-700 ease-in-out shadow-sm"
+              className="h-full rounded-full bg-linear-to-r from-orange-400 to-red-500 transition-all duration-700 ease-in-out shadow-sm"
               style={{ width: `${progressValue}%` }}
             />
           </div>
-          <span className="text-sm font-bold text-orange-600 min-w-[35px]">
+          <span className="text-sm font-bold text-orange-600 min-w-8.75">
             {progressValue}%
           </span>
         </div>
 
         {/* Suggestions Grid - Uses flex-wrap for mobile responsiveness */}
-        <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
-          <ProgressSuggestions text="+ Add Portfolio" />
-          <ProgressSuggestions text="+ Add certificate" />
-          <ProgressSuggestions text="+ Add complete bio" />
-          <ProgressSuggestions text="+ Add work experience" />
-        </div>
+        {suggestions.length > 0 && (
+          <div className="flex flex-wrap gap-2 justify-center sm:justify-start">
+            {suggestions.map((suggestion) => (
+              <ProgressSuggestions
+                key={suggestion.section}
+                text={suggestion.text}
+                onClick={() => onSuggestionClick?.(suggestion.section)}
+              />
+            ))}
+          </div>
+        )}
       </div>
     </div>
   );

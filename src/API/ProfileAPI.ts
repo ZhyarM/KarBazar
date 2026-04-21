@@ -109,6 +109,7 @@ export interface UpdateProfileData {
   website?: string;
   phone?: string;
   hourly_rate?: number;
+  response_time?: number;
   skills?: string[];
   languages?: string[];
   education?: Education[];

@@ -140,6 +140,16 @@ function OrderDetails() {
   const otherParty = isBuyer ? order?.seller : order?.buyer;
   const status = (order?.status || "pending") as OrderStatus;
   const statusConfig = STATUS_CONFIG[status] || STATUS_CONFIG.pending;
+  const orderPrice = Number(order?.price ?? 0);
+  const originalGigPrice = Number(order?.gig?.price ?? orderPrice);
+  const showOriginalPrice = originalGigPrice > orderPrice;
+
+  const formatCurrency = (value: number) =>
+    new Intl.NumberFormat(language === "ku" ? "ku" : "en-US", {
+      style: "currency",
+      currency: "USD",
+      maximumFractionDigits: 2,
+    }).format(value);
 
   const handleStartOrder = async () => {
     if (!order) return;
@@ -212,9 +222,7 @@ function OrderDetails() {
       setReviewDone(true);
       setShowReviewForm(false);
     } catch (err: any) {
-      setReviewError(
-        err?.message || t("orderDetails.reviewFailed"),
-      );
+      setReviewError(err?.message || t("orderDetails.reviewFailed"));
     } finally {
       setReviewSubmitting(false);
     }
@@ -243,7 +251,9 @@ function OrderDetails() {
             icon={faSpinner}
             className="text-4xl text-(--color-primary) animate-spin"
           />
-          <p className="text-(--color-text-muted)">{t("orderDetails.loading")}</p>
+          <p className="text-(--color-text-muted)">
+            {t("orderDetails.loading")}
+          </p>
         </div>
       </div>
     );
@@ -382,9 +392,16 @@ function OrderDetails() {
                       <FontAwesomeIcon icon={faCalendar} />
                       {order.delivery_time} {t("orderDetails.dayDelivery")}
                     </span>
-                    <span className="text-lg font-bold text-green-500">
-                      {t("orderDetails.free")}
-                    </span>
+                    <div className="flex items-center gap-2">
+                      {showOriginalPrice && (
+                        <span className="text-sm line-through text-(--color-text-muted)">
+                          {formatCurrency(originalGigPrice)}
+                        </span>
+                      )}
+                      <span className="text-lg font-bold text-green-500">
+                        {formatCurrency(orderPrice)}
+                      </span>
+                    </div>
                   </div>
                 </div>
               </div>
@@ -459,7 +476,9 @@ function OrderDetails() {
 
             {/* Actions Section */}
             <div className="bg-(--color-surface) border border-(--color-border) rounded-xl p-5 shadow-sm">
-              <h3 className="font-bold text-(--color-text) mb-4">{t("orderDetails.actions")}</h3>
+              <h3 className="font-bold text-(--color-text) mb-4">
+                {t("orderDetails.actions")}
+              </h3>
               <div className="flex flex-wrap gap-3">
                 {/* Seller: Start Order */}
                 {isSeller && status === "pending" && (
@@ -469,7 +488,9 @@ function OrderDetails() {
                     className="px-5 py-2.5 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 disabled:opacity-50 transition flex items-center gap-2"
                   >
                     <FontAwesomeIcon icon={faPlay} />
-                    {actionLoading ? t("orderDetails.starting") : t("orderDetails.startOrder")}
+                    {actionLoading
+                      ? t("orderDetails.starting")
+                      : t("orderDetails.startOrder")}
                   </button>
                 )}
 
@@ -481,7 +502,9 @@ function OrderDetails() {
                       className="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 transition flex items-center gap-2"
                     >
                       <FontAwesomeIcon icon={faTruck} />
-                      {status === "revision" ? t("orderDetails.redeliver") : t("orderDetails.deliverOrder")}
+                      {status === "revision"
+                        ? t("orderDetails.redeliver")
+                        : t("orderDetails.deliverOrder")}
                     </button>
                   )}
 
@@ -493,7 +516,9 @@ function OrderDetails() {
                     className="px-5 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition flex items-center gap-2"
                   >
                     <FontAwesomeIcon icon={faCheckCircle} />
-                    {actionLoading ? t("orderDetails.accepting") : t("orderDetails.acceptDelivery")}
+                    {actionLoading
+                      ? t("orderDetails.accepting")
+                      : t("orderDetails.acceptDelivery")}
                   </button>
                 )}
 
@@ -514,7 +539,9 @@ function OrderDetails() {
                   className="px-5 py-2.5 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 transition flex items-center gap-2"
                 >
                   <FontAwesomeIcon icon={faMessage} />
-                  {isBuyer ? t("orderDetails.messageSeller") : t("orderDetails.messageBuyer")}
+                  {isBuyer
+                    ? t("orderDetails.messageSeller")
+                    : t("orderDetails.messageBuyer")}
                 </Link>
 
                 {/* No actions for completed/cancelled */}
@@ -619,7 +646,9 @@ function OrderDetails() {
                         disabled={reviewSubmitting}
                         className="px-6 py-2.5 bg-(--color-primary) text-white font-semibold rounded-lg hover:opacity-90 disabled:opacity-50 transition"
                       >
-                        {reviewSubmitting ? t("orderDetails.submitting") : t("orderDetails.submitReview")}
+                        {reviewSubmitting
+                          ? t("orderDetails.submitting")
+                          : t("orderDetails.submitReview")}
                       </button>
                       <button
                         onClick={() => setShowReviewForm(false)}
@@ -647,20 +676,36 @@ function OrderDetails() {
               </h3>
               <div className="flex flex-col gap-3 text-sm">
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">{t("orderDetails.orderId")}</span>
+                  <span className="text-(--color-text-muted)">
+                    {t("orderDetails.orderId")}
+                  </span>
                   <span className="font-semibold text-(--color-text)">
                     #{order.id}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">{t("orderDetails.status")}</span>
+                  <span className="text-(--color-text-muted)">
+                    {t("orderDetails.status")}
+                  </span>
                   <span className={`font-semibold ${statusConfig.color}`}>
                     {t(statusConfig.labelKey)}
                   </span>
                 </div>
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">{t("orderDetails.price")}</span>
-                  <span className="font-bold text-green-500 text-lg">{t("orderDetails.free")}</span>
+                  <span className="text-(--color-text-muted)">
+                    {t("orderDetails.price")}
+                  </span>
+                  <div className="text-right">
+                    {showOriginalPrice && (
+                      <p className="text-xs line-through text-(--color-text-muted)">
+                        {t("deals.originalPrice")}:{" "}
+                        {formatCurrency(originalGigPrice)}
+                      </p>
+                    )}
+                    <span className="font-bold text-green-500 text-lg">
+                      {formatCurrency(orderPrice)}
+                    </span>
+                  </div>
                 </div>
                 <div className="flex justify-between">
                   <span className="text-(--color-text-muted)">
@@ -672,16 +717,24 @@ function OrderDetails() {
                 </div>
                 <hr className="border-(--color-border)" />
                 <div className="flex justify-between">
-                  <span className="text-(--color-text-muted)">{t("orderDetails.ordered")}</span>
+                  <span className="text-(--color-text-muted)">
+                    {t("orderDetails.ordered")}
+                  </span>
                   <span className="text-(--color-text)">
-                    {new Date(order.created_at).toLocaleDateString(language === "ku" ? "ku" : "en-US")}
+                    {new Date(order.created_at).toLocaleDateString(
+                      language === "ku" ? "ku" : "en-US",
+                    )}
                   </span>
                 </div>
                 {order.completed_at && (
                   <div className="flex justify-between">
-                    <span className="text-(--color-text-muted)">{t("orderDetails.completed")}</span>
+                    <span className="text-(--color-text-muted)">
+                      {t("orderDetails.completed")}
+                    </span>
                     <span className="text-(--color-text)">
-                      {new Date(order.completed_at).toLocaleDateString(language === "ku" ? "ku" : "en-US")}
+                      {new Date(order.completed_at).toLocaleDateString(
+                        language === "ku" ? "ku" : "en-US",
+                      )}
                     </span>
                   </div>
                 )}
@@ -696,7 +749,9 @@ function OrderDetails() {
                     icon={faUser}
                     className="text-(--color-primary)"
                   />
-                  {isBuyer ? t("orderDetails.partySeller") : t("orderDetails.partyBuyer")}
+                  {isBuyer
+                    ? t("orderDetails.partySeller")
+                    : t("orderDetails.partyBuyer")}
                 </h3>
                 <div className="flex items-center gap-3">
                   {otherParty.profile?.avatar_url ? (
@@ -779,7 +834,9 @@ function OrderDetails() {
         <div className="fixed inset-0 bg-black/50 flex items-center justify-center z-50 p-4">
           <div className="bg-(--color-surface) rounded-xl p-6 max-w-md w-full shadow-2xl">
             <h2 className="text-xl font-bold text-(--color-text) mb-4">
-              {status === "revision" ? t("orderDetails.redeliverOrder") : t("orderDetails.deliverOrder")}
+              {status === "revision"
+                ? t("orderDetails.redeliverOrder")
+                : t("orderDetails.deliverOrder")}
             </h2>
             <textarea
               value={deliveryNote}
@@ -794,7 +851,9 @@ function OrderDetails() {
                 disabled={actionLoading || !deliveryNote.trim()}
                 className="flex-1 px-4 py-2.5 bg-green-600 text-white font-semibold rounded-lg hover:bg-green-700 disabled:opacity-50 transition"
               >
-                {actionLoading ? t("orderDetails.delivering") : t("orderDetails.deliver")}
+                {actionLoading
+                  ? t("orderDetails.delivering")
+                  : t("orderDetails.deliver")}
               </button>
               <button
                 onClick={() => {
@@ -830,7 +889,9 @@ function OrderDetails() {
                 disabled={actionLoading || !revisionReason.trim()}
                 className="flex-1 px-4 py-2.5 bg-orange-600 text-white font-semibold rounded-lg hover:bg-orange-700 disabled:opacity-50 transition"
               >
-                {actionLoading ? t("orderDetails.requesting") : t("orderDetails.requestRevision")}
+                {actionLoading
+                  ? t("orderDetails.requesting")
+                  : t("orderDetails.requestRevision")}
               </button>
               <button
                 onClick={() => {

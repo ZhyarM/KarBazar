@@ -2,7 +2,8 @@
  * Image URL utility for handling asset URLs
  */
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
+const API_BASE_URL =
+  import.meta.env.VITE_API_BASE_URL || "http://127.0.0.1:8000/api";
 
 const normalizeBackendUrl = (): string => {
   const envBackendUrl = import.meta.env.VITE_BACKEND_URL as string | undefined;
@@ -52,6 +53,8 @@ export const getImageUrlCandidates = (path?: string | null): string[] => {
     normalizedPath.startsWith("http://") ||
     normalizedPath.startsWith("https://")
   ) {
+    candidates.push(normalizedPath);
+
     try {
       const parsed = new URL(normalizedPath);
       if (parsed.pathname.startsWith("/storage/")) {
@@ -62,28 +65,27 @@ export const getImageUrlCandidates = (path?: string | null): string[] => {
       // ignore parse errors and keep original URL
     }
 
-    candidates.push(normalizedPath);
     return [...new Set(candidates)];
   }
 
   // If it starts with /storage/ or storage/, prepend backend URL once and add api fallback
   if (normalizedPath.startsWith("/storage/")) {
     const mediaPath = normalizedPath.replace(/^\/storage\//, "");
-    candidates.push(`${API_ORIGIN}/api/media/${mediaPath}`);
     candidates.push(`${BACKEND_URL}${normalizedPath}`);
+    candidates.push(`${API_ORIGIN}/api/media/${mediaPath}`);
     return [...new Set(candidates)];
   }
 
   if (normalizedPath.startsWith("storage/")) {
     const mediaPath = normalizedPath.replace(/^storage\//, "");
-    candidates.push(`${API_ORIGIN}/api/media/${mediaPath}`);
     candidates.push(`${BACKEND_URL}/${normalizedPath}`);
+    candidates.push(`${API_ORIGIN}/api/media/${mediaPath}`);
     return [...new Set(candidates)];
   }
 
   // Otherwise, it's a bare relative path (e.g. "avatars/abc.png")
-  candidates.push(`${API_ORIGIN}/api/media/${normalizedPath}`);
   candidates.push(`${BACKEND_URL}/storage/${normalizedPath}`);
+  candidates.push(`${API_ORIGIN}/api/media/${normalizedPath}`);
 
   return [...new Set(candidates)];
 };

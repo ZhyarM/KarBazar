@@ -85,6 +85,7 @@ class ProfileController extends Controller
             'website' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
             'hourly_rate' => 'nullable|integer|min:0',
+            'response_time' => 'nullable|integer|min:0|max:168',
             'skills' => 'nullable|array',
             'languages' => 'nullable|array',
             'education' => 'nullable|array',
@@ -106,6 +107,7 @@ class ProfileController extends Controller
             'website',
             'phone',
             'hourly_rate',
+            'response_time',
             'skills',
             'languages',
             'education',
@@ -130,7 +132,7 @@ class ProfileController extends Controller
         $profile = $request->user()->profile;
 
         $validSections = [
-            'basic' => ['username', 'bio', 'title', 'location', 'website', 'phone', 'hourly_rate'],
+            'basic' => ['username', 'bio', 'title', 'location', 'website', 'phone', 'hourly_rate', 'response_time'],
             'skills' => ['skills'],
             'languages' => ['languages'],
             'education' => ['education'],

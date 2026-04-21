@@ -33,7 +33,7 @@ function StatsCard({
   return (
     // Changed w-1/4 to w-full so it fills the grid column defined in the parent
     // Changed h-48 to min-h-[180px] to allow expansion if text wraps
-    <div className="bg-(--color-card) shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-3xl w-full min-h-[180px] flex flex-col justify-between p-5 border border-(--color-border)">
+    <div className="bg-(--color-card) shadow-lg hover:shadow-xl transition-shadow duration-300 rounded-3xl w-full min-h-45 flex flex-col justify-between p-5 border border-(--color-border)">
       {/* Header: Icon & Menu */}
       <div className="flex justify-between items-start">
         {/* Dynamic Background Color applied correctly here */}
@@ -87,7 +87,7 @@ function StatsCard({
             </div>
           ) : null}
 
-          {avgTime ? (
+          {avgTime !== undefined && avgTime !== null ? (
             <div className="flex items-center gap-1">
               <span className="text-(--color-text) font-bold">{avgTime}h</span>
               <span>avg time</span>
