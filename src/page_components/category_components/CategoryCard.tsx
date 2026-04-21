@@ -31,18 +31,17 @@ function CategoryCard({
         hover:border-(--color-primary)
         hover:shadow-lg
         hover:-translate-y-1
-        
       "
     >
       <div className="flex flex-col items-start gap-4">
         <div
           className={`
-            flex h-14 w-14 items-center justify-center
+           flex h-14 w-14 items-center justify-center
             rounded-2xl text-white
             ${bg}
           `}
         >
-          <span className="text-6xl   transition-transform duration-300 group-hover:scale-110">
+          <span className="text-2xl transition-transform duration-300 group-hover:scale-110">
             {icon}
           </span>
         </div>
@@ -69,7 +68,7 @@ function CategoryCard({
               text-white
             "
           >
-            {gig_count}
+            {gig_count} services
           </span>
         </div>
       </div>

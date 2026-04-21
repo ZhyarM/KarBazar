@@ -1,0 +1,26 @@
+import type { OverviewDataType } from './../config/analytics/overview.config.ts';
+
+export const data: OverviewDataType = {
+  total_users: 1200,
+  total_freelancers: 800,
+  total_clients: 400,
+  total_gigs: 1500,
+  active_gigs: 1200,
+  total_orders: 1000,
+  pending_orders: 150,
+  in_progress_orders: 200,
+  completed_orders: 650,
+  total_revenue: 75000,
+  platform_earnings: 15000,
+  current_platform_fee: 15,
+  total_reviews: 500,
+  average_rating: 4.6,
+  total_categories: 12,
+  total_ads: 50,
+  active_ads: 35,
+  pending_ad_requests: 5,
+  ad_revenue: 2000,
+  new_users_this_month: 80,
+  orders_this_month: 90,
+  revenue_this_month: 7000,
+};

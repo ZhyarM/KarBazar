@@ -1,3 +1,4 @@
+
 <?php
 
 use Illuminate\Http\Request;
@@ -53,15 +54,15 @@ Route::get('/profiles/{username}', [ProfileController::class, 'show']);
 Route::get('/reviews/gig/{gigId}', [ReviewController::class, 'gigReviews']);
 Route::get('/reviews/user/{userId}', [ReviewController::class, 'userReviews']);
 
-// ⭐ NEW: Public Advertisement Routes
+// ⭐️ NEW: Public Advertisement Routes
 Route::get('/ads/active', [AdController::class, 'getActiveAds']);
 Route::post('/ads/track-view/{id}', [AdController::class, 'trackView']);
 Route::post('/ads/track-click/{id}', [AdController::class, 'trackClick']);
 
-// ⭐ NEW: Public Ad Request (Contact form for ads)
+// ⭐️ NEW: Public Ad Request (Contact form for ads)
 Route::post('/ad-requests', [AdRequestController::class, 'store']);
 
-// ⭐ NEW: Public Settings (get platform fee, etc)
+// ⭐️ NEW: Public Settings (get platform fee, etc)
 Route::get('/settings/{key}', [SettingsController::class, 'show']);
 
 // Public homepage stats
@@ -150,7 +151,8 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/revision', [OrderController::class, 'requestRevision']);
     });
 
-    // Reviews
+
+// Reviews
     Route::prefix('reviews')->group(function () {
         Route::post('/', [ReviewController::class, 'store']);
         Route::put('/{id}', [ReviewController::class, 'update']);
@@ -197,7 +199,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::delete('/delete-file', [UploadController::class, 'deleteFile']);
     });
 
-    // ⭐ NEW: Advertisement Routes (Authenticated Users)
+    // ⭐️ NEW: Advertisement Routes (Authenticated Users)
     Route::prefix('ads')->group(function () {
         Route::get('/my-ads', [AdController::class, 'myAds']);
         Route::post('/purchase', [AdController::class, 'purchaseAd']);
@@ -214,7 +216,7 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::get('/recent-activities', [AnalyticsController::class, 'recentActivities']);
     });
 
-    // ⭐ NEW: Admin Advertisement Management
+    // ⭐️ NEW: Admin Advertisement Management
     Route::middleware('admin')->prefix('admin/ads')->group(function () {
         Route::get('/', [AdController::class, 'index']);
         Route::post('/', [AdController::class, 'store']);
@@ -223,14 +225,15 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::put('/{id}/status', [AdController::class, 'updateStatus']);
     });
 
-    // ⭐ NEW: Admin Ad Request Management
+
+// ⭐️ NEW: Admin Ad Request Management
     Route::middleware('admin')->prefix('admin/ad-requests')->group(function () {
         Route::get('/', [AdRequestController::class, 'index']);
         Route::put('/{id}', [AdRequestController::class, 'updateStatus']);
         Route::delete('/{id}', [AdRequestController::class, 'destroy']);
     });
 
-    // ⭐ NEW: Admin Settings Management
+    // ⭐️ NEW: Admin Settings Management
     Route::middleware('admin')->prefix('admin/settings')->group(function () {
         Route::get('/', [SettingsController::class, 'index']);
         Route::put('/platform-fee', [SettingsController::class, 'updatePlatformFee']);

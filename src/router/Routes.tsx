@@ -9,6 +9,7 @@ import SignUp from "./../pages/auth/SignUp.tsx";
 import ErrorPage from "./../pages/ErrorPages/ErrorPage.tsx";
 import Root from "./Root.tsx";
 import UserDetails from "./../page_components/user_profile/UserDetails";
+import { adminRoutes } from "./admin.routes.tsx";
 import UserProfile from "../page_components/user/userProfile.tsx";
 import FreelancerProfile from "../page_components/user/sample.tsx";
 
@@ -41,7 +42,6 @@ import PostDetail from "../pages/PostDetail.tsx";
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
-    path: "/",
     element: <Root />,
     errorElement: <ErrorPage />,
     children: [

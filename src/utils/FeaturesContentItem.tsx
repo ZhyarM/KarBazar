@@ -14,17 +14,18 @@ import type { JSX } from "react";
 type CardContentItem = {
     logo: JSX.Element;
     text: string;
+    category: string;
   };
 
   const cardContent: CardContentItem[] = [
-    { logo: <FontAwesomeIcon icon={faSuitcase} />, text: "Business" },
-    { logo: <FontAwesomeIcon icon={faArrowTrendUp} />, text: "Data & Analytics"},
-    { logo: <FontAwesomeIcon icon={faBullhorn} />, text: "Digital Marketing" },
-    { logo: <FontAwesomeIcon icon={faFileLines} />, text: "E-commerce" },
-    { logo: <FontAwesomeIcon icon={faPalette} />, text: "Graphics & Design" },
-    { logo: <FontAwesomeIcon icon={faCircleCheck} />, text: "Music & Audio" },
-    { logo: <FontAwesomeIcon icon={faMusic} />, text: "Lifestyle" },
-    { logo: <FontAwesomeIcon icon={faCode} />, text: "Programming & Tech" },
-  ];
+  { logo: <FontAwesomeIcon icon={faSuitcase} />, text: "Business", category: "business" },
+  { logo: <FontAwesomeIcon icon={faArrowTrendUp} />, text: "Data & Analytics", category: "data-analytics" },
+  { logo: <FontAwesomeIcon icon={faBullhorn} />, text: "Digital Marketing", category: "digital-marketing" },
+  { logo: <FontAwesomeIcon icon={faFileLines} />, text: "E-commerce", category: "ecommerce" },
+  { logo: <FontAwesomeIcon icon={faPalette} />, text: "Graphics & Design", category: "graphics-design" },
+  { logo: <FontAwesomeIcon icon={faCircleCheck} />, text: "Music & Audio", category: "music-audio" },
+  { logo: <FontAwesomeIcon icon={faMusic} />, text: "Lifestyle", category: "lifestyle" },
+  { logo: <FontAwesomeIcon icon={faCode} />, text: "Programming & Tech", category: "programming-tech" },
+];
 
   export default cardContent;
