@@ -164,7 +164,7 @@ function BrowseGigs() {
 
   return (
     <>
-      <section className="bg-(--color-bg) pb-4 px-5">
+      <section className="mx-auto max-w-screen-2xl bg-(--color-bg) pb-4 px-5">
         <Header
           searchQuery={searchQuery}
           onSearch={handleSearch}

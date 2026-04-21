@@ -6,6 +6,12 @@ export interface GigresponseByID {
   data: GigDetailData;
 }
 
+export interface GigPackageDiscountSummary {
+  discount_percentage: number;
+  expires_at: string | null;
+  discounted_price: number | null;
+}
+
 export interface GigDetailData {
   id: number;
   seller_id: number;
@@ -22,6 +28,11 @@ export interface GigDetailData {
     standard?: PackageTier;
     premium?: PackageTier;
   } | null;
+  active_package_discounts: {
+    basic?: GigPackageDiscountSummary;
+    standard?: GigPackageDiscountSummary;
+    premium?: GigPackageDiscountSummary;
+  };
   requirements: string | null;
   faq: Array<{ question: string; answer: string }> | null;
   rating: string;

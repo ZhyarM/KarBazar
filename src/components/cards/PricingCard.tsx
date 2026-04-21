@@ -13,9 +13,16 @@ import type { PrcingPlanTypes } from "../../utils/PricingPlans";
 import { toggleGigFavorite, checkGigFavorite } from "../../API/FavoritesAPI";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 
+type GigPackageDiscountSummary = {
+  discount_percentage: number;
+  expires_at: string | null;
+  discounted_price: number | null;
+};
+
 interface PricingCardProps {
   pricing?: PrcingPlanTypes[];
   gigPackages?: any;
+  gigDiscounts?: Record<string, GigPackageDiscountSummary | undefined>;
   gigRating?: string;
   gigReviewCount?: number;
   gigOrderCount?: number;
@@ -29,6 +36,7 @@ interface PricingCardProps {
 function PricingCard({
   pricing,
   gigPackages,
+  gigDiscounts,
   gigRating,
   gigReviewCount,
   gigOrderCount,
@@ -132,6 +140,24 @@ function PricingCard({
     displayPlans[0]?.name || "Standard",
   );
   const selectedPlan = displayPlans.find((plan) => plan.name === planSelecter);
+  const selectedPackageKey = planSelecter.toLowerCase();
+  const selectedDiscount = gigDiscounts?.[selectedPackageKey];
+  const displayedPrice =
+    selectedDiscount?.discounted_price ?? selectedPlan?.price ?? 0;
+  const hasSelectedDiscount =
+    selectedDiscount?.discounted_price != null &&
+    selectedPlan?.price != null &&
+    selectedDiscount.discounted_price < selectedPlan.price;
+  const discountedPlans = displayPlans.filter((plan) => {
+    const packageKey = plan.name.toLowerCase();
+    const discount = gigDiscounts?.[packageKey];
+
+    return (
+      packageKey !== selectedPackageKey &&
+      discount?.discounted_price != null &&
+      discount.discounted_price < plan.price
+    );
+  });
 
   return (
     <section className="px-5 py-6 rounded-md shadow-(--shadow-lg) border border-(--color-border) bg-(--color-surface)">
@@ -185,9 +211,21 @@ function PricingCard({
 
         <div className="max-w-sm flex justify-start flex-col gap-1.5 mt-3 border-b-2 border-(--color-border) px-2">
           <div className="flex flex-col gap-1 justify-start">
-            <span className="text-3xl font-semibold text-(--color-text)">
-              {`$${selectedPlan?.price}`}
-            </span>
+            <div className="flex flex-wrap items-center gap-2">
+              <span className="text-3xl font-semibold text-(--color-text)">
+                {`$${displayedPrice}`}
+              </span>
+              {hasSelectedDiscount && (
+                <span className="rounded-full bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white">
+                  {selectedDiscount?.discount_percentage}% {t("deals.off")}
+                </span>
+              )}
+            </div>
+            {hasSelectedDiscount && (
+              <span className="text-sm text-(--color-text-muted) line-through">
+                {`$${selectedPlan?.price}`}
+              </span>
+            )}
             <span className="text-md text-(--color-text-muted)">
               {selectedPlan?.packageType}
             </span>
@@ -218,9 +256,50 @@ function PricingCard({
           </ul>
         </div>
 
+        {discountedPlans.length > 0 && (
+          <div className="mx-2 mt-1 rounded-xl border border-amber-300 bg-amber-50/90 p-3">
+            <p className="mb-3 text-sm font-semibold text-amber-800">
+              Discounted packages
+            </p>
+            <div className="space-y-2">
+              {discountedPlans.map((plan) => {
+                const packageKey = plan.name.toLowerCase();
+                const discount = gigDiscounts?.[packageKey];
+
+                if (!discount || discount.discounted_price == null) {
+                  return null;
+                }
+
+                return (
+                  <div
+                    key={plan.name}
+                    className="flex items-center justify-between gap-3 rounded-lg bg-white/90 px-3 py-2 shadow-sm"
+                  >
+                    <div className="min-w-0">
+                      <p className="text-sm font-semibold text-(--color-text)">
+                        {t(`pricingCard.tier.${packageKey}`)}
+                      </p>
+                      <p className="text-xs text-(--color-text-muted)">
+                        <span className="line-through">${plan.price}</span>
+                        <span className="mx-2">→</span>
+                        <span className="font-semibold text-green-600">
+                          ${discount.discounted_price}
+                        </span>
+                      </p>
+                    </div>
+                    <span className="shrink-0 rounded-full bg-amber-500 px-2.5 py-1 text-xs font-semibold text-white">
+                      {discount.discount_percentage}% {t("deals.off")}
+                    </span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+        )}
+
         <div className="flex flex-col gap-2.5 mt-3 px-5">
           <Button
-            text={`${t("pricingCard.continue")} (${selectedPlan?.price}$)`}
+            text={`${t("pricingCard.continue")} ($${displayedPrice})`}
             textColor="text-(--color-text-inverse)"
             bgColor="bg-(--color-primary)"
             backdropColor=""

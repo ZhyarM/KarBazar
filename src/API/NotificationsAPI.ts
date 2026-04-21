@@ -7,8 +7,9 @@ export interface Notification {
   type: string;
   title: string;
   message: string;
+  link: string | null;
   data: any;
-  read_at: string | null;
+  is_read: boolean;
   created_at: string;
 }
 

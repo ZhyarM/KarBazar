@@ -66,11 +66,17 @@ function Checkout() {
   }
 
   const selectedPackage = (gig.data.packages as any)?.[packageTier];
+  const selectedDiscount = gig.data.active_package_discounts?.[packageTier];
+  const originalPrice = selectedPackage?.price ?? gig.data.price ?? 0;
+  const totalPrice = selectedDiscount?.discounted_price ?? originalPrice;
   const packageName =
     packageTier.charAt(0).toUpperCase() + packageTier.slice(1);
 
   return (
-    <div className="w-full min-h-screen bg-(--color-bg) py-8 px-6" dir={direction}>
+    <div
+      className="w-full min-h-screen bg-(--color-bg) py-8 px-6"
+      dir={direction}
+    >
       <MessageToast
         visible={success !== null}
         message={message}
@@ -97,11 +103,17 @@ function Checkout() {
             </h2>
 
             <div className="flex gap-4 pb-4 border-b border-(--color-border) mb-4">
-              <img
-                src={getImageUrl(gig.data.image_url) || ""}
-                alt={gig.data.title}
-                className="w-24 h-24 rounded-lg object-cover"
-              />
+              {gig.data.image_url ? (
+                <img
+                  src={getImageUrl(gig.data.image_url) || undefined}
+                  alt={gig.data.title}
+                  className="w-24 h-24 rounded-lg object-cover"
+                />
+              ) : (
+                <div className="w-24 h-24 rounded-lg bg-(--color-bg-muted) border border-(--color-border) flex items-center justify-center text-xs text-(--color-text-muted)">
+                  No image
+                </div>
+              )}
               <div className="flex-1 min-w-0">
                 <h3 className="font-semibold text-(--color-text) mb-1">
                   {gig.data.title}
@@ -119,11 +131,15 @@ function Checkout() {
             {selectedPackage && (
               <div className="space-y-3">
                 <p className="text-sm text-(--color-text)">
-                  <span className="font-semibold">{t("checkout.description")}:</span>{" "}
+                  <span className="font-semibold">
+                    {t("checkout.description")}:
+                  </span>{" "}
                   {selectedPackage.description}
                 </p>
                 <p className="text-sm text-(--color-text)">
-                  <span className="font-semibold">{t("checkout.delivery")}:</span>{" "}
+                  <span className="font-semibold">
+                    {t("checkout.delivery")}:
+                  </span>{" "}
                   {selectedPackage.delivery_time} days
                 </p>
                 {Array.isArray(selectedPackage.features) &&
@@ -206,7 +222,17 @@ function Checkout() {
               <span className="text-lg font-bold text-(--color-text)">
                 {t("checkout.total")}
               </span>
-              <span className="text-2xl font-bold text-green-500">{t("checkout.free")}</span>
+              <div className="text-right">
+                <span className="text-2xl font-bold text-(--color-text)">
+                  ${totalPrice}
+                </span>
+                {selectedDiscount?.discounted_price != null &&
+                  selectedDiscount.discounted_price < originalPrice && (
+                    <p className="text-sm text-(--color-text-muted) line-through">
+                      ${originalPrice}
+                    </p>
+                  )}
+              </div>
             </div>
             <p className="text-sm text-(--color-text-muted) mb-6">
               {t("checkout.noPayment")}

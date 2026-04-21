@@ -81,7 +81,7 @@ function GigCard({
     <article className="flex flex-col items-center justify-center gap-5 w-full">
       {gigs.length > 0 ? (
         <>
-          <section className="w-full flex flex-wrap justify-center gap-4">
+          <section className="grid w-full grid-cols-1 gap-6 sm:grid-cols-2 xl:grid-cols-4 items-stretch">
             {gigs.map((gig) =>
               (() => {
                 const packageOrder: Array<"basic" | "standard" | "premium"> = [
@@ -114,7 +114,11 @@ function GigCard({
                   discountedStartingPrice < originalStartingPrice;
 
                 return (
-                  <Link to={`/gig/${gig.id}`} key={gig.id}>
+                  <Link
+                    to={`/gig/${gig.id}`}
+                    key={gig.id}
+                    className="block h-full w-full"
+                  >
                     <UserCard
                       username={gig.seller.name}
                       sellerUsername={gig.seller.profile?.username}

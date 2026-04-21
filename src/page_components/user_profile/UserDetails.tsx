@@ -139,9 +139,11 @@ function UserDetails() {
         {/* Left Column - Main Content */}
         <section className="flex-1 flex flex-col gap-6 min-w-0">
           {/* Title */}
-          <h1 className="text-2xl md:text-3xl font-bold text-(--color-text) leading-tight">
-            {gig.data.title}
-          </h1>
+          <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-(--color-text) leading-tight">
+              {gig.data.title}
+            </h1>
+          </div>
 
           {/* Seller Info & Stats Row */}
           <div className="flex flex-wrap items-center gap-4">
@@ -240,11 +242,15 @@ function UserDetails() {
                           : "border-(--color-border) hover:border-(--color-primary)/50"
                       }`}
                     >
-                      <img
-                        src={getImageUrl(gig.data.image_url) || ""}
-                        alt="Main"
-                        className="w-full h-full object-cover"
-                      />
+                      {getImageUrl(gig.data.image_url) ? (
+                        <img
+                          src={getImageUrl(gig.data.image_url) || undefined}
+                          alt="Main"
+                          className="w-full h-full object-cover"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-(--color-bg-muted)" />
+                      )}
                     </button>
                   )}
                   {getGalleryImages(gig.data.gallery).map((img, idx) => (
@@ -315,6 +321,7 @@ function UserDetails() {
               gigId={gig.data.id}
               gigTitle={gig.data.title}
               gigPackages={gig.data.packages}
+              gigDiscounts={gig.data.active_package_discounts}
               gigRating={gig.data.rating}
               gigReviewCount={gig.data.review_count}
               gigOrderCount={gig.data.order_count}

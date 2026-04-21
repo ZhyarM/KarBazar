@@ -3,6 +3,8 @@ import { faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { getGigReviews, createReview } from "../../API/ReviewsAPI";
 import type { Review } from "../../API/ReviewsAPI";
+import { getOrders } from "../../API/OrdersAPI";
+import type { Order } from "../../API/OrdersAPI";
 import { getAvatarUrl } from "../../utils/imageUrl";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 
@@ -10,7 +12,7 @@ interface ReviewsProps {
   gigId: number;
   gigRating?: number | string;
   reviewCount?: number;
-  /** Pass an order to allow the buyer to write a review */
+  /** Optional preloaded order that allows the buyer to write a review */
   completedOrder?: {
     id: number;
     seller_id: number;
@@ -31,6 +33,9 @@ function Reviews({
   const [loading, setLoading] = useState(true);
   const [totalReviews, setTotalReviews] = useState(reviewCount ?? 0);
   const [avgRating, setAvgRating] = useState<number>(Number(gigRating) || 0);
+  const [eligibleOrder, setEligibleOrder] = useState<
+    ReviewsProps["completedOrder"]
+  >(completedOrder ?? null);
 
   // Review form state
   const [showForm, setShowForm] = useState(false);
@@ -42,8 +47,43 @@ function Reviews({
   const [submitSuccess, setSubmitSuccess] = useState(false);
 
   useEffect(() => {
-    if (gigId) loadReviews();
+    if (gigId) {
+      loadReviews();
+      loadEligibleOrder();
+    }
   }, [gigId]);
+
+  const loadEligibleOrder = async () => {
+    try {
+      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
+      if (!currentUser?.id) {
+        setEligibleOrder(null);
+        return;
+      }
+
+      const orders = await getOrders({ gig_id: gigId, status: "completed" });
+      const matchingOrder = (orders as Order[]).find(
+        (order) =>
+          order.gig_id === gigId &&
+          order.buyer_id === currentUser.id &&
+          order.status === "completed" &&
+          !order.review,
+      );
+
+      if (matchingOrder) {
+        setEligibleOrder({
+          id: matchingOrder.id,
+          seller_id: matchingOrder.seller_id,
+          hasReview: false,
+        });
+      } else {
+        setEligibleOrder(null);
+      }
+    } catch (error) {
+      console.error("Failed to load eligible review order:", error);
+      setEligibleOrder(completedOrder ?? null);
+    }
+  };
 
   const loadReviews = async () => {
     try {
@@ -63,14 +103,14 @@ function Reviews({
   };
 
   const handleSubmitReview = async () => {
-    if (!completedOrder) return;
+    if (!eligibleOrder) return;
     setSubmitError("");
     setSubmitting(true);
     try {
       await createReview(
-        completedOrder.id,
+        eligibleOrder.id,
         gigId,
-        completedOrder.seller_id,
+        eligibleOrder.seller_id,
         newRating,
         newComment,
       );
@@ -78,6 +118,9 @@ function Reviews({
       setShowForm(false);
       setNewComment("");
       setNewRating(5);
+      setEligibleOrder((current) =>
+        current ? { ...current, hasReview: true } : current,
+      );
       await loadReviews();
       onReviewSubmitted?.();
     } catch (err: any) {
@@ -130,7 +173,7 @@ function Reviews({
       </div>
 
       {/* Write Review Button/Form */}
-      {completedOrder && !completedOrder.hasReview && !submitSuccess && (
+      {eligibleOrder && !eligibleOrder.hasReview && !submitSuccess && (
         <div className="bg-(--color-bg-muted) border border-(--color-border) rounded-xl p-5">
           {!showForm ? (
             <button

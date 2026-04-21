@@ -13,10 +13,12 @@ import {
   faTrash,
   faCheckDouble,
 } from "@fortawesome/free-solid-svg-icons";
+import { useNavigate } from "react-router-dom";
 import { useLanguage } from "../context/LanguageContext.tsx";
 
 function Notifications() {
   const { t, direction } = useLanguage();
+  const navigate = useNavigate();
   const [notifications, setNotifications] = useState<Notification[]>([]);
   const [loading, setLoading] = useState(true);
   const [filter, setFilter] = useState<"all" | "unread">("all");
@@ -45,6 +47,36 @@ function Notifications() {
     }
   };
 
+  const getNotificationLink = (notification: Notification) => {
+    if (notification.link) return notification.link;
+
+    switch (notification.type) {
+      case "message":
+        return "/messages";
+      case "order":
+        return "/orders";
+      default:
+        return "";
+    }
+  };
+
+  const openNotification = async (notification: Notification) => {
+    try {
+      if (!notification.is_read) {
+        await markNotificationAsRead(notification.id);
+      }
+
+      const link = getNotificationLink(notification);
+      await loadNotifications();
+
+      if (link) {
+        navigate(link);
+      }
+    } catch (error) {
+      console.error("Failed to open notification:", error);
+    }
+  };
+
   const handleMarkAllAsRead = async () => {
     try {
       await markAllAsRead();
@@ -64,10 +96,10 @@ function Notifications() {
   };
 
   const filteredNotifications = notifications.filter((notif) =>
-    filter === "all" ? true : !notif.read_at,
+    filter === "all" ? true : !notif.is_read,
   );
 
-  const unreadCount = notifications.filter((n) => !n.read_at).length;
+  const unreadCount = notifications.filter((n) => !n.is_read).length;
 
   const formatTime = (dateString: string) => {
     const date = new Date(dateString);
@@ -159,9 +191,18 @@ function Notifications() {
             {filteredNotifications.map((notif) => (
               <div
                 key={notif.id}
-                className={`bg-(--color-surface) rounded-lg p-4 shadow-md hover:shadow-lg transition-all ${
-                  !notif.read_at ? "border-l-4 border-(--color-primary)" : ""
-                }`}
+                onClick={() => openNotification(notif)}
+                role="button"
+                tabIndex={0}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    openNotification(notif);
+                  }
+                }}
+                className={`w-full text-left bg-(--color-surface) rounded-lg p-4 shadow-md hover:shadow-lg transition-all ${
+                  !notif.is_read ? "border-l-4 border-(--color-primary)" : ""
+                }}`}
               >
                 <div className="flex justify-between items-start gap-4">
                   <div className="flex-1">
@@ -180,9 +221,12 @@ function Notifications() {
 
                   {/* Actions */}
                   <div className="flex gap-2">
-                    {!notif.read_at && (
+                    {!notif.is_read && (
                       <button
-                        onClick={() => handleMarkAsRead(notif.id)}
+                        onClick={(event) => {
+                          event.stopPropagation();
+                          handleMarkAsRead(notif.id);
+                        }}
                         className="p-2 text-green-600 hover:bg-green-100 rounded-lg transition-all"
                         title={t("notifications.markRead")}
                       >
@@ -190,7 +234,10 @@ function Notifications() {
                       </button>
                     )}
                     <button
-                      onClick={() => handleDelete(notif.id)}
+                      onClick={(event) => {
+                        event.stopPropagation();
+                        handleDelete(notif.id);
+                      }}
                       className="p-2 text-red-600 hover:bg-red-100 rounded-lg transition-all"
                       title={t("notifications.delete")}
                     >

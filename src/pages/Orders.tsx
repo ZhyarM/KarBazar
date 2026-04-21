@@ -275,6 +275,8 @@ function Orders() {
             {filteredOrders.map((order) => {
               const isBuyer = order.buyer_id === currentUser.id;
               const otherParty = isBuyer ? order.seller : order.buyer;
+              const orderTotal =
+                order.price > 0 ? order.price : order.gig.price;
 
               return (
                 <div
@@ -303,11 +305,13 @@ function Orders() {
                         </div>
                         <div className="text-right">
                           <p className="text-2xl font-bold text-green-500">
-                            Free
+                            ${orderTotal}
                           </p>
-                          <p className="text-sm text-(--color-text-muted) capitalize">
-                            {order.package_type}
-                          </p>
+                          {order.package_type && (
+                            <p className="text-sm text-(--color-text-muted) capitalize">
+                              {order.package_type}
+                            </p>
+                          )}
                         </div>
                       </div>
 
