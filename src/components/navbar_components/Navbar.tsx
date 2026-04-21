@@ -12,66 +12,21 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import NavLinks from "../../utils/NavLinks.tsx";
 import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
-import { useEffect, useState } from "react";
 import ProfileDropdown from "./profileIcon.tsx";
 import moon from "../../assets/moon.png";
 import theme from "../../assets/theme.png";
-import me, { type AuthResponse } from "../../API/me.tsx";
-import { getUnreadCount } from "../../API/NotificationsAPI.ts";
-import { isAuthenticated } from "../../API/apiClient.ts";
 import { isSellerRole } from "../../utils/roles";
 import { useLanguage } from "../../context/LanguageContext.tsx";
-
-const getUser = async () => {
-  const user = await me();
-
-  if (user) {
-    return user;
-  } else {
-    return null;
-  }
-};
+import { useUserData } from "../../context/UserDataContext.tsx";
 
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
   const { language, toggleLanguage, direction, t } = useLanguage();
+  const { user, unreadCount } = useUserData();
   const navigate = useNavigate();
-  const [user, setUser] = useState<AuthResponse | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
   const isRTL = direction === "rtl";
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!isAuthenticated()) {
-        setUser(null);
-        return;
-      }
-
-      const user = await getUser();
-      setUser(user);
-
-      if (user) {
-        try {
-          const count = await getUnreadCount();
-          setUnreadCount(count);
-        } catch (error) {
-          console.error("Failed to get unread count:", error);
-        }
-      }
-    };
-
-    fetchUser();
-
-    // Poll for notifications every 30 seconds if logged in
-    const interval = setInterval(() => {
-      if (isAuthenticated()) {
-        getUnreadCount().then(setUnreadCount).catch(console.error);
-      }
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const isLoggedIn = Boolean(user?.data);
 
   const isSeller = isSellerRole(user?.data?.role);
 
@@ -167,7 +122,7 @@ function Navbar() {
             )}
           </button>
 
-          {!isAuthenticated() ? (
+          {!isLoggedIn ? (
             <>
               <Link to="/sign-in">
                 <Button

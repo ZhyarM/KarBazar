@@ -1,9 +1,5 @@
-import React from 'react'
-
 function RecentActivities() {
-  return (
-    <div>RecentActivities</div>
-  )
+  return <div>RecentActivities</div>;
 }
 
-export default RecentActivities
+export default RecentActivities;

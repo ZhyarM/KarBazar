@@ -1,4 +1,5 @@
 import { normalizeRoleForUi, type UiRole } from "../utils/roles";
+import { API_BASE_URL } from "./apiClient";
 
 interface UserProfile {
   id: number;
@@ -46,7 +47,7 @@ const me = async (): Promise<AuthResponse> => {
     throw new Error("No authentication token found");
   }
 
-  const response = await fetch("http://127.0.0.1:8000/api/auth/me", {
+  const response = await fetch(`${API_BASE_URL}/auth/me`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

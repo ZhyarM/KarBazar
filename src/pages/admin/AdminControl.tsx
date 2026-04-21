@@ -12,6 +12,12 @@ function AdminControlPage() {
       to: "/admin/listings",
     },
     {
+      title: "Deals & Promotions",
+      description:
+        "Create, pause, and adjust active discounts for gig packages.",
+      to: "/admin/deals",
+    },
+    {
       title: "Orders & Reviews",
       description:
         "Review all orders, resolve order issues, and moderate review quality.",
@@ -71,6 +77,12 @@ function AdminControlPage() {
             className="inline-block px-4 py-2 rounded-md border border-(--color-border) text-(--color-text) font-semibold"
           >
             Publish News
+          </Link>
+          <Link
+            to="/admin/deals"
+            className="inline-block px-4 py-2 rounded-md border border-(--color-border) text-(--color-text) font-semibold"
+          >
+            Manage Deals
           </Link>
         </div>
       </div>

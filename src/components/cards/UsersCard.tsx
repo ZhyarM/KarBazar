@@ -58,6 +58,8 @@ function UsersCard({
             src={user_background_img}
             className="w-full h-44 object-cover"
             alt={description}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-44 flex justify-center items-center bg-(image:--gradient-secondary) text-3xl">
@@ -80,6 +82,8 @@ function UsersCard({
               src={user_profile_img}
               alt={username}
               className="w-9 h-9 shrink-0 rounded-full object-cover object-center border-2 border-(--color-border)"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <span

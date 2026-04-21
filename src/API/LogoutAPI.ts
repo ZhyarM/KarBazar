@@ -18,6 +18,7 @@ export const logout = async (): Promise<void> => {
     // Clear local storage
     localStorage.removeItem("auth_token");
     localStorage.removeItem("user");
+    window.dispatchEvent(new Event("auth-changed"));
 
     // Redirect to home page
     window.location.href = "/";

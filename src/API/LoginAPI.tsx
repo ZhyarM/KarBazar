@@ -1,4 +1,5 @@
 import { normalizeRoleForUi } from "../utils/roles";
+import { API_BASE_URL } from "./apiClient";
 
 interface UserProfile {
   id: number;
@@ -52,7 +53,7 @@ interface RequestPayload {
 export const loginuser = async (
   payload: RequestPayload,
 ): Promise<AuthResponse> => {
-  const response = await fetch("http://127.0.0.1:8000/api/auth/login", {
+  const response = await fetch(`${API_BASE_URL}/auth/login`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",

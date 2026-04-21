@@ -1,6 +1,6 @@
 import type { TranslationKey } from "../i18n/translations";
 
-type NavLinkItem = { labelKey: TranslationKey; to: string };
+export type NavLinkItem = { labelKey: TranslationKey; to: string };
 
 const navLinks: NavLinkItem[] = [
   { labelKey: "nav.home", to: "/" },

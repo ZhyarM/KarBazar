@@ -6,6 +6,7 @@ use Illuminate\Database\Seeder;
 use App\Models\Gig;
 use App\Models\User;
 use App\Models\Category;
+use App\Models\GigPackageDiscount;
 
 class GigSeeder extends Seeder
 {
@@ -31,6 +32,13 @@ class GigSeeder extends Seeder
                 'review_count' => 87,
                 'order_count' => 156,
                 'is_sponsored' => true,
+                'is_trending' => true,
+                'view_count' => 1124,
+                'image_url' => 'https://picsum.photos/id/1015/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/1016/1200/800',
+                    'https://picsum.photos/id/1025/1200/800',
+                ],
             ],
             [
                 'title' => 'Full Stack Web Application Development',
@@ -43,6 +51,13 @@ class GigSeeder extends Seeder
                 'review_count' => 45,
                 'order_count' => 89,
                 'is_sponsored' => true,
+                'is_trending' => true,
+                'view_count' => 947,
+                'image_url' => 'https://picsum.photos/id/180/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/0/1200/800',
+                    'https://picsum.photos/id/48/1200/800',
+                ],
             ],
             [
                 'title' => 'SEO Optimized Blog Posts and Articles',
@@ -54,6 +69,13 @@ class GigSeeder extends Seeder
                 'rating' => 4.8,
                 'review_count' => 234,
                 'order_count' => 456,
+                'is_trending' => true,
+                'view_count' => 1890,
+                'image_url' => 'https://picsum.photos/id/24/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/20/1200/800',
+                    'https://picsum.photos/id/25/1200/800',
+                ],
             ],
             [
                 'title' => 'Professional Video Editing for YouTube',
@@ -66,6 +88,13 @@ class GigSeeder extends Seeder
                 'review_count' => 178,
                 'order_count' => 298,
                 'is_sponsored' => true,
+                'is_trending' => true,
+                'view_count' => 1605,
+                'image_url' => 'https://picsum.photos/id/250/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/237/1200/800',
+                    'https://picsum.photos/id/251/1200/800',
+                ],
             ],
             [
                 'title' => 'Custom Mobile App Development (iOS & Android)',
@@ -77,6 +106,13 @@ class GigSeeder extends Seeder
                 'rating' => 4.9,
                 'review_count' => 56,
                 'order_count' => 78,
+                'is_trending' => false,
+                'view_count' => 731,
+                'image_url' => 'https://picsum.photos/id/1/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/2/1200/800',
+                    'https://picsum.photos/id/3/1200/800',
+                ],
             ],
             [
                 'title' => '2D Character Animation for Explainer Videos',
@@ -88,6 +124,13 @@ class GigSeeder extends Seeder
                 'rating' => 4.7,
                 'review_count' => 67,
                 'order_count' => 112,
+                'is_trending' => false,
+                'view_count' => 624,
+                'image_url' => 'https://picsum.photos/id/1073/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/1074/1200/800',
+                    'https://picsum.photos/id/1076/1200/800',
+                ],
             ],
             [
                 'title' => 'Complete Social Media Marketing Strategy',
@@ -100,6 +143,13 @@ class GigSeeder extends Seeder
                 'review_count' => 145,
                 'order_count' => 267,
                 'is_sponsored' => true,
+                'is_trending' => true,
+                'view_count' => 1412,
+                'image_url' => 'https://picsum.photos/id/888/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/889/1200/800',
+                    'https://picsum.photos/id/890/1200/800',
+                ],
             ],
             [
                 'title' => 'WordPress Website Design and Development',
@@ -111,6 +161,13 @@ class GigSeeder extends Seeder
                 'rating' => 4.8,
                 'review_count' => 92,
                 'order_count' => 143,
+                'is_trending' => false,
+                'view_count' => 878,
+                'image_url' => 'https://picsum.photos/id/1005/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/1008/1200/800',
+                    'https://picsum.photos/id/1011/1200/800',
+                ],
             ],
             [
                 'title' => 'Professional Voice Over Recording',
@@ -122,6 +179,13 @@ class GigSeeder extends Seeder
                 'rating' => 4.9,
                 'review_count' => 198,
                 'order_count' => 334,
+                'is_trending' => true,
+                'view_count' => 1760,
+                'image_url' => 'https://picsum.photos/id/433/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/434/1200/800',
+                    'https://picsum.photos/id/436/1200/800',
+                ],
             ],
             [
                 'title' => 'Complete SEO Audit and Optimization',
@@ -133,18 +197,47 @@ class GigSeeder extends Seeder
                 'rating' => 4.7,
                 'review_count' => 76,
                 'order_count' => 134,
+                'is_trending' => false,
+                'view_count' => 803,
+                'image_url' => 'https://picsum.photos/id/119/1200/800',
+                'gallery' => [
+                    'https://picsum.photos/id/120/1200/800',
+                    'https://picsum.photos/id/121/1200/800',
+                ],
             ],
         ];
 
         foreach ($gigs as $index => $gigData) {
             $category = $categories->where('name', $gigData['category'])->first();
-            
+
             if (!$category) {
                 $this->command->warn("⚠️ Category '{$gigData['category']}' not found, skipping gig.");
                 continue;
             }
 
             $freelancer = $freelancers[$index % $freelancers->count()];
+
+            $basicPrice = (int) $gigData['price'];
+            $standardPrice = (int) round($basicPrice * 1.6);
+            $premiumPrice = (int) round($basicPrice * 2.3);
+
+            $packages = [
+                'basic' => [
+                    'price' => $basicPrice,
+                    'delivery_time' => (int) $gigData['delivery_time'],
+                    'description' => 'Starter package with core deliverables and one revision.',
+                ],
+                'standard' => [
+                    'price' => $standardPrice,
+                    'delivery_time' => max(1, (int) $gigData['delivery_time'] - 1),
+                    'description' => 'Most popular package with priority support and extra revision rounds.',
+                ],
+                'premium' => [
+                    'price' => $premiumPrice,
+                    'delivery_time' => max(1, (int) floor($gigData['delivery_time'] * 0.7)),
+                    'description' => 'Fast-track delivery with full commercial rights and complete source assets.',
+                ],
+            ];
 
             Gig::create([
                 'seller_id' => $freelancer->id,
@@ -153,15 +246,129 @@ class GigSeeder extends Seeder
                 'description' => $gigData['description'],
                 'price' => $gigData['price'],
                 'delivery_time' => $gigData['delivery_time'],
-                'tags' => json_encode($gigData['tags']),
+                'image_url' => $gigData['image_url'] ?? null,
+                'gallery' => $gigData['gallery'] ?? [],
+                'tags' => $gigData['tags'],
+                'packages' => $packages,
+                'requirements' => "Please share your goals, preferred style, reference examples, and deadline before we begin.",
+                'faq' => json_encode([
+                    [
+                        'question' => 'Do you offer revisions?',
+                        'answer' => 'Yes, all packages include revision rounds based on the selected tier.',
+                    ],
+                    [
+                        'question' => 'Can I use this commercially?',
+                        'answer' => 'Commercial usage is included for final approved deliverables.',
+                    ],
+                ]),
                 'rating' => $gigData['rating'],
                 'review_count' => $gigData['review_count'],
                 'order_count' => $gigData['order_count'],
+                'view_count' => $gigData['view_count'] ?? 0,
                 'is_active' => true,
                 'is_featured' => $gigData['is_sponsored'] ?? false,
+                'is_trending' => $gigData['is_trending'] ?? false,
             ]);
         }
 
+        $gigMap = Gig::with('seller')->get()->keyBy('title');
+        $adminId = User::where('role', 'admin')->value('id');
+
+        $discounts = [
+            [
+                'gig_title' => 'Professional Logo Design with Unlimited Revisions',
+                'package_key' => 'basic',
+                'discount_percentage' => 25,
+                'expires_at' => now()->addDays(10),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Professional Logo Design with Unlimited Revisions',
+                'package_key' => 'premium',
+                'discount_percentage' => 15,
+                'expires_at' => now()->addDays(3),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Full Stack Web Application Development',
+                'package_key' => 'standard',
+                'discount_percentage' => 20,
+                'expires_at' => now()->addDays(14),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'SEO Optimized Blog Posts and Articles',
+                'package_key' => 'basic',
+                'discount_percentage' => 30,
+                'expires_at' => now()->addDays(5),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Complete Social Media Marketing Strategy',
+                'package_key' => 'premium',
+                'discount_percentage' => 18,
+                'expires_at' => now()->addHours(36),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'WordPress Website Design and Development',
+                'package_key' => 'standard',
+                'discount_percentage' => 12,
+                'expires_at' => null,
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Professional Voice Over Recording',
+                'package_key' => 'premium',
+                'discount_percentage' => 22,
+                'expires_at' => now()->addHours(30),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Custom Mobile App Development (iOS & Android)',
+                'package_key' => 'standard',
+                'discount_percentage' => 16,
+                'expires_at' => now()->addDays(8),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Complete SEO Audit and Optimization',
+                'package_key' => 'premium',
+                'discount_percentage' => 14,
+                'expires_at' => now()->addDays(6),
+                'is_active' => true,
+            ],
+            [
+                'gig_title' => 'Professional Video Editing for YouTube',
+                'package_key' => 'basic',
+                'discount_percentage' => 10,
+                'expires_at' => now()->subDays(1),
+                'is_active' => false,
+            ],
+        ];
+
+        foreach ($discounts as $discountData) {
+            $gig = $gigMap->get($discountData['gig_title']);
+
+            if (!$gig) {
+                continue;
+            }
+
+            GigPackageDiscount::updateOrCreate(
+                [
+                    'gig_id' => $gig->id,
+                    'package_key' => $discountData['package_key'],
+                ],
+                [
+                    'discount_percentage' => $discountData['discount_percentage'],
+                    'expires_at' => $discountData['expires_at'],
+                    'is_active' => $discountData['is_active'],
+                    'created_by' => $adminId,
+                ],
+            );
+        }
+
         $this->command->info('✅ Gigs seeded successfully!');
+        $this->command->info('✅ Deals and discounts seeded successfully!');
     }
 }

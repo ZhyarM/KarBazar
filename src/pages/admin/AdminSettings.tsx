@@ -8,6 +8,7 @@ import {
 
 function AdminSettingsPage() {
   const [settings, setSettings] = useState<AdminSetting[]>([]);
+  const [savingMaintenance, setSavingMaintenance] = useState(false);
   const [form, setForm] = useState({
     key: "",
     value: "",
@@ -30,6 +31,38 @@ function AdminSettingsPage() {
   useEffect(() => {
     loadSettings();
   }, []);
+
+  const maintenanceSetting = settings.find(
+    (setting) => setting.key === "platform_maintenance_mode",
+  );
+
+  const isMaintenanceEnabled =
+    maintenanceSetting?.type === "boolean"
+      ? maintenanceSetting.value === "1" || maintenanceSetting.value === "true"
+      : false;
+
+  const toggleMaintenanceMode = async () => {
+    setSavingMaintenance(true);
+    try {
+      await updateAdminSetting({
+        key: "platform_maintenance_mode",
+        value: !isMaintenanceEnabled,
+        type: "boolean",
+        description:
+          "Blocks non-admin API requests while the platform is in maintenance mode.",
+      });
+      await loadSettings();
+    } catch (error) {
+      console.error("Failed to update maintenance mode:", error);
+      alert(
+        error instanceof Error
+          ? error.message
+          : "Failed to update maintenance mode.",
+      );
+    } finally {
+      setSavingMaintenance(false);
+    }
+  };
 
   const handleSave = async (event: FormEvent) => {
     event.preventDefault();
@@ -78,6 +111,42 @@ function AdminSettingsPage() {
           Manage global platform behavior. Keep the platform free by avoiding
           payment-related settings.
         </p>
+      </div>
+
+      <div className="bg-(--color-surface) rounded-lg p-6 shadow-md border border-(--color-border)">
+        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+          <div>
+            <h3 className="text-lg font-semibold text-(--color-text)">
+              Maintenance Mode
+            </h3>
+            <p className="text-sm text-(--color-text-muted) mt-1">
+              When enabled, the backend returns 503 for non-admin requests.
+            </p>
+          </div>
+          <div className="flex items-center gap-3">
+            <span
+              className={`px-3 py-1 rounded-full text-xs font-semibold ${
+                isMaintenanceEnabled
+                  ? "bg-red-100 text-red-700"
+                  : "bg-green-100 text-green-700"
+              }`}
+            >
+              {isMaintenanceEnabled ? "Enabled" : "Disabled"}
+            </span>
+            <button
+              type="button"
+              onClick={toggleMaintenanceMode}
+              disabled={savingMaintenance}
+              className="px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold disabled:opacity-60"
+            >
+              {savingMaintenance
+                ? "Updating..."
+                : isMaintenanceEnabled
+                  ? "Disable Maintenance"
+                  : "Enable Maintenance"}
+            </button>
+          </div>
+        </div>
       </div>
 
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">

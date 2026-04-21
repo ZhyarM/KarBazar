@@ -219,6 +219,7 @@ function UserDetails() {
                   src={selectedGalleryImg}
                   alt={gig.data.title}
                   className="w-full max-h-[420px] object-contain"
+                  decoding="async"
                 />
               </div>
             )}
@@ -247,6 +248,8 @@ function UserDetails() {
                           src={getImageUrl(gig.data.image_url) || undefined}
                           alt="Main"
                           className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
                         />
                       ) : (
                         <div className="w-full h-full bg-(--color-bg-muted)" />
@@ -267,6 +270,8 @@ function UserDetails() {
                         src={img}
                         alt={`Gallery ${idx + 1}`}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </button>
                   ))}

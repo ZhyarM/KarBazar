@@ -7,6 +7,11 @@ const getAuthToken = (): string | null => {
   return localStorage.getItem("auth_token");
 };
 
+export const clearAuthStorage = (): void => {
+  localStorage.removeItem("auth_token");
+  localStorage.removeItem("user");
+};
+
 // Helper function to check if user is authenticated
 export const isAuthenticated = (): boolean => {
   return !!getAuthToken();
@@ -56,6 +61,10 @@ export const apiCall = async <T>(
 
   if (!response.ok) {
     const errorData = await response.json().catch(() => ({}));
+
+    if (response.status === 401 || response.status === 403) {
+      clearAuthStorage();
+    }
 
     // Handle Laravel validation errors
     if (errorData.errors) {

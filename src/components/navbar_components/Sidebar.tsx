@@ -15,32 +15,18 @@ import {
   faShieldAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useEffect, useState } from "react";
-import me from "../../API/me.tsx";
-import { isAuthenticated } from "../../API/apiClient.ts";
 import { isSellerRole } from "../../utils/roles";
 import { useLanguage } from "../../context/LanguageContext.tsx";
-
-function isLogedIn() {
-  return isAuthenticated();
-}
+import { useUserData } from "../../context/UserDataContext.tsx";
 
 export default function Sidebar(): JSX.Element {
   const { isCollapse, toggleCollapse } = useCollapse();
   const { isBgLight } = useTheme();
   const { t, direction } = useLanguage();
-  const [userRole, setUserRole] = useState<string | null>(null);
+  const { user } = useUserData();
+  const userRole = user?.data?.role ?? null;
+  const isLoggedIn = Boolean(user?.data);
   const isRTL = direction === "rtl";
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (isLogedIn()) {
-        const user = await me();
-        setUserRole(user?.data?.role || null);
-      }
-    };
-    fetchUser();
-  }, []);
 
   const authenticatedLinks = [
     { to: "/dashboard", label: t("sidebar.dashboard"), icon: faTachometerAlt },
@@ -102,7 +88,7 @@ export default function Sidebar(): JSX.Element {
         ))}
 
         {/* Authenticated User Links */}
-        {isLogedIn() && (
+        {isLoggedIn && (
           <>
             <li className="mt-4 px-3 py-2 text-xs font-semibold text-(--color-text-muted) uppercase">
               {t("sidebar.yourAccount")}

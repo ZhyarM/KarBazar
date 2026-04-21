@@ -3,6 +3,7 @@ import type { FormEvent } from "react";
 import {
   createAdminAccount,
   deleteAdminUser,
+  exportAdminUsersCsv,
   getAdminUsers,
   updateAdminUserRole,
   updateAdminUserStatus,
@@ -13,7 +14,9 @@ import { useLanguage } from "../../context/LanguageContext";
 function AdminUsersPage() {
   const { t } = useLanguage();
   const [users, setUsers] = useState<AdminUser[]>([]);
+  const [totalUsers, setTotalUsers] = useState(0);
   const [loading, setLoading] = useState(true);
+  const [exporting, setExporting] = useState(false);
   const [search, setSearch] = useState("");
   const [roleFilter, setRoleFilter] = useState<
     "all" | "client" | "freelancer" | "admin"
@@ -37,6 +40,7 @@ function AdminUsersPage() {
         per_page: 50,
       });
       setUsers(response.data);
+      setTotalUsers(response.meta.total);
     } catch (error) {
       console.error("Failed to load admin users:", error);
     } finally {
@@ -111,6 +115,34 @@ function AdminUsersPage() {
     }
   };
 
+  const handleExportCsv = async () => {
+    setExporting(true);
+
+    try {
+      const blob = await exportAdminUsersCsv({
+        search: search || undefined,
+        role: roleFilter === "all" ? undefined : roleFilter,
+        per_page: 100,
+      });
+
+      const url = window.URL.createObjectURL(blob);
+      const anchor = document.createElement("a");
+      anchor.href = url;
+      anchor.download = `admin-users-${new Date().toISOString().slice(0, 10)}.csv`;
+      document.body.appendChild(anchor);
+      anchor.click();
+      anchor.remove();
+      window.URL.revokeObjectURL(url);
+    } catch (error) {
+      console.error("Failed to export users:", error);
+      alert(
+        error instanceof Error ? error.message : t("admin.users.actionFailed"),
+      );
+    } finally {
+      setExporting(false);
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
@@ -175,9 +207,14 @@ function AdminUsersPage() {
 
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <div className="flex flex-col md:flex-row gap-3 md:items-center md:justify-between mb-4">
-          <h2 className="text-xl font-bold text-(--color-text)">
-            {t("admin.users.title")}
-          </h2>
+          <div>
+            <h2 className="text-xl font-bold text-(--color-text)">
+              {t("admin.users.title")}
+            </h2>
+            <p className="text-sm text-(--color-text-muted)">
+              Total users: {totalUsers}
+            </p>
+          </div>
           <div className="flex flex-col md:flex-row gap-3">
             <input
               value={search}
@@ -207,6 +244,14 @@ function AdminUsersPage() {
               className="px-4 py-2 rounded-md bg-(--color-bg) border border-(--color-border) text-(--color-text) font-semibold"
             >
               {t("admin.users.apply")}
+            </button>
+            <button
+              type="button"
+              onClick={handleExportCsv}
+              disabled={exporting}
+              className="px-4 py-2 rounded-md bg-(--color-primary) text-white font-semibold disabled:opacity-60"
+            >
+              {exporting ? "Exporting..." : "Export CSV"}
             </button>
           </div>
         </div>

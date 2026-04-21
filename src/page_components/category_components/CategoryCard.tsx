@@ -1,19 +1,19 @@
+import type { ReactNode } from "react";
+
 interface CategoryData {
-  id: number;
   name: string;
-  slug: string;
+  logo: ReactNode;
+  services: string;
   description: string;
-  icon: string;
-  gig_count: number;
   bg: string;
 }
 
 function CategoryCard({
   name,
+  logo,
+  services,
   description,
-  icon,
   bg = "bg-(--color-primary)",
-  gig_count,
 }: CategoryData) {
   return (
     <article
@@ -42,7 +42,7 @@ function CategoryCard({
           `}
         >
           <span className="text-2xl transition-transform duration-300 group-hover:scale-110">
-            {icon}
+            {logo}
           </span>
         </div>
 
@@ -68,7 +68,7 @@ function CategoryCard({
               text-white
             "
           >
-            {gig_count} services
+            {services}
           </span>
         </div>
       </div>

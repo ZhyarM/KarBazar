@@ -30,58 +30,60 @@ use Illuminate\Support\Facades\Broadcast;
 */
 
 // Public routes
-Route::prefix('auth')->group(function () {
-    Route::post('/register', [AuthController::class, 'register']);
-    Route::post('/login', [AuthController::class, 'login']);
+Route::middleware('platform.maintenance')->group(function () {
+    Route::prefix('auth')->group(function () {
+        Route::post('/register', [AuthController::class, 'register']);
+        Route::post('/login', [AuthController::class, 'login']);
+    });
+
+    // Public categories
+    Route::get('/categories', [CategoryController::class, 'index']);
+    Route::get('/categories/{id}', [CategoryController::class, 'show']);
+
+    // Public gigs browsing
+    Route::get('/gigs', [GigController::class, 'index']);
+    Route::get('/gigs/{id}', [GigController::class, 'show'])->where('id', '[0-9]+');
+    Route::get('/deals', [GigController::class, 'deals']);
+
+    // Public profiles
+    Route::get('/profiles/freelancers', [ProfileController::class, 'freelancers']);
+    Route::get('/profiles/accounts', [ProfileController::class, 'accounts']);
+    Route::get('/profiles/user/{userId}', [ProfileController::class, 'showById']);
+    Route::get('/profiles/{username}', [ProfileController::class, 'show']);
+
+    // Public reviews
+    Route::get('/reviews/gig/{gigId}', [ReviewController::class, 'gigReviews']);
+    Route::get('/reviews/user/{userId}', [ReviewController::class, 'userReviews']);
+
+    // ⭐️ NEW: Public Advertisement Routes
+    Route::get('/ads/active', [AdController::class, 'getActiveAds']);
+    Route::post('/ads/track-view/{id}', [AdController::class, 'trackView']);
+    Route::post('/ads/track-click/{id}', [AdController::class, 'trackClick']);
+
+    // ⭐️ NEW: Public Ad Request (Contact form for ads)
+    Route::post('/ad-requests', [AdRequestController::class, 'store']);
+
+    // ⭐️ NEW: Public Settings (get platform fee, etc)
+    Route::get('/settings/{key}', [SettingsController::class, 'show']);
+
+    // Public homepage stats
+    Route::get('/stats/public-overview', [AnalyticsController::class, 'publicStats']);
+
+    // Public posts browsing
+    Route::get('/posts', [PostController::class, 'index']);
+    Route::get('/posts/feed', [PostController::class, 'feed']);
+    Route::get('/posts/{id}', [PostController::class, 'show'])->where('id', '[0-9]+');
+    Route::get('/posts/{id}/comments', [PostController::class, 'getComments'])->where('id', '[0-9]+');
+    Route::get('/posts/user/{userId}', [PostController::class, 'userPosts']);
+
+    // Public follow stats
+    Route::get('/follow/{userId}/stats', [FollowController::class, 'stats']);
+    Route::get('/follow/{userId}/followers', [FollowController::class, 'followers']);
+    Route::get('/follow/{userId}/following', [FollowController::class, 'following']);
 });
 
-// Public categories
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/categories/{id}', [CategoryController::class, 'show']);
-
-// Public gigs browsing
-Route::get('/gigs', [GigController::class, 'index']);
-Route::get('/gigs/{id}', [GigController::class, 'show'])->where('id', '[0-9]+');
-Route::get('/deals', [GigController::class, 'deals']);
-
-// Public profiles
-Route::get('/profiles/freelancers', [ProfileController::class, 'freelancers']);
-Route::get('/profiles/accounts', [ProfileController::class, 'accounts']);
-Route::get('/profiles/user/{userId}', [ProfileController::class, 'showById']);
-Route::get('/profiles/{username}', [ProfileController::class, 'show']);
-
-// Public reviews
-Route::get('/reviews/gig/{gigId}', [ReviewController::class, 'gigReviews']);
-Route::get('/reviews/user/{userId}', [ReviewController::class, 'userReviews']);
-
-// ⭐️ NEW: Public Advertisement Routes
-Route::get('/ads/active', [AdController::class, 'getActiveAds']);
-Route::post('/ads/track-view/{id}', [AdController::class, 'trackView']);
-Route::post('/ads/track-click/{id}', [AdController::class, 'trackClick']);
-
-// ⭐️ NEW: Public Ad Request (Contact form for ads)
-Route::post('/ad-requests', [AdRequestController::class, 'store']);
-
-// ⭐️ NEW: Public Settings (get platform fee, etc)
-Route::get('/settings/{key}', [SettingsController::class, 'show']);
-
-// Public homepage stats
-Route::get('/stats/public-overview', [AnalyticsController::class, 'publicStats']);
-
-// Public posts browsing
-Route::get('/posts', [PostController::class, 'index']);
-Route::get('/posts/feed', [PostController::class, 'feed']);
-Route::get('/posts/{id}', [PostController::class, 'show'])->where('id', '[0-9]+');
-Route::get('/posts/{id}/comments', [PostController::class, 'getComments'])->where('id', '[0-9]+');
-Route::get('/posts/user/{userId}', [PostController::class, 'userPosts']);
-
-// Public follow stats
-Route::get('/follow/{userId}/stats', [FollowController::class, 'stats']);
-Route::get('/follow/{userId}/followers', [FollowController::class, 'followers']);
-Route::get('/follow/{userId}/following', [FollowController::class, 'following']);
-
 // Protected routes (require authentication)
-Route::middleware('auth:sanctum')->group(function () {
+Route::middleware(['auth:sanctum', 'platform.maintenance'])->group(function () {
 
     // Auth
     Route::prefix('auth')->group(function () {
@@ -152,7 +154,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-// Reviews
+    // Reviews
     Route::prefix('reviews')->group(function () {
         Route::post('/', [ReviewController::class, 'store']);
         Route::put('/{id}', [ReviewController::class, 'update']);
@@ -207,6 +209,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Analytics (Admin only)
     Route::middleware('admin')->prefix('analytics')->group(function () {
+        Route::get('/dashboard', [AnalyticsController::class, 'dashboard']);
         Route::get('/overview', [AnalyticsController::class, 'overview']);
         Route::get('/revenue-chart', [AnalyticsController::class, 'revenueChart']);
         Route::get('/orders-chart', [AnalyticsController::class, 'ordersChart']);
@@ -226,7 +229,7 @@ Route::middleware('auth:sanctum')->group(function () {
     });
 
 
-// ⭐️ NEW: Admin Ad Request Management
+    // ⭐️ NEW: Admin Ad Request Management
     Route::middleware('admin')->prefix('admin/ad-requests')->group(function () {
         Route::get('/', [AdRequestController::class, 'index']);
         Route::put('/{id}', [AdRequestController::class, 'updateStatus']);
@@ -243,6 +246,7 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin user management
     Route::middleware('admin')->prefix('admin/users')->group(function () {
         Route::get('/', [AdminUserController::class, 'index']);
+        Route::get('/export', [AdminUserController::class, 'export']);
         Route::get('/admins', [AdminUserController::class, 'admins']);
         Route::post('/admins', [AdminUserController::class, 'storeAdmin']);
         Route::put('/{id}/status', [AdminUserController::class, 'updateStatus']);
