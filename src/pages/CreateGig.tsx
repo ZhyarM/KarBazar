@@ -524,7 +524,7 @@ function CreateGig() {
                 </div>
                 <div className="mt-4">
                   <label className="block text-(--color-text) mb-2">
-                    Description *
+                    {t("createGig.basicPackageDescription")}
                   </label>
                   <textarea
                     value={formData.basic_description}
@@ -588,7 +588,7 @@ function CreateGig() {
                 </div>
                 <div className="mt-4">
                   <label className="block text-(--color-text) mb-2">
-                    Description
+                    {t("createGig.standardPackageDescription")}
                   </label>
                   <textarea
                     value={formData.standard_description || ""}
@@ -651,7 +651,7 @@ function CreateGig() {
                 </div>
                 <div className="mt-4">
                   <label className="block text-(--color-text) mb-2">
-                    Description
+                    {t("createGig.premiumPackageDescription")}
                   </label>
                   <textarea
                     value={formData.premium_description || ""}

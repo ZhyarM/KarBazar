@@ -71,7 +71,7 @@ function UserDetails() {
           <Suspense
             fallback={
               <div className="flex justify-center text-(--color-text)">
-                Loading FAQs...
+                {t("gigDetail.loadingFaqs")}
               </div>
             }
           >
@@ -83,7 +83,7 @@ function UserDetails() {
           <div className="flex flex-col gap-4">
             <div>
               <h3 className="text-lg font-bold text-(--color-text) mb-2">
-                About this gig
+                {t("gigDetail.aboutThisGig")}
               </h3>
               <p className="text-(--color-text) text-base leading-relaxed whitespace-pre-line">
                 {gig.data.description}
@@ -92,7 +92,7 @@ function UserDetails() {
             {gig.data.requirements && (
               <div>
                 <h3 className="text-lg font-bold text-(--color-text) mb-2">
-                  Requirements
+                  {t("gigDetail.requirements")}
                 </h3>
                 <p className="text-(--color-text) text-base leading-relaxed">
                   {gig.data.requirements}
@@ -298,19 +298,26 @@ function UserDetails() {
           {/* Tabs: Description / Reviews / FAQ */}
           <div className="flex flex-col gap-4">
             <div className="flex bg-(--color-bg-muted) rounded-lg p-1 max-w-sm">
-              {["description", "reviews", "faq"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                    activeTab === tab
-                      ? "bg-(--color-surface) text-(--color-primary) shadow-sm"
-                      : "text-(--color-text-muted) hover:text-(--color-text)"
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
+              {["description", "reviews", "faq"].map((tab) => {
+                const tabLabels: Record<string, string> = {
+                  description: t("gigDetail.tab.description"),
+                  reviews: t("gigDetail.tab.reviews"),
+                  faq: t("gigDetail.tab.faq"),
+                };
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                      activeTab === tab
+                        ? "bg-(--color-surface) text-(--color-primary) shadow-sm"
+                        : "text-(--color-text-muted) hover:text-(--color-text)"
+                    }`}
+                  >
+                    {tabLabels[tab]}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="border border-(--color-border) rounded-lg px-6 py-5 bg-(--color-surface) shadow-sm">
