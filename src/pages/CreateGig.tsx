@@ -261,12 +261,12 @@ function CreateGig() {
           navigate(`/gigs/${editId}`);
         }, 2000);
       } else {
-        const createdGig = await createGig(gigData);
+        await createGig(gigData);
         setSuccess(true);
         setMessage(t("createGig.createdSuccess"));
         setTimeout(() => {
-          navigate(`/gigs/${createdGig.id}`);
-        }, 2000);
+          navigate("/dashboard");
+        }, 1500);
       }
     } catch (error: any) {
       console.error("Gig save error:", error);
@@ -862,7 +862,7 @@ function CreateGig() {
                     : t("createGig.creating")
                   : isEditMode
                     ? t("createGig.updateGig")
-                    : t("createGig.createGig")}
+                    : t("createGig.uploadGig")}
               </button>
             )}
           </div>

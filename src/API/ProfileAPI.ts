@@ -76,6 +76,7 @@ export interface Profile {
   total_reviews: number;
   total_jobs: number;
   total_earnings: number;
+  total_post_likes: number;
   response_time: number;
   profile_views: number;
   is_public: boolean;
@@ -96,6 +97,7 @@ export interface ProfileStatistics {
   total_reviews: number;
   total_jobs: number;
   total_earnings: number;
+  total_post_likes: number;
   response_time: number;
   profile_views: number;
   gigs_count: number;
@@ -170,7 +172,25 @@ export const getProfileByUsername = async (
       "Content-Type": "application/json",
     },
   });
-  const data = await response.json();
+
+  const raw = await response.text();
+  let data: ProfileResponse | { message?: string; error?: string };
+
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error(`Failed to load profile (HTTP ${response.status})`);
+  }
+
+  if (!response.ok || !("data" in data)) {
+    const errorData = data as { message?: string; error?: string };
+    const message =
+      errorData.message ||
+      errorData.error ||
+      `Failed to load profile (HTTP ${response.status})`;
+    throw new Error(message);
+  }
+
   return data.data;
 };
 
@@ -182,7 +202,25 @@ export const getProfileByUserId = async (userId: number): Promise<Profile> => {
       "Content-Type": "application/json",
     },
   });
-  const data = await response.json();
+
+  const raw = await response.text();
+  let data: ProfileResponse | { message?: string; error?: string };
+
+  try {
+    data = raw ? JSON.parse(raw) : {};
+  } catch {
+    throw new Error(`Failed to load profile (HTTP ${response.status})`);
+  }
+
+  if (!response.ok || !("data" in data)) {
+    const errorData = data as { message?: string; error?: string };
+    const message =
+      errorData.message ||
+      errorData.error ||
+      `Failed to load profile (HTTP ${response.status})`;
+    throw new Error(message);
+  }
+
   return data.data;
 };
 

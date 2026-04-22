@@ -7,6 +7,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { deleteAccount } from "../../API/ProfileAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface DeleteAccountModalProps {
   isOpen: boolean;
@@ -14,6 +15,7 @@ interface DeleteAccountModalProps {
 }
 
 function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
+  const { t } = useLanguage();
   const navigate = useNavigate();
   const [password, setPassword] = useState("");
   const [confirmText, setConfirmText] = useState("");
@@ -26,7 +28,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
     setError(null);
 
     if (confirmText !== "DELETE") {
-      setError('Please type "DELETE" to confirm');
+      setError(t("deleteAccount.confirmError"));
       return;
     }
 
@@ -41,7 +43,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
       window.location.reload();
     } catch (err: unknown) {
       const message =
-        err instanceof Error ? err.message : "Failed to delete account";
+        err instanceof Error ? err.message : t("deleteAccount.failed");
       setError(message);
     } finally {
       setLoading(false);
@@ -67,7 +69,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
             <div className="w-10 h-10 bg-red-100 rounded-xl flex items-center justify-center">
               <FontAwesomeIcon icon={faTrash} className="text-red-600" />
             </div>
-            <h2 className="text-xl font-bold text-red-600">Delete Account</h2>
+            <h2 className="text-xl font-bold text-red-600">{t("deleteAccount.title")}</h2>
           </div>
           <button
             onClick={handleClose}
@@ -88,17 +90,17 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
                 />
                 <div>
                   <h3 className="font-bold text-red-700 mb-1">
-                    This action is irreversible
+                    {t("deleteAccount.irreversible")}
                   </h3>
                   <p className="text-sm text-red-600">
-                    Deleting your account will permanently remove:
+                    {t("deleteAccount.removeIntro")}
                   </p>
                   <ul className="text-sm text-red-600 mt-2 ml-4 list-disc space-y-1">
-                    <li>Your profile and all personal data</li>
-                    <li>All your gigs and services</li>
-                    <li>Your order history</li>
-                    <li>All messages and conversations</li>
-                    <li>Reviews you've given and received</li>
+                    <li>{t("deleteAccount.remove.profile")}</li>
+                    <li>{t("deleteAccount.remove.gigs")}</li>
+                    <li>{t("deleteAccount.remove.orders")}</li>
+                    <li>{t("deleteAccount.remove.messages")}</li>
+                    <li>{t("deleteAccount.remove.reviews")}</li>
                   </ul>
                 </div>
               </div>
@@ -109,13 +111,13 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
                 onClick={handleClose}
                 className="flex-1 py-3 bg-(--color-surface) text-(--color-text) rounded-xl font-bold hover:bg-(--color-border) transition-colors"
               >
-                Cancel
+                {t("deleteAccount.cancel")}
               </button>
               <button
                 onClick={() => setStep(2)}
                 className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors"
               >
-                Continue
+                {t("deleteAccount.continue")}
               </button>
             </div>
           </div>
@@ -130,7 +132,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
 
             <div>
               <label className="block text-sm font-semibold text-(--color-text) mb-1">
-                Enter your password
+                {t("deleteAccount.passwordLabel")}
               </label>
               <input
                 type="password"
@@ -138,14 +140,13 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
                 onChange={(e) => setPassword(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-(--color-border) rounded-xl bg-(--color-surface) text-(--color-text) focus:outline-none focus:border-red-500"
-                placeholder="Your current password"
+                placeholder={t("deleteAccount.passwordPlaceholder")}
               />
             </div>
 
             <div>
               <label className="block text-sm font-semibold text-(--color-text) mb-1">
-                Type <span className="text-red-600 font-bold">DELETE</span> to
-                confirm
+                {t("deleteAccount.confirmLabel")} <span className="text-red-600 font-bold">DELETE</span>
               </label>
               <input
                 type="text"
@@ -153,7 +154,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
                 onChange={(e) => setConfirmText(e.target.value)}
                 required
                 className="w-full px-4 py-3 border border-(--color-border) rounded-xl bg-(--color-surface) text-(--color-text) focus:outline-none focus:border-red-500"
-                placeholder='Type "DELETE"'
+                placeholder={t("deleteAccount.confirmPlaceholder")}
               />
             </div>
 
@@ -163,7 +164,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
                 onClick={() => setStep(1)}
                 className="flex-1 py-3 bg-(--color-surface) text-(--color-text) rounded-xl font-bold hover:bg-(--color-border) transition-colors"
               >
-                Back
+                {t("deleteAccount.back")}
               </button>
               <button
                 type="submit"
@@ -171,7 +172,7 @@ function DeleteAccountModal({ isOpen, onClose }: DeleteAccountModalProps) {
                 className="flex-1 py-3 bg-red-600 text-white rounded-xl font-bold hover:bg-red-700 transition-colors disabled:opacity-50 flex items-center justify-center gap-2"
               >
                 <FontAwesomeIcon icon={faTrash} />
-                {loading ? "Deleting..." : "Delete Forever"}
+                {loading ? t("deleteAccount.deleting") : t("deleteAccount.deleteForever")}
               </button>
             </div>
           </form>

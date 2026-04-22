@@ -392,6 +392,19 @@ class PostController extends Controller
             'parent_id' => 'nullable|exists:post_comments,id',
         ]);
 
+        if (!empty($validated['parent_id'])) {
+            $parentCommentBelongsToPost = PostComment::where('id', $validated['parent_id'])
+                ->where('post_id', $post->id)
+                ->exists();
+
+            if (!$parentCommentBelongsToPost) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid parent comment for this post',
+                ], 422);
+            }
+        }
+
         $comment = PostComment::create([
             'user_id' => $user->id,
             'post_id' => $id,

@@ -2,6 +2,7 @@ import { faPlus, faTimes } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import Button from "../../components/btns/Button";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface UserTopSkillsProps {
   skills: string[];
@@ -14,6 +15,7 @@ function UserTopSkills({
   onSave,
   readOnly = false,
 }: UserTopSkillsProps) {
+  const { t } = useLanguage();
   const [mySkills, setMySkills] = useState<string[]>(skills);
   const [newSkill, setNewSkill] = useState("");
   const [isAdding, setIsAdding] = useState(false);
@@ -49,10 +51,10 @@ function UserTopSkills({
     <div className="w-full h-full p-6 bg-(--color-card) shadow-xl text-(--color-text) rounded-4xl flex flex-col gap-2 font-bold text-md">
       <div className="flex justify-between pb-2 font-extrabold gap-4 text-left">
         <div className="flex items-center">
-          <p className="text-xl">Skills</p>
+          <p className="text-xl">{t("profile.topSkills.title")}</p>
           {saving && (
             <span className="ml-2 text-sm text-(--color-text-muted)">
-              (Saving...)
+              ({t("profile.topSkills.saving")})
             </span>
           )}
         </div>
@@ -73,14 +75,14 @@ function UserTopSkills({
             value={newSkill}
             onChange={(e) => setNewSkill(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleAddSkill()}
-            placeholder="Enter skill..."
+            placeholder={t("profile.topSkills.enterSkill")}
             className="flex-1 px-3 py-2 border border-(--color-border) rounded-lg bg-(--color-surface) text-(--color-text) text-sm focus:outline-none focus:border-(--color-primary)"
           />
           <button
             onClick={handleAddSkill}
             className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90"
           >
-            Add
+            {t("profile.topSkills.add")}
           </button>
         </div>
       )}
@@ -107,7 +109,7 @@ function UserTopSkills({
       {mySkills.length === 0 && !isAdding && !readOnly && (
         <div className="w-full border border-(--color-text-muted) flex rounded-xl border-dashed">
           <Button
-            text="Add Your First Skill"
+            text={t("profile.topSkills.addFirst")}
             textColor="text-indigo-700"
             bold="font-bold"
             onClick={() => setIsAdding(true)}
@@ -116,7 +118,7 @@ function UserTopSkills({
       )}
 
       {mySkills.length === 0 && readOnly && (
-        <p className="text-(--color-text-muted)">No skills added</p>
+        <p className="text-(--color-text-muted)">{t("profile.topSkills.noSkills")}</p>
       )}
     </div>
   );

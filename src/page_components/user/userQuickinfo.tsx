@@ -9,6 +9,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState, useEffect } from "react";
 import type { UpdateProfileData } from "../../API/ProfileAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface UserQuickInfoProps {
   Email: string;
@@ -27,6 +28,7 @@ function UserQuickInfo({
   Phone = "",
   onSave,
 }: UserQuickInfoProps) {
+  const { t } = useLanguage();
   const [formData, setFormData] = useState({
     phone: Phone,
     location: Location,
@@ -61,10 +63,10 @@ function UserQuickInfo({
     <div className="w-full h-full p-6 bg-(--color-card) shadow-xl text-(--color-text) rounded-4xl flex flex-col gap-2 font-bold text-md">
       <div className="flex items-center pb-2 font-extrabold gap-4 text-left">
         <FontAwesomeIcon icon={faGlobe} className="text-indigo-700 text-xl" />
-        <p className="text-xl">Quick Info</p>
+        <p className="text-xl">{t("profile.quickInfo.title")}</p>
         {saving && (
           <span className="text-sm text-(--color-text-muted) font-normal">
-            (Saving...)
+            ({t("profile.quickInfo.saving")})
           </span>
         )}
       </div>
@@ -76,9 +78,9 @@ function UserQuickInfo({
         </div>
         <div className="flex-1">
           <p className="font-extrabold text-(--color-text-muted) text-sm">
-            Email
+            {t("profile.quickInfo.email")}
           </p>
-          <p className="font-bold text-(--color-text)">{Email || "Not set"}</p>
+          <p className="font-bold text-(--color-text)">{Email || t("profile.quickInfo.notSet")}</p>
         </div>
       </div>
 
@@ -89,13 +91,13 @@ function UserQuickInfo({
         </div>
         <div className="flex-1">
           <p className="font-extrabold text-(--color-text-muted) text-sm">
-            Phone Number
+            {t("profile.quickInfo.phoneNumber")}
           </p>
           <input
             type="text"
             value={formData.phone}
             onChange={(e) => handleChange("phone", e.target.value)}
-            placeholder="Enter phone number"
+            placeholder={t("profile.quickInfo.phonePlaceholder")}
             className="font-bold border-none outline-none bg-transparent appearance-none w-full text-(--color-text)"
           />
         </div>
@@ -108,13 +110,13 @@ function UserQuickInfo({
         </div>
         <div className="flex-1">
           <p className="font-extrabold text-(--color-text-muted) text-sm">
-            Location
+            {t("profile.quickInfo.location")}
           </p>
           <input
             type="text"
             value={formData.location}
             onChange={(e) => handleChange("location", e.target.value)}
-            placeholder="Enter your location"
+            placeholder={t("profile.quickInfo.locationPlaceholder")}
             className="font-bold border-none outline-none bg-transparent appearance-none w-full text-(--color-text)"
           />
         </div>
@@ -127,13 +129,13 @@ function UserQuickInfo({
         </div>
         <div className="flex-1">
           <p className="font-extrabold text-(--color-text-muted) text-sm">
-            Website
+            {t("profile.quickInfo.website")}
           </p>
           <input
             type="text"
             value={formData.website}
             onChange={(e) => handleChange("website", e.target.value)}
-            placeholder="Enter your website"
+            placeholder={t("profile.quickInfo.websitePlaceholder")}
             className="font-bold border-none outline-none bg-transparent appearance-none w-full text-(--color-text)"
           />
         </div>
@@ -146,7 +148,7 @@ function UserQuickInfo({
         </div>
         <div className="flex-1">
           <p className="font-extrabold text-(--color-text-muted) text-sm">
-            Member Since
+            {t("profile.quickInfo.memberSince")}
           </p>
           <p className="font-bold text-(--color-text)">{MemberSince}</p>
         </div>
@@ -160,7 +162,7 @@ function UserQuickInfo({
           className="w-full py-3 bg-indigo-600 text-white rounded-xl font-bold hover:bg-indigo-700 transition-colors flex items-center justify-center gap-2 disabled:opacity-50"
         >
           <FontAwesomeIcon icon={faSave} />
-          {saving ? "Saving..." : "Save Changes"}
+          {saving ? t("profile.quickInfo.saving") : t("profile.quickInfo.saveChanges")}
         </button>
       )}
     </div>

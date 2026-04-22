@@ -473,7 +473,7 @@ function UserProfile() {
                 name={profile.user?.name || t("profile.user")}
                 username={profile.username}
                 title={profile.title || ""}
-                saves={profile.profile_views}
+                saves={profile.total_post_likes ?? 0}
                 typeOfBussiness={profile.title || t("profilePage.business")}
                 views={profile.profile_views}
                 isOwner={isOwner}

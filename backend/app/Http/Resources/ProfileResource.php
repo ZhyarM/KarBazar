@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources;
 
+use App\Models\Post;
 use Illuminate\Http\Request;
 use Illuminate\Http\Resources\Json\JsonResource;
 
@@ -55,6 +56,7 @@ class ProfileResource extends JsonResource
             'total_reviews' => $this->total_reviews,
             'total_jobs' => $this->total_jobs,
             'total_earnings' => $this->total_earnings,
+            'total_post_likes' => (int) Post::where('user_id', $this->user_id)->sum('likes_count'),
             'response_time' => $this->response_time,
             'profile_views' => $this->profile_views ?? 0,
             'is_public' => $this->is_public ?? true,

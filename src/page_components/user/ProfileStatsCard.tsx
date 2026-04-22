@@ -1,6 +1,7 @@
 import { faSliders, faStar } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import type React from "react";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface StatsProps {
   icon?: React.ReactNode;
@@ -30,6 +31,7 @@ function StatsCard({
   total_earnings,
   avgTime,
 }: StatsProps) {
+  const { t } = useLanguage();
   return (
     // Changed w-1/4 to w-full so it fills the grid column defined in the parent
     // Changed h-48 to min-h-[180px] to allow expansion if text wraps
@@ -62,35 +64,35 @@ function StatsCard({
           {reviews ? (
             <div className="flex items-center gap-1">
               <span className="text-(--color-text) font-bold">{reviews}</span>
-              <span>reviews</span>
+              <span>{t("profile.stats.reviews")}</span>
             </div>
           ) : null}
 
           {rating ? (
             <div className="flex items-center gap-1">
               <span className="text-(--color-text) font-bold">{rating}</span>
-              <span>ratings</span>
+              <span>{t("profile.stats.ratings")}</span>
             </div>
           ) : null}
 
           {projects ? (
             <div className="flex items-center gap-1">
               <span className="text-(--color-text) font-bold">{projects}</span>
-              <span>projects</span>
+              <span>{t("profile.stats.projects")}</span>
             </div>
           ) : null}
 
           {total_earnings ? (
             <div className="flex items-center gap-1">
-              <span className="text-green-500 font-bold">Free</span>
-              <span>platform</span>
+              <span className="text-green-500 font-bold">{t("profile.stats.free")}</span>
+              <span>{t("profile.stats.platform")}</span>
             </div>
           ) : null}
 
           {avgTime !== undefined && avgTime !== null ? (
             <div className="flex items-center gap-1">
               <span className="text-(--color-text) font-bold">{avgTime}h</span>
-              <span>avg time</span>
+              <span>{t("profile.stats.avgTime")}</span>
             </div>
           ) : null}
         </div>

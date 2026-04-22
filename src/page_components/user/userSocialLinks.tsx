@@ -17,6 +17,7 @@ import {
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
 import type { SocialLinks } from "../../API/ProfileAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface UserSocialLinksProps {
   socialLinks?: SocialLinks | null;
@@ -95,6 +96,7 @@ function UserSocialLinks({
   onSave,
   readOnly = false,
 }: UserSocialLinksProps) {
+  const { t } = useLanguage();
   const [isEditing, setIsEditing] = useState(false);
   const [saving, setSaving] = useState(false);
   const [formData, setFormData] = useState<SocialLinks>(socialLinks || {});
@@ -127,10 +129,10 @@ function UserSocialLinks({
       <div className="flex justify-between items-center">
         <div className="flex items-center gap-2">
           <FontAwesomeIcon icon={faGlobe} className="text-indigo-700 text-xl" />
-          <h3 className="text-xl font-extrabold">Social Links</h3>
+          <h3 className="text-xl font-extrabold">{t("profile.socialLinks.title")}</h3>
           {saving && (
             <span className="text-sm text-(--color-text-muted) font-normal">
-              (Saving...)
+              ({t("profile.socialLinks.saving")})
             </span>
           )}
         </div>
@@ -140,7 +142,7 @@ function UserSocialLinks({
             className="flex items-center gap-1 hover:text-indigo-600 transition-colors font-bold"
           >
             <FontAwesomeIcon icon={faPen} className="text-sm" />
-            <span>Edit</span>
+            <span>{t("profile.socialLinks.edit")}</span>
           </button>
         )}
       </div>
@@ -172,14 +174,14 @@ function UserSocialLinks({
               className="flex-1 px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90 flex items-center justify-center gap-2 disabled:opacity-50"
             >
               <FontAwesomeIcon icon={faSave} />
-              {saving ? "Saving..." : "Save"}
+              {saving ? t("profile.socialLinks.saving") : t("profile.socialLinks.save")}
             </button>
             <button
               onClick={handleCancel}
               className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:opacity-90"
             >
               <FontAwesomeIcon icon={faTimes} className="mr-1" />
-              Cancel
+              {t("profile.socialLinks.cancel")}
             </button>
           </div>
         </div>
@@ -219,8 +221,8 @@ function UserSocialLinks({
           ) : (
             <p className="text-sm text-(--color-text-muted) italic py-4 text-center">
               {readOnly
-                ? "No social links added"
-                : "Add your social links to help clients find you"}
+                ? t("profile.socialLinks.noLinks")
+                : t("profile.socialLinks.addLinksHelp")}
             </p>
           )}
         </div>
