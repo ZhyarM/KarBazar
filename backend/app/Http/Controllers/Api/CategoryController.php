@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Resources\CategoryResource;
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Str;
 
 class CategoryController extends Controller
@@ -13,7 +14,9 @@ class CategoryController extends Controller
     // Get all categories
     public function index()
     {
-        $categories = Category::withCount('gigs')->orderBy('name')->get();
+        $categories = Cache::remember('categories_index', 3600, function() {
+            return Category::withCount('gigs')->orderBy('name')->get();
+        });
 
         return response()->json([
             'success' => true,
@@ -48,6 +51,8 @@ class CategoryController extends Controller
             'icon' => $request->icon,
         ]);
 
+        Cache::forget('categories_index');
+
         return response()->json([
             'success' => true,
             'message' => 'Category created successfully',
@@ -73,6 +78,8 @@ class CategoryController extends Controller
             'icon' => $request->icon ?? $category->icon,
         ]);
 
+        Cache::forget('categories_index');
+
         return response()->json([
             'success' => true,
             'message' => 'Category updated successfully',
@@ -85,6 +92,8 @@ class CategoryController extends Controller
     {
         $category = Category::findOrFail($id);
         $category->delete();
+
+        Cache::forget('categories_index');
 
         return response()->json([
             'success' => true,

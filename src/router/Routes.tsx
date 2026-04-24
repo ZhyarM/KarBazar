@@ -1,89 +1,337 @@
+import { lazy, Suspense } from "react";
 import { createBrowserRouter } from "react-router-dom";
-import Home from "./../pages/Home.tsx";
-import Categories from "./../pages/Categories.tsx";
-import BrowseGigs from "../pages/BrowseGigs.tsx";
-import Deals from "../pages/Deals.tsx";
-import About from "./../pages/About.tsx";
-import SignIn from "./../pages/auth/SignIn.tsx";
-import SignUp from "./../pages/auth/SignUp.tsx";
-import ErrorPage from "./../pages/ErrorPages/ErrorPage.tsx";
 import Root from "./Root.tsx";
-import UserDetails from "./../page_components/user_profile/UserDetails";
-import { adminRoutes } from "./admin.routes.tsx";
-import UserProfile from "../page_components/user/userProfile.tsx";
-import FreelancerProfile from "../page_components/user/sample.tsx";
-
-// New Pages
-import Dashboard from "../pages/Dashboard.tsx";
-import Messages from "../pages/Messages.tsx";
-import Orders from "../pages/Orders.tsx";
-import OrderDetails from "../pages/OrderDetails.tsx";
-import CreateGig from "../pages/CreateGig.tsx";
-import MyGigs from "../pages/MyGigs.tsx";
-import Notifications from "../pages/Notifications.tsx";
-import Favorites from "../pages/Favorites.tsx";
-import Checkout from "../pages/Checkout.tsx";
-import SearchResults from "../pages/SearchResults.tsx";
 import ProtectedAdminRoute from "../components/ProtectedAdminRoute.tsx";
 import AdminLayout from "../pages/admin/AdminLayout.tsx";
-import AdminOverviewPage from "../pages/admin/AdminOverview.tsx";
-import AdminUsersPage from "../pages/admin/AdminUsers.tsx";
-import AdminControlPage from "../pages/admin/AdminControl.tsx";
-import AdminListingsPage from "../pages/admin/AdminListings.tsx";
-import AdminCategoriesPage from "../pages/admin/AdminCategories.tsx";
-import AdminOrdersPage from "../pages/admin/AdminOrders.tsx";
-import AdminReviewsPage from "../pages/admin/AdminReviews.tsx";
-import AdminNewsPage from "../pages/admin/AdminNews.tsx";
-import AdminSettingsPage from "../pages/admin/AdminSettings.tsx";
+import LoadingSpinner from "../components/LoadingSpinner.tsx";
 
-// Post Pages
-import CreatePost from "../pages/CreatePost.tsx";
-import PostDetail from "../pages/PostDetail.tsx";
+// Lazy-loaded page components
+const Home = lazy(() => import("./../pages/Home.tsx"));
+const Categories = lazy(() => import("./../pages/Categories.tsx"));
+const BrowseGigs = lazy(() => import("../pages/BrowseGigs.tsx"));
+const Deals = lazy(() => import("../pages/Deals.tsx"));
+const About = lazy(() => import("./../pages/About.tsx"));
+const SignIn = lazy(() => import("./../pages/auth/SignIn.tsx"));
+const SignUp = lazy(() => import("./../pages/auth/SignUp.tsx"));
+const ErrorPage = lazy(() => import("./../pages/ErrorPages/ErrorPage.tsx"));
+const UserDetails = lazy(
+  () => import("./../page_components/user_profile/UserDetails"),
+);
+const UserProfile = lazy(
+  () => import("../page_components/user/userProfile.tsx"),
+);
+const FreelancerProfile = lazy(
+  () => import("../page_components/user/sample.tsx"),
+);
+const Dashboard = lazy(() => import("../pages/Dashboard.tsx"));
+const Messages = lazy(() => import("../pages/Messages.tsx"));
+const Orders = lazy(() => import("../pages/Orders.tsx"));
+const OrderDetails = lazy(() => import("../pages/OrderDetails.tsx"));
+const CreateGig = lazy(() => import("../pages/CreateGig.tsx"));
+const MyGigs = lazy(() => import("../pages/MyGigs.tsx"));
+const Notifications = lazy(() => import("../pages/Notifications.tsx"));
+const Favorites = lazy(() => import("../pages/Favorites.tsx"));
+const Checkout = lazy(() => import("../pages/Checkout.tsx"));
+const SearchResults = lazy(() => import("../pages/SearchResults.tsx"));
+const AdminOverviewPage = lazy(
+  () => import("../pages/admin/AdminOverview.tsx"),
+);
+const AdminUsersPage = lazy(() => import("../pages/admin/AdminUsers.tsx"));
+const AdminControlPage = lazy(() => import("../pages/admin/AdminControl.tsx"));
+const AdminListingsPage = lazy(
+  () => import("../pages/admin/AdminListings.tsx"),
+);
+const AdminCategoriesPage = lazy(
+  () => import("../pages/admin/AdminCategories.tsx"),
+);
+const AdminOrdersPage = lazy(() => import("../pages/admin/AdminOrders.tsx"));
+const AdminReviewsPage = lazy(() => import("../pages/admin/AdminReviews.tsx"));
+const AdminNewsPage = lazy(() => import("../pages/admin/AdminNews.tsx"));
+const AdminSettingsPage = lazy(
+  () => import("../pages/admin/AdminSettings.tsx"),
+);
+const CreatePost = lazy(() => import("../pages/CreatePost.tsx"));
+const PostDetail = lazy(() => import("../pages/PostDetail.tsx"));
 
 const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
   {
     element: <Root />,
-    errorElement: <ErrorPage />,
+    errorElement: (
+      <Suspense fallback={<LoadingSpinner size="lg" />}>
+        <ErrorPage />
+      </Suspense>
+    ),
     children: [
-      { index: true, element: <Home /> },
-      { path: "browseGigs", element: <BrowseGigs /> },
-      { path: "browse-gigs", element: <BrowseGigs /> },
-      { path: "deals", element: <Deals /> },
-      { path: "search", element: <SearchResults /> },
-      { path: "/user/:userId", element: <UserDetails /> },
-      { path: "/gig/:id", element: <UserDetails /> },
-      { path: "/gigs/:id", element: <UserDetails /> },
-      { path: "categories", element: <Categories /> },
-      { path: "about", element: <About /> },
-      { path: "sign-in", element: <SignIn /> },
-      { path: "auth/signin", element: <SignIn /> },
-      { path: "auth/login", element: <SignIn /> },
-      { path: "sign-up", element: <SignUp /> },
-      { path: "auth/register", element: <SignUp /> },
-      { path: "sampleProfile", element: <FreelancerProfile /> },
-      { path: "profile", element: <UserProfile /> },
-      { path: "my-profile", element: <UserProfile /> },
-      { path: "profile/:username", element: <UserProfile /> },
+      {
+        index: true,
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Home />
+          </Suspense>
+        ),
+      },
+      {
+        path: "browseGigs",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <BrowseGigs />
+          </Suspense>
+        ),
+      },
+      {
+        path: "browse-gigs",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <BrowseGigs />
+          </Suspense>
+        ),
+      },
+      {
+        path: "deals",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Deals />
+          </Suspense>
+        ),
+      },
+      {
+        path: "search",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <SearchResults />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/user/:userId",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <UserDetails />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/gig/:id",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <UserDetails />
+          </Suspense>
+        ),
+      },
+      {
+        path: "/gigs/:id",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <UserDetails />
+          </Suspense>
+        ),
+      },
+      {
+        path: "categories",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Categories />
+          </Suspense>
+        ),
+      },
+      {
+        path: "about",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <About />
+          </Suspense>
+        ),
+      },
+      {
+        path: "sign-in",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <SignIn />
+          </Suspense>
+        ),
+      },
+      {
+        path: "auth/signin",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <SignIn />
+          </Suspense>
+        ),
+      },
+      {
+        path: "auth/login",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <SignIn />
+          </Suspense>
+        ),
+      },
+      {
+        path: "sign-up",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <SignUp />
+          </Suspense>
+        ),
+      },
+      {
+        path: "auth/register",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <SignUp />
+          </Suspense>
+        ),
+      },
+      {
+        path: "sampleProfile",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <FreelancerProfile />
+          </Suspense>
+        ),
+      },
+      {
+        path: "profile",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <UserProfile />
+          </Suspense>
+        ),
+      },
+      {
+        path: "my-profile",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <UserProfile />
+          </Suspense>
+        ),
+      },
+      {
+        path: "profile/:username",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <UserProfile />
+          </Suspense>
+        ),
+      },
 
       // Dashboard and User Pages
-      { path: "dashboard", element: <Dashboard /> },
-      { path: "messages", element: <Messages /> },
-      { path: "messages/:userId", element: <Messages /> },
-      { path: "orders", element: <Orders /> },
-      { path: "order/:id", element: <OrderDetails /> },
-      { path: "notifications", element: <Notifications /> },
-      { path: "favorites", element: <Favorites /> },
+      {
+        path: "dashboard",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Dashboard />
+          </Suspense>
+        ),
+      },
+      {
+        path: "messages",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Messages />
+          </Suspense>
+        ),
+      },
+      {
+        path: "messages/:userId",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Messages />
+          </Suspense>
+        ),
+      },
+      {
+        path: "orders",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Orders />
+          </Suspense>
+        ),
+      },
+      {
+        path: "order/:id",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <OrderDetails />
+          </Suspense>
+        ),
+      },
+      {
+        path: "notifications",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Notifications />
+          </Suspense>
+        ),
+      },
+      {
+        path: "favorites",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Favorites />
+          </Suspense>
+        ),
+      },
 
       // Gig Management (Freelancers)
-      { path: "create-gig", element: <CreateGig /> },
-      { path: "my-gigs", element: <MyGigs /> },
-      { path: "edit-gig/:id", element: <CreateGig /> },
-      { path: "checkout/:gigId", element: <Checkout /> },
+      {
+        path: "create-gig",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <CreateGig />
+          </Suspense>
+        ),
+      },
+      {
+        path: "my-gigs",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <MyGigs />
+          </Suspense>
+        ),
+      },
+      {
+        path: "edit-gig/:id",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <CreateGig />
+          </Suspense>
+        ),
+      },
+      {
+        path: "checkout/:gigId",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <Checkout />
+          </Suspense>
+        ),
+      },
 
       // Post Management
-      { path: "create-post", element: <CreatePost /> },
-      { path: "edit-post/:id", element: <CreatePost /> },
-      { path: "posts/:id", element: <PostDetail /> },
+      {
+        path: "create-post",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <CreatePost />
+          </Suspense>
+        ),
+      },
+      {
+        path: "edit-post/:id",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <CreatePost />
+          </Suspense>
+        ),
+      },
+      {
+        path: "posts/:id",
+        element: (
+          <Suspense fallback={<LoadingSpinner size="lg" />}>
+            <PostDetail />
+          </Suspense>
+        ),
+      },
 
       // Admin Panel
       {
@@ -94,15 +342,78 @@ const router: ReturnType<typeof createBrowserRouter> = createBrowserRouter([
           </ProtectedAdminRoute>
         ),
         children: [
-          { index: true, element: <AdminOverviewPage /> },
-          { path: "users", element: <AdminUsersPage /> },
-          { path: "control", element: <AdminControlPage /> },
-          { path: "listings", element: <AdminListingsPage /> },
-          { path: "categories", element: <AdminCategoriesPage /> },
-          { path: "orders", element: <AdminOrdersPage /> },
-          { path: "reviews", element: <AdminReviewsPage /> },
-          { path: "news", element: <AdminNewsPage /> },
-          { path: "settings", element: <AdminSettingsPage /> },
+          {
+            index: true,
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminOverviewPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "users",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminUsersPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "control",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminControlPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "listings",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminListingsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "categories",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminCategoriesPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "orders",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminOrdersPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "reviews",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminReviewsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "news",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminNewsPage />
+              </Suspense>
+            ),
+          },
+          {
+            path: "settings",
+            element: (
+              <Suspense fallback={<LoadingSpinner size="lg" />}>
+                <AdminSettingsPage />
+              </Suspense>
+            ),
+          },
         ],
       },
     ],

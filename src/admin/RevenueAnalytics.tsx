@@ -1,9 +1,5 @@
-import React from 'react'
-
 function RevenueAnalytics() {
-  return (
-    <div>RevenueAnalytics</div>
-  )
+  return <div>RevenueAnalytics</div>;
 }
 
-export default RevenueAnalytics
+export default RevenueAnalytics;

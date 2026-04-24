@@ -1,4 +1,4 @@
-import type { NavLinkItem } from "./NavLinks";
+type NavLinkItem = { label: string; to: string };
 
 const adminNavLinks: NavLinkItem[] = [
   { label: "Overview", to: "/admin" },
@@ -9,3 +9,5 @@ const adminNavLinks: NavLinkItem[] = [
   { label: "Categories", to: "/admin/categories" },
   { label: "Recent Activities", to: "/admin/activities" },
 ];
+
+export default adminNavLinks;

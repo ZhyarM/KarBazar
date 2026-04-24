@@ -12,6 +12,7 @@ import {
   faChevronRight,
   faExpand,
 } from "@fortawesome/free-solid-svg-icons";
+import LazyImage from "../LazyImage";
 import {
   faHeart as faHeartRegular,
   faBookmark as faBookmarkRegular,
@@ -124,9 +125,9 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
           >
             <div className="w-12 h-12 rounded-full overflow-hidden ring-2 ring-(--color-primary)/20 ring-offset-2 ring-offset-(--color-surface) transition-all hover:ring-(--color-primary)/50">
               {avatarUrl ? (
-                <img
+                <LazyImage
                   src={avatarUrl}
-                  alt={post.user?.name}
+                  alt={post.user?.name || "User avatar"}
                   className="w-full h-full object-cover"
                 />
               ) : (
@@ -264,11 +265,10 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
       {hasImages && (
         <div className="relative mx-6 mb-4 rounded-xl overflow-hidden bg-(--color-bg) group/img">
           <Link to={`/posts/${post.id}`}>
-            <img
+            <LazyImage
               src={post.images![imageIndex]}
               alt={`Post image ${imageIndex + 1}`}
               className="w-full h-80 object-cover transition-transform duration-500 group-hover/img:scale-[1.02]"
-              loading="lazy"
             />
           </Link>
 
@@ -336,7 +336,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
           className="fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-8 cursor-pointer"
           onClick={() => setExpandedImage(false)}
         >
-          <img
+          <LazyImage
             src={post.images![imageIndex]}
             alt="Expanded"
             className="max-w-full max-h-full object-contain rounded-lg"

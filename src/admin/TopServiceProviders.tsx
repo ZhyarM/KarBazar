@@ -1,9 +1,5 @@
-import React from 'react'
-
 function TopServiceProviders() {
-  return (
-    <div>TopServiceProviders</div>
-  )
+  return <div>TopServiceProviders</div>;
 }
 
-export default TopServiceProviders
+export default TopServiceProviders;

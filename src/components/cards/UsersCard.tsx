@@ -1,6 +1,7 @@
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faCode, faStar } from "@fortawesome/free-solid-svg-icons";
 import { useLanguage } from "../../context/LanguageContext.tsx";
+import LazyImage from "../LazyImage";
 
 interface UserCardProps {
   user_id: string;
@@ -54,7 +55,7 @@ function UsersCard({
       {/* Gig Image */}
       <div className="relative">
         {user_background_img ? (
-          <img
+          <LazyImage
             src={user_background_img}
             className="w-full h-44 object-cover"
             alt={description}
@@ -76,7 +77,7 @@ function UsersCard({
         {/* Seller Info */}
         <div className="flex items-center gap-2.5">
           {user_profile_img ? (
-            <img
+            <LazyImage
               src={user_profile_img}
               alt={username}
               className="w-9 h-9 rounded-full object-cover object-center border-2 border-(--color-border) flex-shrink-0"
