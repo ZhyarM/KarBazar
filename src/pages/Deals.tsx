@@ -89,11 +89,14 @@ function Deals() {
     loadDeals();
   }, [page, queryVersion]);
 
-  const formatPrice = (value: number) =>
-    new Intl.NumberFormat(locale, {
-      maximumFractionDigits: 0,
-      minimumFractionDigits: value % 1 === 0 ? 0 : 2,
+  const formatPrice = (value: number) => {
+    const hasDecimals = value % 1 !== 0;
+
+    return new Intl.NumberFormat(locale, {
+      minimumFractionDigits: hasDecimals ? 2 : 0,
+      maximumFractionDigits: hasDecimals ? 2 : 0,
     }).format(value);
+  };
 
   const activeCategoryName = useMemo(() => {
     if (!categoryId) return "";
@@ -264,6 +267,10 @@ function Deals() {
               {deals.map((deal) => {
                 const gig = deal.gig;
                 const discountLabel = `${deal.discount_percentage}% ${t("deals.off")}`;
+                const gigImageUrl = getImageUrl(gig.image_url);
+                const sellerAvatarUrl = getAvatarUrl(
+                  gig.seller.profile?.avatar_url || gig.seller.image,
+                );
 
                 return (
                   <article
@@ -272,11 +279,15 @@ function Deals() {
                   >
                     <Link to={`/gig/${gig.id}`} className="block relative">
                       <div className="relative h-48 bg-(--color-bg)">
-                        <img
-                          src={getImageUrl(gig.image_url)}
-                          alt={gig.title}
-                          className="w-full h-full object-cover"
-                        />
+                        {gigImageUrl ? (
+                          <img
+                            src={gigImageUrl}
+                            alt={gig.title}
+                            className="w-full h-full object-cover"
+                          />
+                        ) : (
+                          <div className="w-full h-full bg-(--color-bg-muted)" />
+                        )}
                         <div className="absolute top-3 left-3 px-3 py-1.5 rounded-full bg-red-500 text-white text-xs font-bold shadow-md">
                           {discountLabel}
                         </div>
@@ -304,13 +315,17 @@ function Deals() {
                       </div>
 
                       <div className="mt-3 flex items-center gap-2">
-                        <img
-                          src={getAvatarUrl(
-                            gig.seller.profile?.avatar_url || gig.seller.image,
-                          )}
-                          alt={gig.seller.name}
-                          className="w-9 h-9 rounded-full object-cover border border-(--color-border)"
-                        />
+                        {sellerAvatarUrl ? (
+                          <img
+                            src={sellerAvatarUrl}
+                            alt={gig.seller.name}
+                            className="w-9 h-9 rounded-full object-cover border border-(--color-border)"
+                          />
+                        ) : (
+                          <span className="flex items-center justify-center w-9 h-9 rounded-full border border-(--color-border) bg-(--color-bg-muted) text-(--color-text-muted) text-sm font-semibold">
+                            {(gig.seller.name || "?").charAt(0).toUpperCase()}
+                          </span>
+                        )}
                         <div className="min-w-0">
                           <p className="text-sm font-semibold text-(--color-text) truncate">
                             {gig.seller.name}

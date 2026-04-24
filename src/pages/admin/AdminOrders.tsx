@@ -4,8 +4,10 @@ import {
   updateOrderStatus,
   type AdminOrder,
 } from "../../API/AdminAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 function AdminOrdersPage() {
+  const { t } = useLanguage();
   const [orders, setOrders] = useState<AdminOrder[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -27,7 +29,7 @@ function AdminOrdersPage() {
 
   const handleStatusUpdate = async (order: AdminOrder) => {
     const nextStatus = window.prompt(
-      "Set order status (pending, in_progress, delivered, revision, completed, cancelled)",
+      t("admin.orders.statusPrompt"),
       order.status,
     );
 
@@ -40,7 +42,9 @@ function AdminOrdersPage() {
       await loadOrders();
     } catch (error) {
       console.error("Failed to update order status:", error);
-      alert(error instanceof Error ? error.message : "Failed to update order.");
+      alert(
+        error instanceof Error ? error.message : t("admin.orders.updateFailed"),
+      );
     }
   };
 
@@ -48,10 +52,10 @@ function AdminOrdersPage() {
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <h2 className="text-xl font-bold text-(--color-text)">
-          View All Orders
+          {t("admin.orders.title")}
         </h2>
         <p className="text-(--color-text-muted) mt-2">
-          Review order statuses and intervene when needed.
+          {t("admin.orders.subtitle")}
         </p>
       </div>
 
@@ -65,12 +69,12 @@ function AdminOrdersPage() {
             <table className="w-full text-left">
               <thead>
                 <tr className="text-(--color-text-muted) border-b border-(--color-border)">
-                  <th className="py-3">ID</th>
-                  <th className="py-3">Gig</th>
-                  <th className="py-3">Buyer</th>
-                  <th className="py-3">Seller</th>
-                  <th className="py-3">Status</th>
-                  <th className="py-3">Actions</th>
+                  <th className="py-3">{t("admin.orders.id")}</th>
+                  <th className="py-3">{t("admin.orders.gig")}</th>
+                  <th className="py-3">{t("admin.orders.buyer")}</th>
+                  <th className="py-3">{t("admin.orders.seller")}</th>
+                  <th className="py-3">{t("admin.orders.status")}</th>
+                  <th className="py-3">{t("admin.orders.actions")}</th>
                 </tr>
               </thead>
               <tbody>
@@ -80,9 +84,15 @@ function AdminOrdersPage() {
                     className="border-b border-(--color-border) text-(--color-text)"
                   >
                     <td className="py-3">#{order.id}</td>
-                    <td className="py-3">{order.gig?.title || "N/A"}</td>
-                    <td className="py-3">{order.buyer?.name || "N/A"}</td>
-                    <td className="py-3">{order.seller?.name || "N/A"}</td>
+                    <td className="py-3">
+                      {order.gig?.title || t("admin.orders.notAvailable")}
+                    </td>
+                    <td className="py-3">
+                      {order.buyer?.name || t("admin.orders.notAvailable")}
+                    </td>
+                    <td className="py-3">
+                      {order.seller?.name || t("admin.orders.notAvailable")}
+                    </td>
                     <td className="py-3 capitalize">
                       {order.status.replace("_", " ")}
                     </td>
@@ -92,7 +102,7 @@ function AdminOrdersPage() {
                         onClick={() => handleStatusUpdate(order)}
                         className="px-3 py-1 rounded-md border border-(--color-border) text-sm"
                       >
-                        Update Status
+                        {t("admin.orders.updateStatus")}
                       </button>
                     </td>
                   </tr>

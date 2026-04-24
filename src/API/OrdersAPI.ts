@@ -6,7 +6,7 @@ export interface Order {
   gig_id: number;
   buyer_id: number;
   seller_id: number;
-  package_type: "basic" | "standard" | "premium";
+  package_type?: "basic" | "standard" | "premium" | null;
   price: number;
   delivery_time: number;
   status:
@@ -26,6 +26,7 @@ export interface Order {
     id: number;
     title: string;
     image_url: string | null;
+    price: number;
     seller: {
       id: number;
       name: string;
@@ -53,6 +54,9 @@ export interface Order {
       avatar_url: string | null;
     };
   };
+  review?: {
+    id: number;
+  } | null;
 }
 
 interface OrdersResponse {
@@ -67,8 +71,23 @@ interface OrderResponse {
 }
 
 // Get all orders (buyer and seller)
-export const getOrders = async (): Promise<Order[]> => {
-  const response = await apiCall<OrdersResponse>("/orders");
+export const getOrders = async (filters?: {
+  gig_id?: number;
+  status?: string;
+}): Promise<Order[]> => {
+  const query = new URLSearchParams();
+
+  if (filters?.gig_id != null) {
+    query.set("gig_id", String(filters.gig_id));
+  }
+
+  if (filters?.status) {
+    query.set("status", filters.status);
+  }
+
+  const response = await apiCall<OrdersResponse>(
+    `/orders${query.toString() ? `?${query.toString()}` : ""}`,
+  );
   return response.data;
 };
 

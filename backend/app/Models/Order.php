@@ -13,6 +13,7 @@ class Order extends Model
         'gig_id',
         'buyer_id',
         'seller_id',
+        'package_type',
         'status',
         'price',
         'platform_fee_percentage',

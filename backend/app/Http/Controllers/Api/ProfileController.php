@@ -7,9 +7,64 @@ use App\Http\Resources\ProfileResource;
 use App\Models\Profile;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Schema;
 
 class ProfileController extends Controller
 {
+    private function trackUniqueProfileView(Request $request, Profile $profile): void
+    {
+        if (!$profile->is_public) {
+            return;
+        }
+
+        if (!Schema::hasTable('profile_view_logs')) {
+            return;
+        }
+
+        $viewerId = $request->user()?->id;
+
+        if ($viewerId && $viewerId === $profile->user_id) {
+            return;
+        }
+
+        $viewerIp = $request->ip();
+
+        try {
+            $existingView = DB::table('profile_view_logs')
+                ->where('profile_id', $profile->id)
+                ->where(function ($query) use ($viewerId, $viewerIp) {
+                    if ($viewerId) {
+                        $query->where('user_id', $viewerId);
+                    } else {
+                        $query->where('ip_address', $viewerIp);
+                    }
+                })
+                ->exists();
+
+            if ($existingView) {
+                return;
+            }
+
+            DB::table('profile_view_logs')->insert([
+                'profile_id' => $profile->id,
+                'user_id' => $viewerId,
+                'ip_address' => $viewerIp,
+                'created_at' => now(),
+            ]);
+
+            $profile->incrementViews();
+        } catch (\Throwable $exception) {
+            Log::warning('Failed to track profile unique view', [
+                'profile_id' => $profile->id,
+                'viewer_id' => $viewerId,
+                'ip_address' => $viewerIp,
+                'error' => $exception->getMessage(),
+            ]);
+        }
+    }
+
     // Get user's own profile
     public function me(Request $request)
     {
@@ -30,16 +85,13 @@ class ProfileController extends Controller
     }
 
     // Get profile by username (public view)
-    public function show($username)
+    public function show(Request $request, $username)
     {
         $profile = Profile::where('username', $username)
             ->with('user')
             ->firstOrFail();
 
-        // Increment view count (only for public profiles)
-        if ($profile->is_public) {
-            $profile->incrementViews();
-        }
+        $this->trackUniqueProfileView($request, $profile);
 
         return response()->json([
             'success' => true,
@@ -48,7 +100,7 @@ class ProfileController extends Controller
     }
 
     // Get profile by user ID
-    public function showById($userId)
+    public function showById(Request $request, $userId)
     {
         $user = User::findOrFail($userId);
         $profile = $user->profile;
@@ -60,9 +112,7 @@ class ProfileController extends Controller
             ], 404);
         }
 
-        if ($profile->is_public) {
-            $profile->incrementViews();
-        }
+        $this->trackUniqueProfileView($request, $profile);
 
         return response()->json([
             'success' => true,
@@ -85,6 +135,7 @@ class ProfileController extends Controller
             'website' => 'nullable|string|max:255',
             'phone' => 'nullable|string|max:50',
             'hourly_rate' => 'nullable|integer|min:0',
+            'response_time' => 'nullable|integer|min:0|max:168',
             'skills' => 'nullable|array',
             'languages' => 'nullable|array',
             'education' => 'nullable|array',
@@ -106,6 +157,7 @@ class ProfileController extends Controller
             'website',
             'phone',
             'hourly_rate',
+            'response_time',
             'skills',
             'languages',
             'education',
@@ -130,7 +182,7 @@ class ProfileController extends Controller
         $profile = $request->user()->profile;
 
         $validSections = [
-            'basic' => ['username', 'bio', 'title', 'location', 'website', 'phone', 'hourly_rate'],
+            'basic' => ['username', 'bio', 'title', 'location', 'website', 'phone', 'hourly_rate', 'response_time'],
             'skills' => ['skills'],
             'languages' => ['languages'],
             'education' => ['education'],
@@ -279,6 +331,7 @@ class ProfileController extends Controller
                 'total_earnings' => $profile->total_earnings,
                 'response_time' => $profile->response_time,
                 'profile_views' => $profile->profile_views,
+                'total_post_likes' => (int) $request->user()->posts()->sum('likes_count'),
                 'gigs_count' => $profile->gigs_count,
             ],
         ]);

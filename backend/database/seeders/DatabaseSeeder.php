@@ -31,8 +31,8 @@ class DatabaseSeeder extends Seeder
         $this->command->info('');
         $this->command->info('📧 Test Accounts:');
         $this->command->info('  Admin: admin@karbazar.com');
-        $this->command->info('  Freelancer: alex@designer.com');
-        $this->command->info('  Client: john@client.com');
+        $this->command->info('  Client: client@karbazar.com');
+        $this->command->info('  Business: business@karbazar.com (role: freelancer)');
         $this->command->info('  Password (all): password123');
         $this->command->info('');
     }

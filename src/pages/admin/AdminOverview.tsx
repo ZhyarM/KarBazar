@@ -1,37 +1,156 @@
 import { useEffect, useState } from "react";
+import type { ReactNode } from "react";
 import {
-  faUsers,
   faBriefcase,
-  faShoppingCart,
-  faListCheck,
-  faStar,
+  faDollarSign,
   faLayerGroup,
+  faListCheck,
+  faShieldHalved,
+  faShoppingCart,
+  faStar,
+  faUsers,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
-  getAdminOverview,
-  getRecentAdminActivities,
+  getAdminDashboard,
   type AdminActivity,
-  type AdminOverview,
+  type AdminChartPoint,
+  type AdminDashboardResponse,
+  type AdminTopFreelancer,
+  type AdminTopGig,
 } from "../../API/AdminAPI";
 import { useLanguage } from "../../context/LanguageContext";
 
+function formatCompact(value: number): string {
+  return new Intl.NumberFormat(undefined, {
+    notation: "compact",
+    maximumFractionDigits: 1,
+  }).format(value);
+}
+
+function formatCurrency(value: number): string {
+  return new Intl.NumberFormat(undefined, {
+    style: "currency",
+    currency: "USD",
+    maximumFractionDigits: 0,
+  }).format(value);
+}
+
+function StatCard({
+  label,
+  value,
+  icon,
+  tone,
+  subtitle,
+}: {
+  label: string;
+  value: string;
+  icon: any;
+  tone: string;
+  subtitle?: string;
+}) {
+  return (
+    <div className="bg-(--color-surface) rounded-xl p-5 shadow-md border border-(--color-border)">
+      <div className="flex items-start justify-between gap-3">
+        <div>
+          <p className="text-sm text-(--color-text-muted)">{label}</p>
+          <p className="mt-2 text-3xl font-bold text-(--color-text)">{value}</p>
+          {subtitle ? (
+            <p className="mt-1 text-xs text-(--color-text-muted)">{subtitle}</p>
+          ) : null}
+        </div>
+        <div
+          className={`h-11 w-11 rounded-xl flex items-center justify-center ${tone}`}
+        >
+          <FontAwesomeIcon icon={icon} className="text-white" />
+        </div>
+      </div>
+    </div>
+  );
+}
+
+function MiniBarChart({
+  title,
+  data,
+  accentClass,
+  formatter,
+  periodLabel,
+}: {
+  title: string;
+  data: AdminChartPoint[];
+  accentClass: string;
+  formatter?: (value: number) => string;
+  periodLabel: string;
+}) {
+  const visibleData = data.slice(-12);
+  const maxValue = Math.max(...visibleData.map((entry) => entry.value), 1);
+
+  return (
+    <div className="bg-(--color-surface) rounded-xl p-5 shadow-md border border-(--color-border)">
+      <div className="flex items-center justify-between mb-4">
+        <h3 className="text-lg font-semibold text-(--color-text)">{title}</h3>
+        <span className="text-xs text-(--color-text-muted)">{periodLabel}</span>
+      </div>
+      <div className="h-48 flex items-end gap-2">
+        {visibleData.map((entry) => {
+          const height = (entry.value / maxValue) * 100;
+
+          return (
+            <div
+              key={`${title}-${entry.label}`}
+              className="flex-1 flex flex-col items-center gap-2 h-full"
+            >
+              <div className="flex-1 flex items-end w-full">
+                <div
+                  className={`w-full rounded-t-md ${accentClass}`}
+                  style={{ height: `${Math.max(height, 4)}%` }}
+                  title={`${entry.label}: ${formatter ? formatter(entry.value) : entry.value}`}
+                />
+              </div>
+              <span className="text-[10px] text-(--color-text-muted) whitespace-nowrap">
+                {entry.label}
+              </span>
+            </div>
+          );
+        })}
+      </div>
+    </div>
+  );
+}
+
+function ListCard<T extends { id: number }>({
+  title,
+  items,
+  renderItem,
+}: {
+  title: string;
+  items: T[];
+  renderItem: (item: T) => ReactNode;
+}) {
+  return (
+    <div className="bg-(--color-surface) rounded-xl p-5 shadow-md border border-(--color-border)">
+      <h3 className="text-lg font-semibold text-(--color-text) mb-4">
+        {title}
+      </h3>
+      <div className="space-y-3">{items.slice(0, 5).map(renderItem)}</div>
+    </div>
+  );
+}
+
 function AdminOverviewPage() {
   const { t } = useLanguage();
-  const [overview, setOverview] = useState<AdminOverview | null>(null);
+  const [dashboard, setDashboard] = useState<AdminDashboardResponse | null>(
+    null,
+  );
   const [activities, setActivities] = useState<AdminActivity[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const load = async () => {
       try {
-        const [overviewData, activitiesData] = await Promise.all([
-          getAdminOverview(),
-          getRecentAdminActivities(),
-        ]);
-
-        setOverview(overviewData);
-        setActivities(activitiesData);
+        const data = await getAdminDashboard();
+        setDashboard(data);
+        setActivities(data.tables.recent_activities);
       } catch (error) {
         console.error("Failed to load admin overview:", error);
       } finally {
@@ -50,7 +169,7 @@ function AdminOverviewPage() {
     );
   }
 
-  if (!overview) {
+  if (!dashboard) {
     return (
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md text-(--color-text-muted)">
         {t("admin.overview.loadFailed")}
@@ -58,122 +177,192 @@ function AdminOverviewPage() {
     );
   }
 
-  const stats = [
+  const dashboardStats = dashboard.stats;
+  const { charts, tables } = dashboard;
+
+  const statCards = [
     {
       icon: faUsers,
       label: t("admin.overview.totalUsers"),
-      value: overview.total_users,
-      iconColor: "text-(--color-primary)",
+      value: formatCompact(dashboardStats.total_users),
+      tone: "bg-slate-700",
     },
     {
       icon: faBriefcase,
       label: t("admin.overview.activeGigs"),
-      value: overview.active_gigs,
-      iconColor: "text-blue-600",
+      value: formatCompact(dashboardStats.active_gigs),
+      tone: "bg-blue-700",
     },
     {
       icon: faShoppingCart,
       label: t("admin.overview.totalOrders"),
-      value: overview.total_orders,
-      iconColor: "text-orange-600",
+      value: formatCompact(dashboardStats.total_orders),
+      tone: "bg-orange-700",
     },
     {
       icon: faLayerGroup,
-      label: "Total Categories",
-      value: overview.total_categories,
-      iconColor: "text-purple-600",
+      label: t("admin.overview.totalCategories"),
+      value: formatCompact(dashboardStats.total_categories),
+      tone: "bg-violet-700",
     },
     {
       icon: faListCheck,
-      label: "Pending Orders",
-      value: overview.pending_orders,
-      iconColor: "text-rose-600",
+      label: t("admin.overview.pendingOrders"),
+      value: formatCompact(dashboardStats.pending_orders),
+      tone: "bg-rose-700",
     },
     {
       icon: faStar,
       label: t("admin.overview.averageRating"),
-      value: overview.average_rating,
-      iconColor: "text-yellow-500",
+      value: dashboardStats.average_rating.toFixed(1),
+      tone: "bg-amber-600",
+    },
+    {
+      icon: faDollarSign,
+      label: t("admin.overview.revenue"),
+      value: formatCurrency(dashboardStats.total_revenue),
+      tone: "bg-emerald-700",
+      subtitle: `${t("admin.overview.platformFee")} ${dashboardStats.current_platform_fee}%`,
+    },
+    {
+      icon: faShieldHalved,
+      label: t("admin.overview.maintenance"),
+      value: dashboardStats.maintenance_mode
+        ? t("admin.overview.on")
+        : t("admin.overview.off"),
+      tone: dashboardStats.maintenance_mode ? "bg-red-700" : "bg-green-700",
+      subtitle: dashboardStats.maintenance_mode
+        ? t("admin.overview.maintenanceBlocked")
+        : t("admin.overview.publicOpen"),
     },
   ];
 
   return (
     <div className="space-y-6">
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {stats.map((stat) => (
-          <div
+      <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-4">
+        {statCards.map((stat) => (
+          <StatCard
             key={stat.label}
-            className="bg-(--color-surface) rounded-lg p-6 shadow-md hover:shadow-lg transition-shadow"
-          >
-            <div className="flex items-center justify-between mb-4">
-              <FontAwesomeIcon
-                icon={stat.icon}
-                className={`text-2xl ${stat.iconColor}`}
-              />
-              <span className="text-3xl font-bold text-(--color-text)">
-                {stat.value}
-              </span>
-            </div>
-            <h3 className="text-(--color-text-muted) font-semibold">
-              {stat.label}
-            </h3>
-          </div>
+            label={stat.label}
+            value={String(stat.value)}
+            icon={stat.icon}
+            tone={stat.tone}
+            subtitle={stat.subtitle}
+          />
         ))}
       </div>
 
-      <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
-        <h2 className="text-xl font-bold text-(--color-text) mb-4">
-          Admin Abilities
-        </h2>
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-          {[
-            "Manage all users",
-            "Moderate listings",
-            "Manage categories",
-            "View all orders",
-            "Moderate reviews",
-            "Manage deals",
-            "Publish news",
-            "View analytics",
-            "Process role requests",
-            "Configure platform settings",
-            "Audit admin actions",
-            "Handle account safety",
-          ].map((ability) => (
-            <div
-              key={ability}
-              className="border border-(--color-border) rounded-md px-3 py-2 text-sm text-(--color-text) bg-(--color-bg)"
-            >
-              {ability}
-            </div>
-          ))}
-        </div>
+      <div className="grid grid-cols-1 xl:grid-cols-2 gap-4">
+        <MiniBarChart
+          title={t("admin.overview.revenue")}
+          data={charts.revenue}
+          accentClass="bg-emerald-600"
+          formatter={formatCurrency}
+          periodLabel={t("admin.overview.last30Days")}
+        />
+        <MiniBarChart
+          title={t("admin.overview.orders")}
+          data={charts.orders}
+          accentClass="bg-orange-600"
+          formatter={(value) => formatCompact(value)}
+          periodLabel={t("admin.overview.last30Days")}
+        />
+        <MiniBarChart
+          title={t("admin.overview.categories")}
+          data={charts.categories}
+          accentClass="bg-violet-600"
+          formatter={(value) => formatCompact(value)}
+          periodLabel={t("admin.overview.last30Days")}
+        />
+        <MiniBarChart
+          title={t("admin.overview.topFreelancers")}
+          data={charts.freelancers.map((entry) => ({
+            label: entry.username || entry.name,
+            value: entry.total_earnings,
+          }))}
+          accentClass="bg-sky-600"
+          formatter={formatCurrency}
+          periodLabel={t("admin.overview.last30Days")}
+        />
       </div>
 
-      <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
-        <h2 className="text-xl font-bold text-(--color-text) mb-4">
-          {t("admin.overview.recentActivity")}
-        </h2>
-
-        {activities.length === 0 ? (
-          <p className="text-(--color-text-muted)">
-            {t("admin.overview.noActivity")}
-          </p>
-        ) : (
-          <div className="space-y-3">
-            {activities.slice(0, 10).map((activity, index) => (
-              <div
-                key={`${activity.date}-${index}`}
-                className="p-3 rounded-lg bg-(--color-bg) border border-(--color-border)"
-              >
-                <p className="text-(--color-text)">{activity.message}</p>
-                <p className="text-xs text-(--color-text-muted) mt-1">
-                  {new Date(activity.date).toLocaleString()}
-                </p>
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-4">
+        <ListCard<AdminTopFreelancer>
+          title={t("admin.overview.topFreelancers")}
+          items={tables.top_freelancers}
+          renderItem={(item) => (
+            <div
+              key={item.id}
+              className="border border-(--color-border) rounded-lg p-3 bg-(--color-bg)"
+            >
+              <div className="flex items-center justify-between gap-3">
+                <div>
+                  <p className="font-semibold text-(--color-text)">
+                    {item.name}
+                  </p>
+                  <p className="text-xs text-(--color-text-muted)">
+                    {item.username || item.email}
+                  </p>
+                </div>
+                <span className="text-sm font-semibold text-(--color-text)">
+                  {formatCurrency(item.total_earnings)}
+                </span>
               </div>
-            ))}
+              <p className="mt-2 text-xs text-(--color-text-muted)">
+                {item.total_orders} {t("admin.overview.ordersSuffix")} ·{" "}
+                {t("admin.overview.rating")} {item.rating.toFixed(1)}
+              </p>
+            </div>
+          )}
+        />
+
+        <ListCard<AdminTopGig>
+          title={t("admin.overview.topGigs")}
+          items={tables.top_gigs}
+          renderItem={(item) => (
+            <div
+              key={item.id}
+              className="border border-(--color-border) rounded-lg p-3 bg-(--color-bg)"
+            >
+              <p className="font-semibold text-(--color-text)">{item.title}</p>
+              <p className="text-xs text-(--color-text-muted)">
+                {item.seller} · {item.category}
+              </p>
+              <p className="mt-2 text-xs text-(--color-text-muted)">
+                {item.total_orders} {t("admin.overview.ordersSuffix")} ·{" "}
+                {item.review_count} {t("admin.overview.reviewsSuffix")} ·{" "}
+                {formatCurrency(item.price)}
+              </p>
+            </div>
+          )}
+        />
+
+        <div className="bg-(--color-surface) rounded-xl p-5 shadow-md border border-(--color-border)">
+          <h3 className="text-lg font-semibold text-(--color-text) mb-4">
+            {t("admin.overview.recentActivity")}
+          </h3>
+          <div className="space-y-3">
+            {activities.length === 0 ? (
+              <p className="text-sm text-(--color-text-muted)">
+                {t("admin.overview.noActivityYet")}
+              </p>
+            ) : (
+              activities.slice(0, 5).map((activity, index) => (
+                <div
+                  key={`${activity.date}-${index}`}
+                  className="rounded-lg border border-(--color-border) bg-(--color-bg) p-3"
+                >
+                  <p className="text-sm text-(--color-text)">
+                    {activity.message}
+                  </p>
+                  <p className="mt-1 text-xs text-(--color-text-muted)">
+                    {new Date(activity.date).toLocaleString()}
+                  </p>
+                </div>
+              ))
+            )}
           </div>
-        )}
+        </div>
       </div>
     </div>
   );

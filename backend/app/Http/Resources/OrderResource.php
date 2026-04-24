@@ -14,6 +14,7 @@ class OrderResource extends JsonResource
             'gig_id' => $this->gig_id,
             'buyer_id' => $this->buyer_id,
             'seller_id' => $this->seller_id,
+            'package_type' => $this->package_type,
             'status' => $this->status,
             'price' => $this->price,
             'platform_fee_percentage' => $this->platform_fee_percentage ?? 0,

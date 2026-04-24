@@ -21,7 +21,7 @@ class OrderController extends Controller
     {
         $user = $request->user();
 
-        $query = Order::with(['gig.seller.profile', 'buyer.profile', 'seller.profile']);
+        $query = Order::with(['gig.seller.profile', 'buyer.profile', 'seller.profile', 'review']);
 
         // Filter by role
         if ($user->role === 'client' || $request->get('as') === 'buyer') {
@@ -36,6 +36,10 @@ class OrderController extends Controller
         // Status filter
         if ($request->has('status')) {
             $query->where('status', $request->status);
+        }
+
+        if ($request->filled('gig_id')) {
+            $query->where('gig_id', $request->gig_id);
         }
 
         $orders = $query->orderBy('created_at', 'desc')->paginate(15);
@@ -81,10 +85,19 @@ class OrderController extends Controller
     {
         $request->validate([
             'gig_id' => 'required|exists:gigs,id',
+            'package_type' => 'required|in:basic,standard,premium',
             'requirements' => 'nullable|string',
         ]);
 
         $gig = Gig::findOrFail($request->gig_id);
+        $packages = is_array($gig->packages) ? $gig->packages : [];
+        $selectedPackage = $packages[$request->package_type] ?? [];
+        $packagePrice = isset($selectedPackage['price'])
+            ? (int) round((float) $selectedPackage['price'])
+            : (int) $gig->price;
+        $deliveryTime = isset($selectedPackage['delivery_time'])
+            ? (int) $selectedPackage['delivery_time']
+            : (int) $gig->delivery_time;
 
         // Check if user is trying to order their own gig
         if ($gig->seller_id === $request->user()->id) {
@@ -99,11 +112,12 @@ class OrderController extends Controller
             'gig_id' => $gig->id,
             'buyer_id' => $request->user()->id,
             'seller_id' => $gig->seller_id,
-            'price' => 0,
+            'package_type' => $request->package_type,
+            'price' => $packagePrice,
             'platform_fee_percentage' => 0,
             'platform_fee_amount' => 0,
-            'seller_earnings' => 0,
-            'delivery_time' => $gig->delivery_time,
+            'seller_earnings' => $packagePrice,
+            'delivery_time' => $deliveryTime,
             'requirements' => $request->requirements,
             'status' => 'pending',
         ]);
@@ -117,7 +131,7 @@ class OrderController extends Controller
             'type' => 'order',
             'title' => 'New Order Received',
             'message' => 'You have received a new order for: ' . $gig->title,
-            'link' => '/orders/' . $order->id,
+            'link' => '/orders',
         ]);
 
         // Broadcast notification in real-time
@@ -185,7 +199,7 @@ class OrderController extends Controller
             'type' => 'order',
             'title' => 'Order Status Updated',
             'message' => $message,
-            'link' => '/orders/' . $order->id,
+            'link' => '/order/' . $order->id,
         ]);
 
         // Broadcast notification in real-time
@@ -229,7 +243,7 @@ class OrderController extends Controller
             'type' => 'order',
             'title' => 'Order Completed',
             'message' => 'The buyer has accepted your delivery. You earned $' . number_format($order->seller_earnings, 2),
-            'link' => '/orders/' . $order->id,
+            'link' => '/order/' . $order->id,
         ]);
 
         // Broadcast notification in real-time
@@ -270,7 +284,7 @@ class OrderController extends Controller
             'type' => 'order',
             'title' => 'Revision Requested',
             'message' => 'The buyer has requested a revision',
-            'link' => '/orders/' . $order->id,
+            'link' => '/order/' . $order->id,
         ]);
 
         // Broadcast notification in real-time

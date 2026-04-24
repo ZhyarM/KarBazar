@@ -1,12 +1,16 @@
-import CombineProviders from './CombineProviders.tsx';
-import { ThemeProvider } from './ThemeContext.tsx';
-import { CollapseProvider } from './SideBarContextCollapse.tsx'
-import { LanguageProvider } from './LanguageContext.tsx';
+import CombineProviders from "./CombineProviders.tsx";
+import { ThemeProvider } from "./ThemeContext.tsx";
+import { CollapseProvider } from "./SideBarContextCollapse.tsx";
+import { LanguageProvider } from "./LanguageContext.tsx";
+import { UserDataProvider } from "./UserDataContext.tsx";
+import { SearchProvider } from "./SearchContext.tsx";
 
 const appProvider = CombineProviders(
-    LanguageProvider,
-    ThemeProvider,
-    CollapseProvider
-)
+  UserDataProvider,
+  LanguageProvider,
+  ThemeProvider,
+  CollapseProvider,
+  SearchProvider,
+);
 
-export default appProvider
+export default appProvider;

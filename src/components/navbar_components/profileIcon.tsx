@@ -12,7 +12,7 @@ import {
   faShieldAlt,
 } from "@fortawesome/free-solid-svg-icons";
 import { logout } from "../../API/LogoutAPI";
-import { getAvatarUrl } from "../../utils/imageUrl";
+import { getImageUrlCandidates } from "../../utils/imageUrl";
 import type { AuthResponse } from "../../API/me.tsx";
 import { isAdminRole, roleLabel } from "../../utils/roles";
 import { useLanguage } from "../../context/LanguageContext.tsx";
@@ -28,9 +28,15 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
   const { t, direction } = useLanguage();
   const isRTL = direction === "rtl";
 
-  const avatarUrl = getAvatarUrl(user?.data?.profile?.avatar_url);
+  const avatarCandidates = getImageUrlCandidates(user?.data?.profile?.avatar_url);
+  const [avatarIndex, setAvatarIndex] = useState(0);
+  const avatarUrl = avatarCandidates[avatarIndex] || "";
   const name = user?.data?.name || t("profile.user");
   const role = roleLabel(user?.data?.role);
+
+  useEffect(() => {
+    setAvatarIndex(0);
+  }, [user?.data?.profile?.avatar_url]);
 
   useEffect(() => {
     const handleClickOutside = (event: MouseEvent) => {
@@ -64,6 +70,14 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
             src={avatarUrl}
             alt={name}
             className="w-full h-full object-cover"
+            onError={() => {
+              if (avatarIndex < avatarCandidates.length - 1) {
+                setAvatarIndex((prev) => prev + 1);
+                return;
+              }
+
+              setAvatarIndex(avatarCandidates.length);
+            }}
           />
         ) : (
           <div className="w-full h-full bg-linear-to-br from-[#315bb5] to-[#6D28D9] flex items-center justify-center text-white font-bold text-sm">
@@ -91,6 +105,14 @@ const ProfileDropdown = ({ user, isFreelancer }: ProfileDropdownProps) => {
                       src={avatarUrl}
                       alt={name}
                       className="w-full h-full object-cover"
+                      onError={() => {
+                        if (avatarIndex < avatarCandidates.length - 1) {
+                          setAvatarIndex((prev) => prev + 1);
+                          return;
+                        }
+
+                        setAvatarIndex(avatarCandidates.length);
+                      }}
                     />
                   ) : (
                     <div className="w-full h-full bg-linear-to-br from-[#315bb5] to-[#6D28D9] flex items-center justify-center text-white font-bold text-sm">

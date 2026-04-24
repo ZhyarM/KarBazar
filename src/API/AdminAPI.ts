@@ -1,4 +1,9 @@
-import { apiCall } from "./apiClient";
+import {
+  API_BASE_URL,
+  apiCall,
+  clearAuthStorage,
+  getAuthHeaders,
+} from "./apiClient";
 
 export interface AdminOverview {
   total_users: number;
@@ -15,6 +20,16 @@ export interface AdminOverview {
   total_categories: number;
   new_users_this_month: number;
   orders_this_month: number;
+  total_revenue: number;
+  platform_earnings: number;
+  current_platform_fee: number;
+  maintenance_mode: boolean;
+  total_ads: number;
+  active_ads: number;
+  pending_ad_requests: number;
+  ad_revenue: number;
+  active_deals: number;
+  expiring_deals: number;
 }
 
 export interface AdminActivity {
@@ -169,11 +184,94 @@ export interface AdminNewsItem {
   is_active: boolean;
 }
 
+export interface AdminChartPoint {
+  label: string;
+  value: number;
+}
+
+export interface AdminTopFreelancer {
+  id: number;
+  name: string;
+  email: string;
+  username: string | null;
+  avatar: string | null;
+  total_orders: number;
+  total_earnings: number;
+  rating: number;
+}
+
+export interface AdminTopGig {
+  id: number;
+  title: string;
+  price: number;
+  seller: string;
+  category: string;
+  total_orders: number;
+  rating: number;
+  review_count: number;
+}
+
+export interface AdminDeal {
+  id: number;
+  gig_id: number;
+  package_key: "basic" | "standard" | "premium";
+  package_label: string;
+  discount_percentage: number;
+  original_price: number;
+  discounted_price: number;
+  expires_at: string | null;
+  is_expiring_soon: boolean;
+  is_active: boolean;
+  created_at: string;
+  gig: {
+    id: number;
+    title: string;
+    description: string;
+    image_url: string | null;
+    rating: number;
+    review_count: number;
+    seller: {
+      id: number;
+      name: string;
+      image: string | null;
+    };
+    category: {
+      id: number;
+      name: string;
+    };
+    packages: Record<string, unknown>;
+  };
+}
+
+export interface AdminDashboardResponse {
+  stats: AdminOverview;
+  charts: {
+    revenue: AdminChartPoint[];
+    orders: AdminChartPoint[];
+    categories: Array<AdminChartPoint & { id: number; gig_count?: number }>;
+    freelancers: AdminTopFreelancer[];
+  };
+  tables: {
+    top_freelancers: AdminTopFreelancer[];
+    top_gigs: AdminTopGig[];
+    recent_activities: AdminActivity[];
+  };
+}
+
 export const getAdminOverview = async (): Promise<AdminOverview> => {
   const response = await apiCall<{ success: boolean; data: AdminOverview }>(
     "/analytics/overview",
     { method: "GET" },
   );
+
+  return response.data;
+};
+
+export const getAdminDashboard = async (): Promise<AdminDashboardResponse> => {
+  const response = await apiCall<{
+    success: boolean;
+    data: AdminDashboardResponse;
+  }>("/analytics/dashboard", { method: "GET" });
 
   return response.data;
 };
@@ -204,6 +302,39 @@ export const getAdminUsers = async (
   return apiCall<PaginatedUsersResponse>(`/admin/users${suffix}`, {
     method: "GET",
   });
+};
+
+export const exportAdminUsersCsv = async (
+  params: GetAdminUsersParams = {},
+): Promise<Blob> => {
+  const query = new URLSearchParams();
+
+  if (params.search) query.set("search", params.search);
+  if (params.role) query.set("role", params.role);
+  if (typeof params.is_active === "boolean") {
+    query.set("is_active", String(params.is_active));
+  }
+  if (params.page) query.set("page", String(params.page));
+  if (params.per_page) query.set("per_page", String(params.per_page));
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  const response = await fetch(`${API_BASE_URL}/admin/users/export${suffix}`, {
+    method: "GET",
+    headers: getAuthHeaders(),
+  });
+
+  if (!response.ok) {
+    if (response.status === 401 || response.status === 403) {
+      clearAuthStorage();
+    }
+
+    const errorData = await response.json().catch(() => ({}));
+    throw new Error(
+      errorData.message || `HTTP error! status: ${response.status}`,
+    );
+  }
+
+  return response.blob();
 };
 
 export const getAdminAccounts = async (): Promise<PaginatedUsersResponse> => {
@@ -423,4 +554,69 @@ export const updateAdminSetting = async (
       body: JSON.stringify(payload),
     },
   );
+};
+
+export interface DealFormPayload {
+  gig_id: number;
+  package_key: "basic" | "standard" | "premium";
+  discount_percentage: number;
+  expires_at?: string | null;
+  is_active?: boolean;
+}
+
+export const getAdminDeals = async (
+  params: Record<string, string | number | boolean | undefined> = {},
+): Promise<AdminDeal[]> => {
+  const query = new URLSearchParams();
+
+  Object.entries(params).forEach(([key, value]) => {
+    if (value !== undefined && value !== null && value !== "") {
+      query.set(key, String(value));
+    }
+  });
+
+  const suffix = query.toString() ? `?${query.toString()}` : "";
+  const response = await apiCall<{ success: boolean; data: AdminDeal[] }>(
+    `/deals${suffix}`,
+    {
+      method: "GET",
+    },
+  );
+
+  return response.data;
+};
+
+export const createAdminDeal = async (
+  payload: DealFormPayload,
+): Promise<AdminDeal> => {
+  const response = await apiCall<{ success: boolean; data: AdminDeal }>(
+    "/deals",
+    {
+      method: "POST",
+      body: JSON.stringify(payload),
+    },
+  );
+
+  return response.data;
+};
+
+export const updateAdminDeal = async (
+  dealId: number,
+  payload: Partial<DealFormPayload>,
+): Promise<AdminDeal> => {
+  const response = await apiCall<{ success: boolean; data: AdminDeal }>(
+    `/deals/${dealId}`,
+    {
+      method: "PUT",
+      body: JSON.stringify(payload),
+    },
+  );
+
+  return response.data;
+};
+
+export const deleteAdminDeal = async (dealId: number): Promise<void> => {
+  await apiCall<{ success: boolean; message: string }>(`/deals/${dealId}`, {
+    method: "DELETE",
+  });
 };

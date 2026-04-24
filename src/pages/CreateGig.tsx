@@ -261,12 +261,12 @@ function CreateGig() {
           navigate(`/gigs/${editId}`);
         }, 2000);
       } else {
-        const createdGig = await createGig(gigData);
+        await createGig(gigData);
         setSuccess(true);
         setMessage(t("createGig.createdSuccess"));
         setTimeout(() => {
-          navigate(`/gigs/${createdGig.id}`);
-        }, 2000);
+          navigate("/dashboard");
+        }, 1500);
       }
     } catch (error: any) {
       console.error("Gig save error:", error);
@@ -524,7 +524,7 @@ function CreateGig() {
                 </div>
                 <div className="mt-4">
                   <label className="block text-(--color-text) mb-2">
-                    Description *
+                    {t("createGig.basicPackageDescription")}
                   </label>
                   <textarea
                     value={formData.basic_description}
@@ -588,7 +588,7 @@ function CreateGig() {
                 </div>
                 <div className="mt-4">
                   <label className="block text-(--color-text) mb-2">
-                    Description
+                    {t("createGig.standardPackageDescription")}
                   </label>
                   <textarea
                     value={formData.standard_description || ""}
@@ -651,7 +651,7 @@ function CreateGig() {
                 </div>
                 <div className="mt-4">
                   <label className="block text-(--color-text) mb-2">
-                    Description
+                    {t("createGig.premiumPackageDescription")}
                   </label>
                   <textarea
                     value={formData.premium_description || ""}
@@ -862,7 +862,7 @@ function CreateGig() {
                     : t("createGig.creating")
                   : isEditMode
                     ? t("createGig.updateGig")
-                    : t("createGig.createGig")}
+                    : t("createGig.uploadGig")}
               </button>
             )}
           </div>

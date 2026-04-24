@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { handleSearchSubmit } from "../../utils/HandleFormSearch";
 import { useLanguage } from "../../context/LanguageContext.tsx";
+import { useSearch } from "../../context/SearchContext.tsx";
 
 interface SearchBarProps {
   onSearch?: (query: string) => void;
@@ -10,7 +11,13 @@ interface SearchBarProps {
 function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
   const [query, setQuery] = useState("");
   const { direction, t } = useLanguage();
+  const { searchQuery, setSearchQuery } = useSearch();
   const isRTL = direction === "rtl";
+
+  // Sync local state with context
+  useEffect(() => {
+    setQuery(searchQuery);
+  }, [searchQuery]);
 
   useEffect(() => {
     if (!onInputChange) {
@@ -19,10 +26,11 @@ function SearchBar({ onSearch, onInputChange }: SearchBarProps) {
 
     const timeout = setTimeout(() => {
       onInputChange(query);
+      setSearchQuery(query);
     }, 120);
 
     return () => clearTimeout(timeout);
-  }, [query, onInputChange]);
+  }, [query, onInputChange, setSearchQuery]);
 
   return (
     <form

@@ -8,20 +8,8 @@ import { loginuser } from "../../API/LoginAPI";
 import MessageToast from "../../utils/message";
 import { useLanguage } from "../../context/LanguageContext.tsx";
 
-function isLogedIn() {
-  if (localStorage.getItem("auth_token")) {
-    return true;
-  } else {
-    return false;
-  }
-}
-
 function SignIn() {
   const { t } = useLanguage();
-
-  if (isLogedIn()) {
-    window.location.href = "/";
-  }
 
   const navigate = useNavigate();
 
@@ -74,6 +62,7 @@ function SignIn() {
         // Store token in localStorage
         localStorage.setItem("auth_token", res.data.token);
         localStorage.setItem("user", JSON.stringify(res.data.user));
+        window.dispatchEvent(new Event("auth-changed"));
 
         console.log(res.data);
         setSuccess(true);
@@ -112,7 +101,7 @@ function SignIn() {
             <h1
               className="  font-inter text-2xl sm:text-5xl md:text-5xl
             tracking-tight font-bold font-sans text-center mb-20
-             leading-normal md:leading-[90px] 
+             leading-normal md:leading-22.5
               text-(--color-text-inverse)"
             >
               {t("auth.signInTitle")}
@@ -195,7 +184,7 @@ function SignIn() {
             <h1
               className="  font-inter text-2xl sm:text-5xl md:text-7xl
             tracking-tight font-bold font-sans
-             leading-normal md:leading-[90px] 
+            leading-normal md:leading-22.5 
               text-(--color-text)"
             >
               {t("auth.startOnlineService")}

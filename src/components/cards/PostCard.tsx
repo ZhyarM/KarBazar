@@ -129,6 +129,8 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
                   src={avatarUrl}
                   alt={post.user?.name || "User avatar"}
                   className="w-full h-full object-cover"
+                  loading="lazy"
+                  decoding="async"
                 />
               ) : (
                 <div className="w-full h-full bg-linear-to-br from-[#315bb5] to-[#6D28D9] flex items-center justify-center text-white font-bold text-lg">
@@ -269,6 +271,8 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
               src={post.images![imageIndex]}
               alt={`Post image ${imageIndex + 1}`}
               className="w-full h-80 object-cover transition-transform duration-500 group-hover/img:scale-[1.02]"
+              loading="lazy"
+              decoding="async"
             />
           </Link>
 
@@ -340,6 +344,7 @@ function PostCard({ post, currentUserId, onPostDeleted }: PostCardProps) {
             src={post.images![imageIndex]}
             alt="Expanded"
             className="max-w-full max-h-full object-contain rounded-lg"
+            decoding="async"
           />
         </div>
       )}

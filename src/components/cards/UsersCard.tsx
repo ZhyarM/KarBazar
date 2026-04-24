@@ -43,8 +43,8 @@ function UsersCard({
   return (
     <div
       className="
-        group flex flex-col
-        w-full max-w-[340px] min-w-[280px]
+        group flex h-full flex-col
+        w-full min-w-0
         font-inter text-base leading-6 text-left
         text-(--color-text)
         bg-(--color-card) border border-(--color-border)
@@ -59,6 +59,8 @@ function UsersCard({
             src={user_background_img}
             className="w-full h-44 object-cover"
             alt={description}
+            loading="lazy"
+            decoding="async"
           />
         ) : (
           <div className="w-full h-44 flex justify-center items-center bg-(image:--gradient-secondary) text-3xl">
@@ -73,20 +75,22 @@ function UsersCard({
         )}
       </div>
 
-      <div className="flex flex-col gap-3 p-4">
+      <div className="flex flex-1 flex-col gap-3 p-4">
         {/* Seller Info */}
         <div className="flex items-center gap-2.5">
           {user_profile_img ? (
             <LazyImage
               src={user_profile_img}
               alt={username}
-              className="w-9 h-9 rounded-full object-cover object-center border-2 border-(--color-border) flex-shrink-0"
+              className="w-9 h-9 shrink-0 rounded-full object-cover object-center border-2 border-(--color-border)"
+              loading="lazy"
+              decoding="async"
             />
           ) : (
             <span
               className="
                 flex items-center justify-center
-                w-9 h-9 flex-shrink-0
+                w-9 h-9 shrink-0
                 font-inter text-sm font-semibold leading-5
                 text-(--color-text)
                 rounded-full
@@ -108,7 +112,7 @@ function UsersCard({
         </div>
 
         {/* Gig Title */}
-        <p className="text-sm text-(--color-text) line-clamp-2 min-h-[40px] transition-colors duration-300 group-hover:text-(--color-primary)">
+        <p className="text-sm text-(--color-text) line-clamp-2 min-h-10 transition-colors duration-300 group-hover:text-(--color-primary)">
           {description}
         </p>
 
@@ -133,7 +137,7 @@ function UsersCard({
         )}
 
         {/* Rating & Price */}
-        <div className="flex justify-between items-center pt-2 border-t border-(--color-border)">
+        <div className="mt-auto flex justify-between items-center pt-2 border-t border-(--color-border)">
           <div className="flex items-center gap-1">
             <span className="text-amber-400 text-sm">
               {star_icon || <FontAwesomeIcon icon={faStar} />}

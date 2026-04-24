@@ -1,4 +1,5 @@
 import { normalizeRoleForUi, toApiRole, type UiRole } from "../utils/roles";
+import { API_BASE_URL } from "./apiClient";
 
 interface UserProfile {
   id: number;
@@ -60,12 +61,11 @@ const registerUser = async (payload: requestPayload): Promise<AuthResponse> => {
       role: toApiRole(payload.role),
     };
 
-    const response = await fetch("http://127.0.0.1:8000/api/auth/register", {
+    const response = await fetch(`${API_BASE_URL}/auth/register`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
         Accept: "application/json",
-        "Access-Control-Allow-Origin": "*",
       },
       body: JSON.stringify(apiPayload),
       credentials: "omit",

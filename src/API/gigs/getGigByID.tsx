@@ -1,9 +1,15 @@
 const BASE_API_URL =
-  import.meta.env.VITE_API_URL || "http://localhost:8000/api";
+  import.meta.env.VITE_API_BASE_URL || "http://localhost:8000/api";
 
 export interface GigresponseByID {
   success: boolean;
   data: GigDetailData;
+}
+
+export interface GigPackageDiscountSummary {
+  discount_percentage: number;
+  expires_at: string | null;
+  discounted_price: number | null;
 }
 
 export interface GigDetailData {
@@ -22,6 +28,11 @@ export interface GigDetailData {
     standard?: PackageTier;
     premium?: PackageTier;
   } | null;
+  active_package_discounts: {
+    basic?: GigPackageDiscountSummary;
+    standard?: GigPackageDiscountSummary;
+    premium?: GigPackageDiscountSummary;
+  };
   requirements: string | null;
   faq: Array<{ question: string; answer: string }> | null;
   rating: string;

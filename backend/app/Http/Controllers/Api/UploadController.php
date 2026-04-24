@@ -9,6 +9,30 @@ use Illuminate\Support\Str;
 
 class UploadController extends Controller
 {
+    // Serve public media from storage disk (fallback when /storage symlink is unavailable)
+    public function servePublicMedia(string $path)
+    {
+        $normalizedPath = ltrim($path, '/');
+
+        if (str_contains($normalizedPath, '..')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Invalid media path',
+            ], 400);
+        }
+
+        if (!Storage::disk('public')->exists($normalizedPath)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Media not found',
+            ], 404);
+        }
+
+        $absolutePath = Storage::disk('public')->path($normalizedPath);
+
+        return response()->file($absolutePath);
+    }
+
     // Upload profile picture
     public function uploadProfilePicture(Request $request)
     {

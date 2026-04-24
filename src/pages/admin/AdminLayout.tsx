@@ -5,6 +5,7 @@ const navItems = [
   { to: "/admin", labelKey: "admin.nav.overview", end: true },
   { to: "/admin/users", labelKey: "admin.nav.users" },
   { to: "/admin/listings", labelKey: "admin.nav.listings" },
+  { to: "/admin/deals", labelKey: "admin.nav.deals" },
   { to: "/admin/categories", labelKey: "admin.nav.categories" },
   { to: "/admin/orders", labelKey: "admin.nav.orders" },
   { to: "/admin/reviews", labelKey: "admin.nav.reviews" },

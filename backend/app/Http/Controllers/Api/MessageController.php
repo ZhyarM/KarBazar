@@ -82,6 +82,12 @@ class MessageController extends Controller
             ->where('is_read', false)
             ->update(['is_read' => true]);
 
+        Notification::where('user_id', $currentUserId)
+            ->where('type', 'message')
+            ->where('link', '/messages/' . $userId)
+            ->where('is_read', false)
+            ->update(['is_read' => true]);
+
         return response()->json([
             'success' => true,
             'data' => MessageResource::collection($messages),

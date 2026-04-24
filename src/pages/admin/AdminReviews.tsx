@@ -4,8 +4,10 @@ import {
   getAdminReviews,
   type AdminReview,
 } from "../../API/AdminAPI";
+import { useLanguage } from "../../context/LanguageContext";
 
 function AdminReviewsPage() {
+  const { t } = useLanguage();
   const [reviews, setReviews] = useState<AdminReview[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -26,7 +28,7 @@ function AdminReviewsPage() {
   }, []);
 
   const handleDelete = async (reviewId: number) => {
-    if (!window.confirm("Delete this review?")) {
+    if (!window.confirm(t("admin.reviews.confirmDelete"))) {
       return;
     }
 
@@ -36,7 +38,9 @@ function AdminReviewsPage() {
     } catch (error) {
       console.error("Failed to delete review:", error);
       alert(
-        error instanceof Error ? error.message : "Failed to delete review.",
+        error instanceof Error
+          ? error.message
+          : t("admin.reviews.deleteFailed"),
       );
     }
   };
@@ -45,10 +49,10 @@ function AdminReviewsPage() {
     <div className="space-y-6">
       <div className="bg-(--color-surface) rounded-lg p-6 shadow-md">
         <h2 className="text-xl font-bold text-(--color-text)">
-          Moderate Reviews
+          {t("admin.reviews.title")}
         </h2>
         <p className="text-(--color-text-muted) mt-2">
-          Remove abusive or fake reviews and keep rating quality high.
+          {t("admin.reviews.subtitle")}
         </p>
       </div>
 
@@ -67,15 +71,17 @@ function AdminReviewsPage() {
                 <div className="flex items-center justify-between gap-3">
                   <div>
                     <p className="font-semibold text-(--color-text)">
-                      {review.reviewer?.name || "Unknown"} {"->"}{" "}
-                      {review.reviewee?.name || "Unknown"}
+                      {review.reviewer?.name || t("admin.reviews.unknown")}{" "}
+                      {"->"}{" "}
+                      {review.reviewee?.name || t("admin.reviews.unknown")}
                     </p>
                     <p className="text-sm text-(--color-text-muted)">
-                      Rating: {review.rating}/5 | Gig:{" "}
-                      {review.gig?.title || "N/A"}
+                      {t("admin.reviews.rating")}: {review.rating}/5 |{" "}
+                      {t("admin.reviews.gig")}:{" "}
+                      {review.gig?.title || t("admin.reviews.notAvailable")}
                     </p>
                     <p className="text-sm text-(--color-text) mt-2">
-                      {review.comment || "No comment"}
+                      {review.comment || t("admin.reviews.noComment")}
                     </p>
                   </div>
                   <button
@@ -83,7 +89,7 @@ function AdminReviewsPage() {
                     onClick={() => handleDelete(review.id)}
                     className="px-3 py-1 rounded-md border border-red-200 bg-red-50 text-red-700 text-sm"
                   >
-                    Delete
+                    {t("admin.reviews.delete")}
                   </button>
                 </div>
               </div>

@@ -10,10 +10,11 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class AdminUserController extends Controller
 {
-    public function index(Request $request)
+    private function buildQuery(Request $request)
     {
         $query = User::query()->with('profile')->orderByDesc('created_at');
 
@@ -34,6 +35,12 @@ class AdminUserController extends Controller
             });
         }
 
+        return $query;
+    }
+
+    public function index(Request $request)
+    {
+        $query = $this->buildQuery($request);
         $perPage = min(max((int) $request->input('per_page', 20), 1), 100);
         $users = $query->paginate($perPage);
 
@@ -46,6 +53,42 @@ class AdminUserController extends Controller
                 'per_page' => $users->perPage(),
                 'total' => $users->total(),
             ],
+        ]);
+    }
+
+    public function export(Request $request): StreamedResponse
+    {
+        $users = $this->buildQuery($request)->get();
+        $fileName = 'users-export-' . now()->format('Y-m-d_His') . '.csv';
+
+        return response()->streamDownload(function () use ($users) {
+            $output = fopen('php://output', 'w');
+
+            fputcsv($output, [
+                'id',
+                'name',
+                'email',
+                'role',
+                'status',
+                'username',
+                'created_at',
+            ]);
+
+            foreach ($users as $user) {
+                fputcsv($output, [
+                    $user->id,
+                    $user->name,
+                    $user->email,
+                    $user->role,
+                    $user->is_active ? 'active' : 'inactive',
+                    $user->profile?->username,
+                    optional($user->created_at)->toDateTimeString(),
+                ]);
+            }
+
+            fclose($output);
+        }, $fileName, [
+            'Content-Type' => 'text/csv; charset=UTF-8',
         ]);
     }
 

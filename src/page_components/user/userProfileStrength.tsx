@@ -1,6 +1,7 @@
 import { faCheckCircle } from "@fortawesome/free-solid-svg-icons";
 import { faCircle } from "@fortawesome/free-regular-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface UserProfileStrengthProps {
   basicInfo: boolean;
@@ -17,6 +18,7 @@ function UserProfileStrength({
   portfolio,
   workExperience,
 }: UserProfileStrengthProps) {
+  const { t } = useLanguage();
   // 1. Calculate Progress
   const criteria = [
     basicInfo,
@@ -45,7 +47,7 @@ function UserProfileStrength({
           type="button"
           className="text-xs text-indigo-600 hover:underline"
         >
-          Add
+          {t("profile.profileStrength.add")}
         </button>
       )}
     </div>
@@ -56,9 +58,9 @@ function UserProfileStrength({
       {/* Header & Percentage */}
       <div className="flex justify-between items-end">
         <div>
-          <h3 className="text-xl font-extrabold">Profile Strength</h3>
+          <h3 className="text-xl font-extrabold">{t("profile.profileStrength.title")}</h3>
           <p className="text-sm font-medium text-gray-500">
-            {completedCount}/{criteria.length} completed
+            {completedCount}/{criteria.length} {t("profile.profileStrength.completed")}
           </p>
         </div>
         <span className="text-2xl font-black text-indigo-700">
@@ -78,11 +80,11 @@ function UserProfileStrength({
 
       {/* List of Requirements */}
       <div className="flex flex-col gap-1">
-        <StatusRow label="Basic Info" isDone={basicInfo} />
-        <StatusRow label="Professional Bio" isDone={professionalBio} />
-        <StatusRow label="Skills" isDone={skills} />
-        <StatusRow label="Portfolio" isDone={portfolio} />
-        <StatusRow label="Work Experience" isDone={workExperience} />
+        <StatusRow label={t("profilePage.progress.addBasicInfo")} isDone={basicInfo} />
+        <StatusRow label={t("profilePage.progress.addCompleteBio")} isDone={professionalBio} />
+        <StatusRow label={t("profilePage.progress.addSkills")} isDone={skills} />
+        <StatusRow label={t("profilePage.progress.addPortfolio")} isDone={portfolio} />
+        <StatusRow label={t("profilePage.progress.addWorkExperience")} isDone={workExperience} />
       </div>
     </div>
   );

@@ -10,6 +10,7 @@ import Button from "../../components/btns/Button";
 import { useState } from "react";
 import type { PortfolioItem } from "../../API/ProfileAPI";
 import { getImageUrl } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface UserWorkProps {
   portfolio?: PortfolioItem[];
@@ -17,6 +18,7 @@ interface UserWorkProps {
 }
 
 function UserWork({ portfolio = [], onSave }: UserWorkProps) {
+  const { t } = useLanguage();
   const [myPortfolio, setMyPortfolio] = useState<PortfolioItem[]>(portfolio);
   const [isAdding, setIsAdding] = useState(false);
   const [saving, setSaving] = useState(false);
@@ -65,18 +67,18 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
       <div className="rounded-4xl p-4 flex justify-between items-center">
         <div>
           <h1 className="font-extrabold text-(--color-text) text-3xl">
-            Portfolio & Work
+            {t("profile.work.title")}
           </h1>
           <p className="text-(--color-text-muted)">
-            Showcase your best projects
-            {saving && <span className="ml-2">(Saving...)</span>}
+            {t("profile.work.subtitle")}
+            {saving && <span className="ml-2">({t("profile.work.saving")})</span>}
           </p>
         </div>
 
         <div>
           <Button
             bgColor="gradient-secondary"
-            text="Add Work"
+            text={t("profile.work.addWork")}
             icon={<FontAwesomeIcon icon={faAdd} />}
             textColor="text-(--color-text)"
             onClick={() => setIsAdding(!isAdding)}
@@ -90,7 +92,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
           <div className="p-4 bg-(--color-surface) rounded-xl space-y-3">
             <input
               type="text"
-              placeholder="Project Title"
+              placeholder={t("profile.work.projectTitle")}
               value={newItem.title}
               onChange={(e) =>
                 setNewItem({ ...newItem, title: e.target.value })
@@ -99,7 +101,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
             />
             <input
               type="url"
-              placeholder="Image URL"
+              placeholder={t("profile.work.imageUrl")}
               value={newItem.image_url}
               onChange={(e) =>
                 setNewItem({ ...newItem, image_url: e.target.value })
@@ -108,7 +110,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
             />
             <input
               type="url"
-              placeholder="Project URL (optional)"
+              placeholder={t("profile.work.projectUrlOptional")}
               value={newItem.project_url || ""}
               onChange={(e) =>
                 setNewItem({ ...newItem, project_url: e.target.value })
@@ -117,7 +119,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
             />
             <input
               type="text"
-              placeholder="Category (e.g., Web Design, Development)"
+              placeholder={t("profile.work.categoryPlaceholder")}
               value={newItem.category || ""}
               onChange={(e) =>
                 setNewItem({ ...newItem, category: e.target.value })
@@ -125,7 +127,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
               className="w-full px-3 py-2 border border-(--color-border) rounded-lg bg-(--color-card) text-(--color-text) text-sm"
             />
             <textarea
-              placeholder="Description (optional)"
+              placeholder={t("profile.work.descriptionOptional")}
               value={newItem.description || ""}
               onChange={(e) =>
                 setNewItem({ ...newItem, description: e.target.value })
@@ -138,13 +140,13 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
                 className="flex-1 px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90 flex items-center justify-center gap-2"
               >
                 <FontAwesomeIcon icon={faSave} />
-                Save
+                {t("profile.work.save")}
               </button>
               <button
                 onClick={() => setIsAdding(false)}
                 className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:opacity-90"
               >
-                Cancel
+                {t("profile.work.cancel")}
               </button>
             </div>
           </div>
@@ -178,7 +180,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
                         className="inline-flex items-center gap-1 mt-2 text-sm text-blue-400 hover:underline"
                       >
                         <FontAwesomeIcon icon={faExternalLink} />
-                        View Project
+                        {t("profile.work.viewProject")}
                       </a>
                     )}
                   </div>
@@ -200,7 +202,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
                 icon={faUpload}
                 className="text-4xl hover:text-blue-300"
               />
-              <p className="font-semibold text-md">Add project</p>
+              <p className="font-semibold text-md">{t("profile.work.addProject")}</p>
             </div>
           </div>
         ) : (
@@ -215,7 +217,7 @@ function UserWork({ portfolio = [], onSave }: UserWorkProps) {
                   icon={faUpload}
                   className="text-4xl hover:text-blue-300"
                 />
-                <p className="font-semibold text-md">Add project images</p>
+                <p className="font-semibold text-md">{t("profile.work.addProjectImages")}</p>
               </div>
             ))}
           </div>

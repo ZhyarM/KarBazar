@@ -36,6 +36,11 @@ function PostDetail() {
   const [loading, setLoading] = useState(true);
   const [commentText, setCommentText] = useState("");
   const [sendingComment, setSendingComment] = useState(false);
+  const [replyingToCommentId, setReplyingToCommentId] = useState<number | null>(
+    null,
+  );
+  const [replyText, setReplyText] = useState("");
+  const [sendingReply, setSendingReply] = useState(false);
   const [liked, setLiked] = useState(false);
   const [likesCount, setLikesCount] = useState(0);
   const [bookmarked, setBookmarked] = useState(false);
@@ -110,7 +115,7 @@ function PostDetail() {
     setSendingComment(true);
     try {
       const res = await addPostComment(post.id, commentText.trim());
-      setComments([res.data, ...comments]);
+      setComments((previousComments) => [res.data, ...previousComments]);
       setCommentText("");
       setPost({ ...post, comments_count: post.comments_count + 1 });
     } catch (err) {
@@ -119,14 +124,90 @@ function PostDetail() {
     setSendingComment(false);
   };
 
+  const handleReply = async (parentCommentId: number) => {
+    if (!post || !replyText.trim()) return;
+
+    setSendingReply(true);
+    try {
+      const res = await addPostComment(post.id, replyText.trim(), parentCommentId);
+      setComments((previousComments) =>
+        previousComments.map((comment) => {
+          if (comment.id !== parentCommentId) return comment;
+
+          return {
+            ...comment,
+            replies: [...(comment.replies ?? []), res.data],
+          };
+        }),
+      );
+      setReplyText("");
+      setReplyingToCommentId(null);
+      setPost({ ...post, comments_count: post.comments_count + 1 });
+    } catch (err) {
+      console.error(err);
+    }
+    setSendingReply(false);
+  };
+
+  const removeCommentFromTree = (
+    previousComments: PostComment[],
+    targetCommentId: number,
+  ): { nextComments: PostComment[]; removedCount: number } => {
+    let removedCount = 0;
+
+    const nextComments = previousComments
+      .map((comment) => {
+        if (comment.id === targetCommentId) {
+          removedCount += 1 + (comment.replies?.length ?? 0);
+          return null;
+        }
+
+        if (!comment.replies || comment.replies.length === 0) {
+          return comment;
+        }
+
+        const nextReplies = comment.replies.filter((reply) => {
+          if (reply.id === targetCommentId) {
+            removedCount += 1;
+            return false;
+          }
+
+          return true;
+        });
+
+        return {
+          ...comment,
+          replies: nextReplies,
+        };
+      })
+      .filter((comment): comment is PostComment => comment !== null);
+
+    return { nextComments, removedCount };
+  };
+
   const handleDeleteComment = async (commentId: number) => {
     if (!post) return;
     try {
       await deletePostComment(post.id, commentId);
-      setComments(comments.filter((c) => c.id !== commentId));
-      setPost({
-        ...post,
-        comments_count: Math.max(0, post.comments_count - 1),
+      setComments((previousComments) => {
+        const { nextComments, removedCount } = removeCommentFromTree(
+          previousComments,
+          commentId,
+        );
+
+        setPost((previousPost) => {
+          if (!previousPost) return previousPost;
+
+          return {
+            ...previousPost,
+            comments_count: Math.max(
+              0,
+              previousPost.comments_count - Math.max(1, removedCount),
+            ),
+          };
+        });
+
+        return nextComments;
       });
     } catch (err) {
       console.error(err);
@@ -384,6 +465,25 @@ function PostDetail() {
                       <span className="text-xs text-(--color-text-muted)">
                         {new Date(comment.created_at).toLocaleDateString()}
                       </span>
+                      {isAuthenticated() && (
+                        <button
+                          onClick={() => {
+                            if (replyingToCommentId === comment.id) {
+                              setReplyingToCommentId(null);
+                              setReplyText("");
+                              return;
+                            }
+
+                            setReplyingToCommentId(comment.id);
+                            setReplyText("");
+                          }}
+                          className="text-xs text-(--color-primary) hover:underline"
+                        >
+                          {replyingToCommentId === comment.id
+                            ? t("post.cancelReply")
+                            : t("post.reply")}
+                        </button>
+                      )}
                       {currentUser?.id === comment.user.id && (
                         <button
                           onClick={() => handleDeleteComment(comment.id)}
@@ -393,6 +493,29 @@ function PostDetail() {
                         </button>
                       )}
                     </div>
+
+                    {isAuthenticated() && replyingToCommentId === comment.id && (
+                      <div className="flex items-center gap-2 mt-2 ml-1">
+                        <input
+                          type="text"
+                          value={replyText}
+                          onChange={(event) => setReplyText(event.target.value)}
+                          placeholder={t("post.writeReply")}
+                          className="flex-1 px-3 py-1.5 rounded-full bg-(--color-bg) border border-(--color-border) text-(--color-text) text-xs focus:outline-none focus:ring-1 focus:ring-(--color-primary)"
+                        />
+                        <button
+                          type="button"
+                          onClick={() => handleReply(comment.id)}
+                          disabled={sendingReply || !replyText.trim()}
+                          className="p-1.5 text-(--color-primary) disabled:opacity-50"
+                        >
+                          <FontAwesomeIcon
+                            icon={sendingReply ? faSpinner : faPaperPlane}
+                            className={sendingReply ? "animate-spin" : ""}
+                          />
+                        </button>
+                      </div>
+                    )}
 
                     {/* Replies */}
                     {comment.replies && comment.replies.length > 0 && (
@@ -417,6 +540,19 @@ function PostDetail() {
                               <p className="text-xs text-(--color-text)">
                                 {reply.content}
                               </p>
+                              <div className="flex items-center gap-2 mt-1">
+                                <span className="text-[10px] text-(--color-text-muted)">
+                                  {new Date(reply.created_at).toLocaleDateString()}
+                                </span>
+                                {currentUser?.id === reply.user.id && (
+                                  <button
+                                    onClick={() => handleDeleteComment(reply.id)}
+                                    className="text-[10px] text-red-400 hover:text-red-600"
+                                  >
+                                    <FontAwesomeIcon icon={faTrash} /> {t("post.delete")}
+                                  </button>
+                                )}
+                              </div>
                             </div>
                           </div>
                         ))}

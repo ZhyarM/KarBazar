@@ -10,6 +10,7 @@ use App\Models\PostBookmark;
 use App\Models\Notification;
 use App\Models\Follow;
 use Illuminate\Http\Request;
+use Illuminate\Support\Carbon;
 
 class PostController extends Controller
 {
@@ -19,6 +20,8 @@ class PostController extends Controller
         $user = auth('sanctum')->user();
         $page = $request->get('page', 1);
         $perPage = $request->get('per_page', 10);
+        $cutoff7Days = Carbon::now()->subDays(7)->toDateTimeString();
+        $cutoff30Days = Carbon::now()->subDays(30)->toDateTimeString();
 
         if (!$user) {
             // Public feed: trending posts
@@ -51,8 +54,8 @@ class PostController extends Controller
             ->with(['user.profile', 'category']);
 
         // Use raw SQL for priority scoring
-        $followedIds = implode(',', array_merge($followingIds, [0])); // add 0 to prevent empty IN clause
-        $categoryIds = implode(',', array_merge($interactedCategories, [0]));
+        $followedIds = implode(',', array_map('intval', array_merge($followingIds, [0]))); // add 0 to prevent empty IN clause
+        $categoryIds = implode(',', array_map('intval', array_merge($interactedCategories, [0])));
 
         $posts = Post::where('is_active', true)
             ->with(['user.profile', 'category'])
@@ -68,11 +71,11 @@ class PostController extends Controller
                 (likes_count * 2) +
                 (comments_count * 3) +
                 CASE 
-                    WHEN created_at >= NOW() - INTERVAL 7 DAY THEN 10
-                    WHEN created_at >= NOW() - INTERVAL 30 DAY THEN 5
+                    WHEN created_at >= ? THEN 10
+                    WHEN created_at >= ? THEN 5
                     ELSE 0
                 END as priority_score
-            ")
+            ", [$cutoff7Days, $cutoff30Days])
             ->orderByDesc('priority_score')
             ->orderByDesc('created_at')
             ->paginate($perPage);
@@ -98,17 +101,19 @@ class PostController extends Controller
     public function publicFeed(Request $request)
     {
         $perPage = $request->get('per_page', 10);
+        $cutoff7Days = Carbon::now()->subDays(7)->toDateTimeString();
+        $cutoff30Days = Carbon::now()->subDays(30)->toDateTimeString();
 
         $posts = Post::where('is_active', true)
             ->with(['user.profile', 'category'])
             ->selectRaw("posts.*, 
                 (likes_count * 2) + (comments_count * 3) +
                 CASE 
-                    WHEN created_at >= NOW() - INTERVAL 7 DAY THEN 10
-                    WHEN created_at >= NOW() - INTERVAL 30 DAY THEN 5
+                    WHEN created_at >= ? THEN 10
+                    WHEN created_at >= ? THEN 5
                     ELSE 0
                 END as priority_score
-            ")
+            ", [$cutoff7Days, $cutoff30Days])
             ->orderByDesc('priority_score')
             ->orderByDesc('created_at')
             ->paginate($perPage);
@@ -386,6 +391,19 @@ class PostController extends Controller
             'content' => 'required|string|max:1000',
             'parent_id' => 'nullable|exists:post_comments,id',
         ]);
+
+        if (!empty($validated['parent_id'])) {
+            $parentCommentBelongsToPost = PostComment::where('id', $validated['parent_id'])
+                ->where('post_id', $post->id)
+                ->exists();
+
+            if (!$parentCommentBelongsToPost) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Invalid parent comment for this post',
+                ], 422);
+            }
+        }
 
         $comment = PostComment::create([
             'user_id' => $user->id,

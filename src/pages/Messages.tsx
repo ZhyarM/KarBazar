@@ -16,6 +16,7 @@ import {
 import { getAvatarUrl } from "../utils/imageUrl";
 import { useLanguage } from "../context/LanguageContext.tsx";
 import { uploadMessageAttachment } from "../API/UploadAPI";
+import { useUserData } from "../context/UserDataContext.tsx";
 
 interface SellerInfo {
   id: number;
@@ -26,6 +27,7 @@ interface SellerInfo {
 
 function Messages() {
   const { t, language, direction } = useLanguage();
+  const { refreshUnreadCount } = useUserData();
   const { userId: urlUserId } = useParams<{ userId?: string }>();
   const location = useLocation();
   const sellerFromState = (location.state as any)?.seller as
@@ -148,13 +150,34 @@ function Messages() {
   // Load messages when user is selected
   useEffect(() => {
     if (selectedUserId && selectedUserId > 0 && !isNewConversation) {
+      let isActive = true;
+
       const loadMessages = async () => {
         try {
           const data = await getMessages(selectedUserId);
+          const conversationsData = await getConversations();
+
+          if (!isActive) {
+            return;
+          }
+
           setMessages(data);
+          setConversations(conversationsData);
+
+          const updatedUser = conversationsData.find(
+            (conv) => conv.user.id === selectedUserId,
+          );
+
+          if (updatedUser) {
+            setSelectedUserInfo(updatedUser);
+          }
+
+          await refreshUnreadCount();
         } catch (error) {
           console.log("Starting new conversation...");
-          setMessages([]);
+          if (isActive) {
+            setMessages([]);
+          }
         }
       };
 
@@ -162,9 +185,12 @@ function Messages() {
 
       // Set up polling for new messages
       const interval = setInterval(loadMessages, 5000);
-      return () => clearInterval(interval);
+      return () => {
+        isActive = false;
+        clearInterval(interval);
+      };
     }
-  }, [selectedUserId, isNewConversation]);
+  }, [selectedUserId, isNewConversation, refreshUnreadCount]);
 
   const handleSelectConversation = (conversation: Conversation) => {
     setSelectedUserId(conversation.user.id);
@@ -200,6 +226,7 @@ function Messages() {
 
       setMessages(messagesData);
       setConversations(conversationsData);
+      await refreshUnreadCount();
 
       // Update selected user info
       const updatedUser = conversationsData.find(
@@ -246,17 +273,20 @@ function Messages() {
 
   if (loading) {
     return (
-      <div className="flex items-center justify-center h-screen bg-(--color-bg)">
+      <div className="flex items-center justify-center h-[calc(100dvh-4.75rem)] overflow-hidden bg-(--color-bg)">
         <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-(--color-primary)"></div>
       </div>
     );
   }
 
   return (
-    <div className="flex h-screen bg-(--color-bg)" dir={direction}>
+    <div
+      className="flex h-[calc(100dvh-4.75rem)] overflow-hidden bg-(--color-bg)"
+      dir={direction}
+    >
       {/* Sidebar - Conversations List */}
       <div
-        className={`${selectedUserId ? "hidden md:flex" : "flex"} w-full md:w-80 flex-col border-r border-(--color-border) bg-(--color-surface)`}
+        className={`${selectedUserId ? "hidden md:flex" : "flex"} h-full min-h-0 w-full md:w-80 flex-col border-r border-(--color-border) bg-(--color-surface)`}
       >
         {/* Header */}
         <div className="p-4 border-b border-(--color-border)">
@@ -281,7 +311,7 @@ function Messages() {
         </div>
 
         {/* Conversations List */}
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 min-h-0 overflow-y-auto">
           {filteredConversations.length === 0 ? (
             <div className="p-8 text-center text-(--color-text-muted)">
               <p className="text-sm">
@@ -340,10 +370,10 @@ function Messages() {
 
       {/* Chat Area */}
       <div
-        className={`${!selectedUserId ? "hidden md:flex" : "flex"} flex-1 flex-col`}
+        className={`${!selectedUserId ? "hidden md:flex" : "flex"} h-full min-h-0 flex-1 flex-col`}
       >
         {!selectedUserId ? (
-          <div className="flex-1 flex items-center justify-center bg-(--color-bg)">
+          <div className="flex-1 min-h-0 flex items-center justify-center bg-(--color-bg)">
             <div className="text-center text-(--color-text-muted)">
               <p className="text-lg">{t("messages.selectConversation")}</p>
             </div>
@@ -351,7 +381,7 @@ function Messages() {
         ) : (
           <>
             {/* Chat Header */}
-            <div className="p-4 border-b border-(--color-border) bg-(--color-surface) flex items-center gap-3">
+            <div className="shrink-0 p-4 border-b border-(--color-border) bg-(--color-surface) flex items-center gap-3">
               <button
                 onClick={() => {
                   setSelectedUserId(null);
@@ -405,7 +435,7 @@ function Messages() {
             </div>
 
             {/* Messages Container */}
-            <div className="flex-1 overflow-y-auto p-4 bg-(--color-bg) space-y-4 flex flex-col justify-end">
+            <div className="flex-1 min-h-0 overflow-y-auto p-4 bg-(--color-bg) space-y-4 flex flex-col justify-end">
               {isNewConversation ? (
                 <div className="text-center space-y-6 flex flex-col items-center justify-center pb-8">
                   <div className="bg-(--color-surface) border border-(--color-border) rounded-full p-8">
@@ -528,7 +558,7 @@ function Messages() {
             {/* Message Input */}
             <form
               onSubmit={handleSendMessage}
-              className="p-4 border-t border-(--color-border) bg-(--color-surface)"
+              className="shrink-0 p-4 border-t border-(--color-border) bg-(--color-surface)"
             >
               {selectedFiles.length > 0 && (
                 <div className="mb-3 flex flex-wrap gap-2">
@@ -552,7 +582,7 @@ function Messages() {
                             <FontAwesomeIcon icon={faFileLines} />
                           </div>
                         )}
-                        <div className="min-w-0 max-w-[220px]">
+                        <div className="min-w-0 max-w-55">
                           <p className="text-xs text-(--color-text) truncate">
                             {file.name}
                           </p>

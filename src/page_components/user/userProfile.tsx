@@ -23,6 +23,7 @@ import UserCertification from "./userCertification";
 import UserProfileStrength from "./userProfileStrength";
 import UserSocialLinks from "./userSocialLinks";
 import UserPosts from "./UserPosts";
+import UserPrivacySettings from "./UserPrivacySettings";
 import ChangePasswordModal from "./ChangePasswordModal";
 import DeleteAccountModal from "./DeleteAccountModal";
 import {
@@ -50,8 +51,12 @@ function UserProfile() {
   const [isPublicProfile, setIsPublicProfile] = useState<boolean>(true);
   const [saving, setSaving] = useState(false);
   const [isOwner, setIsOwner] = useState(false);
+  const [profileImageVersion, setProfileImageVersion] = useState(0);
   const [showChangePassword, setShowChangePassword] = useState(false);
   const [showDeleteAccount, setShowDeleteAccount] = useState(false);
+  const [showPrivacySettings, setShowPrivacySettings] = useState(false);
+  const [responseTimeInput, setResponseTimeInput] = useState("24");
+  const [savingResponseTime, setSavingResponseTime] = useState(false);
   const [toast, setToast] = useState<{
     message: string;
     type: "success" | "error";
@@ -78,6 +83,12 @@ function UserProfile() {
       return () => clearTimeout(timer);
     }
   }, [toast]);
+
+  useEffect(() => {
+    if (profile) {
+      setResponseTimeInput(String(profile.response_time || 0));
+    }
+  }, [profile]);
 
   const fetchProfile = async () => {
     try {
@@ -111,11 +122,11 @@ function UserProfile() {
       setSaving(true);
       const updatedProfile = await updateProfile(data);
       setProfile(updatedProfile);
-      setToast({ message: "Profile updated successfully", type: "success" });
+      setToast({ message: t("profilePage.toast.updated"), type: "success" });
       return true;
     } catch (err) {
       console.error("Error updating profile:", err);
-      setToast({ message: "Failed to update profile", type: "error" });
+      setToast({ message: t("profilePage.toast.updateFailed"), type: "error" });
       return false;
     } finally {
       setSaving(false);
@@ -124,23 +135,49 @@ function UserProfile() {
 
   const handleAvatarUpload = async (file: File) => {
     try {
-      await uploadProfilePicture(file);
-      await fetchProfile(); // Refresh to get new avatar URL
-      setToast({ message: "Profile picture updated", type: "success" });
+      const avatarUrl = await uploadProfilePicture(file);
+      const version = Date.now();
+      setProfileImageVersion(version);
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              avatar_url: avatarUrl,
+            }
+          : prev,
+      );
+      await fetchProfile();
+      setToast({
+        message: t("profilePage.toast.avatarUpdated"),
+        type: "success",
+      });
     } catch (err) {
       console.error("Error uploading avatar:", err);
-      setToast({ message: "Failed to upload profile picture", type: "error" });
+      setToast({ message: t("profilePage.toast.avatarFailed"), type: "error" });
     }
   };
 
   const handleCoverUpload = async (file: File) => {
     try {
-      await uploadCoverPhoto(file);
-      await fetchProfile(); // Refresh to get new cover URL
-      setToast({ message: "Cover photo updated", type: "success" });
+      const coverUrl = await uploadCoverPhoto(file);
+      const version = Date.now();
+      setProfileImageVersion(version);
+      setProfile((prev) =>
+        prev
+          ? {
+              ...prev,
+              cover_url: coverUrl,
+            }
+          : prev,
+      );
+      await fetchProfile();
+      setToast({
+        message: t("profilePage.toast.coverUpdated"),
+        type: "success",
+      });
     } catch (err) {
       console.error("Error uploading cover:", err);
-      setToast({ message: "Failed to upload cover photo", type: "error" });
+      setToast({ message: t("profilePage.toast.coverFailed"), type: "error" });
     }
   };
 
@@ -162,11 +199,14 @@ function UserProfile() {
         await updateProfile(profileData);
       }
       await fetchProfile(); // Refresh all data
-      setToast({ message: "Profile info updated", type: "success" });
+      setToast({
+        message: t("profilePage.toast.infoUpdated"),
+        type: "success",
+      });
       return true;
     } catch (err) {
       console.error("Error updating basic info:", err);
-      setToast({ message: "Failed to update profile info", type: "error" });
+      setToast({ message: t("profilePage.toast.infoFailed"), type: "error" });
       return false;
     }
   };
@@ -185,9 +225,52 @@ function UserProfile() {
     await handleUpdateProfile({ is_public: newState });
   };
 
+  const handlePreviewPublicProfile = () => {
+    if (!profile?.username) return;
+    navigate(`/profile/${profile.username}`);
+  };
+
   const handleSendMessage = () => {
     if (profile?.user?.id) {
       navigate(`/messages/${profile.user.id}`);
+    }
+  };
+
+  const handleProgressSuggestionClick = (
+    section: "basicInfo" | "bio" | "skills" | "portfolio" | "work",
+  ) => {
+    const sectionIdMap: Record<typeof section, string> = {
+      basicInfo: "profile-section-basic-info",
+      portfolio: "profile-section-portfolio",
+      bio: "profile-section-bio",
+      skills: "profile-section-skills",
+      work: "profile-section-work-experience",
+    };
+
+    const targetElement = document.getElementById(sectionIdMap[section]);
+    if (targetElement) {
+      targetElement.scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+  };
+
+  const handleSaveResponseTime = async () => {
+    const parsed = Number(responseTimeInput);
+    if (!Number.isFinite(parsed) || parsed <= 0) {
+      setToast({
+        message: t("profilePage.toast.responsePositive"),
+        type: "error",
+      });
+      return;
+    }
+
+    const clamped = Math.min(168, Math.round(parsed));
+
+    try {
+      setSavingResponseTime(true);
+      await handleUpdateProfile({ response_time: clamped });
+      setResponseTimeInput(String(clamped));
+    } finally {
+      setSavingResponseTime(false);
     }
   };
 
@@ -217,7 +300,7 @@ function UserProfile() {
 
     const items = {
       basicInfo: !!(profile.user?.name && profile.username && profile.title),
-      professionalBio: !!(profile.bio && profile.bio.length > 50),
+      professionalBio: !!profile.bio?.trim(),
       skills: !!(profile.skills && profile.skills.length > 0),
       portfolio: !!(profile.portfolio && profile.portfolio.length > 0),
       workExperience: !!(
@@ -283,6 +366,41 @@ function UserProfile() {
   }
 
   const { percentage, items } = calculateProfileStrength();
+  const completionSuggestions: Array<{
+    section: "basicInfo" | "bio" | "skills" | "portfolio" | "work";
+    text: string;
+  }> = [];
+
+  if (!items.basicInfo) {
+    completionSuggestions.push({
+      section: "basicInfo",
+      text: t("profilePage.progress.addBasicInfo"),
+    });
+  }
+  if (!items.professionalBio) {
+    completionSuggestions.push({
+      section: "bio",
+      text: t("profilePage.progress.addCompleteBio"),
+    });
+  }
+  if (!items.skills) {
+    completionSuggestions.push({
+      section: "skills",
+      text: t("profilePage.progress.addSkills"),
+    });
+  }
+  if (!items.portfolio) {
+    completionSuggestions.push({
+      section: "portfolio",
+      text: t("profilePage.progress.addPortfolio"),
+    });
+  }
+  if (!items.workExperience) {
+    completionSuggestions.push({
+      section: "work",
+      text: t("profilePage.progress.addWorkExperience"),
+    });
+  }
 
   return (
     <div className="flex justify-center bg-(--color-bg) min-h-screen">
@@ -314,6 +432,12 @@ function UserProfile() {
         isOpen={showDeleteAccount}
         onClose={() => setShowDeleteAccount(false)}
       />
+      <UserPrivacySettings
+        isOpen={showPrivacySettings}
+        isPublic={isPublicProfile}
+        onTogglePublicProfile={enablePublicProfile}
+        onClose={() => setShowPrivacySettings(false)}
+      />
 
       <div className="flex flex-col gap-3 w-full max-w-7xl px-4 py-6">
         {/* Back Button */}
@@ -324,10 +448,14 @@ function UserProfile() {
           &larr; {t("profilePage.back")}
         </button>
 
-        {/* Progress Bar - Only show for owner */}
-        {isOwner && (
+        {/* Progress Bar - Only show for owner when not fully complete */}
+        {isOwner && percentage < 100 && (
           <div className="w-full">
-            <ProfileProgress initialProgress={percentage} />
+            <ProfileProgress
+              initialProgress={percentage}
+              suggestions={completionSuggestions}
+              onSuggestionClick={handleProgressSuggestionClick}
+            />
           </div>
         )}
 
@@ -335,25 +463,28 @@ function UserProfile() {
         <div className="flex flex-col lg:flex-row gap-6 w-full">
           {/* Left Column: Details & Work */}
           <div className="w-full lg:w-2/3 flex flex-col gap-4">
-            <ProfileDetails
-              available={profile.is_available ?? true}
-              topRated={profile.rating >= 4.5}
-              cover_url={profile.cover_url || ""}
-              avatar_url={profile.avatar_url || profile.user?.image || ""}
-              name={profile.user?.name || "User"}
-              username={profile.username}
-              title={profile.title || ""}
-              saves={profile.profile_views}
-              typeOfBussiness={profile.title || t("profilePage.business")}
-              views={profile.profile_views}
-              isOwner={isOwner}
-              onAvatarUpload={isOwner ? handleAvatarUpload : undefined}
-              onCoverUpload={isOwner ? handleCoverUpload : undefined}
-              onUpdateBasicInfo={isOwner ? handleUpdateBasicInfo : undefined}
-              onToggleAvailability={
-                isOwner ? handleToggleAvailability : undefined
-              }
-            />
+            <div id="profile-section-basic-info" className="scroll-mt-24">
+              <ProfileDetails
+                available={profile.is_available ?? true}
+                topRated={profile.rating >= 4.5}
+                cover_url={profile.cover_url || ""}
+                avatar_url={profile.avatar_url || profile.user?.image || ""}
+                imageVersion={profileImageVersion}
+                name={profile.user?.name || t("profile.user")}
+                username={profile.username}
+                title={profile.title || ""}
+                saves={profile.total_post_likes ?? 0}
+                typeOfBussiness={profile.title || t("profilePage.business")}
+                views={profile.profile_views}
+                isOwner={isOwner}
+                onAvatarUpload={isOwner ? handleAvatarUpload : undefined}
+                onCoverUpload={isOwner ? handleCoverUpload : undefined}
+                onUpdateBasicInfo={isOwner ? handleUpdateBasicInfo : undefined}
+                onToggleAvailability={
+                  isOwner ? handleToggleAvailability : undefined
+                }
+              />
+            </div>
             {/* Stats Grid */}
             <div className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
               <Statscard
@@ -381,17 +512,56 @@ function UserProfile() {
                 value={profile.total_jobs.toString()}
                 projects={profile.total_jobs}
               />
-              <Statscard
-                icon={<FontAwesomeIcon icon={faClock} />}
-                IconColor="text-purple-500"
-                bg_color="bg-purple-100"
-                label={t("profilePage.stats.response")}
-                value={`${profile.response_time}h`}
-                avgTime={profile.response_time}
-              />
+              {isOwner ? (
+                <div className="bg-(--color-card) shadow-lg rounded-3xl w-full min-h-45 flex flex-col justify-between p-5 border border-(--color-border)">
+                  <div className="flex justify-between items-start">
+                    <div className="h-12 w-12 rounded-2xl flex items-center justify-center text-xl bg-purple-100 text-purple-500">
+                      <FontAwesomeIcon icon={faClock} />
+                    </div>
+                  </div>
+                  <div className="flex flex-col gap-2 mt-4">
+                    <h1 className="font-extrabold text-(--color-text) text-3xl tracking-tight">
+                      {`${profile.response_time ?? 0}h`}
+                    </h1>
+                    <label className="text-(--color-text-muted) font-medium text-sm uppercase tracking-wider">
+                      {t("profilePage.stats.response")} (
+                      {t("profilePage.hours")})
+                    </label>
+                    <div className="flex gap-2">
+                      <input
+                        type="number"
+                        min={1}
+                        max={168}
+                        value={responseTimeInput}
+                        onChange={(e) => setResponseTimeInput(e.target.value)}
+                        className="w-full bg-(--color-surface) text-(--color-text) border border-(--color-border) rounded-lg px-3 py-2 focus:outline-none focus:border-(--color-primary)"
+                      />
+                      <button
+                        type="button"
+                        onClick={handleSaveResponseTime}
+                        disabled={savingResponseTime}
+                        className="px-3 py-2 bg-(--color-primary) text-(--color-text-inverse) rounded-lg font-semibold hover:opacity-90 disabled:opacity-60"
+                      >
+                        {savingResponseTime
+                          ? t("profilePage.saving")
+                          : t("profilePage.save")}
+                      </button>
+                    </div>
+                  </div>
+                </div>
+              ) : (
+                <Statscard
+                  icon={<FontAwesomeIcon icon={faClock} />}
+                  IconColor="text-purple-500"
+                  bg_color="bg-purple-100"
+                  label={t("profilePage.stats.response")}
+                  value={`${profile.response_time}h`}
+                  avgTime={profile.response_time}
+                />
+              )}
             </div>
             {/* Bio Section */}
-            <div className="w-full">
+            <div id="profile-section-bio" className="w-full scroll-mt-24">
               {isOwner ? (
                 <UserBio
                   bio={profile.bio || ""}
@@ -412,7 +582,7 @@ function UserProfile() {
               )}
             </div>
             {/* Portfolio Section */}
-            <div className="w-full">
+            <div id="profile-section-portfolio" className="w-full scroll-mt-24">
               {isOwner ? (
                 <UserWork
                   portfolio={profile.portfolio}
@@ -471,7 +641,10 @@ function UserProfile() {
               )}
             </div>
             {/* Work Experience Section */}
-            <div className="w-full">
+            <div
+              id="profile-section-work-experience"
+              className="w-full scroll-mt-24"
+            >
               {isOwner ? (
                 <UserWorkExperience
                   experience={profile.work_experience}
@@ -583,9 +756,9 @@ function UserProfile() {
             {isOwner ? (
               <>
                 <UserQuickActions
-                  EnablePublicProfile={enablePublicProfile}
                   ProfileLink={`/profile/${profile.username}`}
-                  publicProfile={isPublicProfile ? "active" : ""}
+                  onPreviewPublicProfile={handlePreviewPublicProfile}
+                  onPrivacySettings={() => setShowPrivacySettings(true)}
                   onChangePassword={() => setShowChangePassword(true)}
                   onDeleteAccount={() => setShowDeleteAccount(true)}
                 />
@@ -665,17 +838,19 @@ function UserProfile() {
               readOnly={!isOwner}
             />
 
-            <UserTopSkills
-              skills={profile.skills}
-              onSave={
-                isOwner
-                  ? async (skills) => {
-                      await handleUpdateProfile({ skills });
-                    }
-                  : undefined
-              }
-              readOnly={!isOwner}
-            />
+            <div id="profile-section-skills" className="scroll-mt-24">
+              <UserTopSkills
+                skills={profile.skills}
+                onSave={
+                  isOwner
+                    ? async (skills) => {
+                        await handleUpdateProfile({ skills });
+                      }
+                    : undefined
+                }
+                readOnly={!isOwner}
+              />
+            </div>
             <UserLanguages
               languages={profile.languages}
               onSave={
@@ -687,17 +862,19 @@ function UserProfile() {
               }
               readOnly={!isOwner}
             />
-            <UserCertification
-              certifications={profile.certifications}
-              onSave={
-                isOwner
-                  ? async (certifications) => {
-                      await handleUpdateProfile({ certifications });
-                    }
-                  : undefined
-              }
-              readOnly={!isOwner}
-            />
+            <div id="profile-section-certification" className="scroll-mt-24">
+              <UserCertification
+                certifications={profile.certifications}
+                onSave={
+                  isOwner
+                    ? async (certifications) => {
+                        await handleUpdateProfile({ certifications });
+                      }
+                    : undefined
+                }
+                readOnly={!isOwner}
+              />
+            </div>
             {isOwner && (
               <UserProfileStrength
                 basicInfo={items.basicInfo}

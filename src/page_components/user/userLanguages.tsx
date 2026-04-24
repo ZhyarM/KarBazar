@@ -1,6 +1,7 @@
 import { faLanguage, faPlus, faXmark } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { useState } from "react";
+import { useLanguage } from "../../context/LanguageContext";
 
 interface UserLanguagesProps {
   languages: string[];
@@ -13,6 +14,7 @@ function UserLanguages({
   onSave,
   readOnly = false,
 }: UserLanguagesProps) {
+  const { t } = useLanguage();
   const [myLanguages, setMyLanguages] = useState<string[]>(languages);
   const [newLanguage, setNewLanguage] = useState("");
   const [isAdding, setIsAdding] = useState(false);
@@ -53,10 +55,10 @@ function UserLanguages({
             icon={faLanguage}
             className="text-indigo-700 text-xl"
           />
-          <h3 className="text-xl font-extrabold">Languages</h3>
+          <h3 className="text-xl font-extrabold">{t("profile.languages.title")}</h3>
           {saving && (
             <span className="text-sm text-(--color-text-muted) font-normal">
-              (Saving...)
+              ({t("profile.languages.saving")})
             </span>
           )}
         </div>
@@ -67,7 +69,7 @@ function UserLanguages({
             className="flex items-center gap-1 hover:text-indigo-600 transition-colors"
           >
             <FontAwesomeIcon icon={faPlus} className="text-sm" />
-            <p>Add</p>
+            <p>{t("profile.languages.add")}</p>
           </button>
         )}
       </div>
@@ -80,14 +82,14 @@ function UserLanguages({
             value={newLanguage}
             onChange={(e) => setNewLanguage(e.target.value)}
             onKeyPress={(e) => e.key === "Enter" && handleAddLanguage()}
-            placeholder="Enter language..."
+            placeholder={t("profile.languages.enterLanguage")}
             className="flex-1 px-3 py-2 border border-(--color-border) rounded-lg bg-(--color-surface) text-(--color-text) text-sm focus:outline-none focus:border-(--color-primary)"
           />
           <button
             onClick={handleAddLanguage}
             className="px-4 py-2 bg-(--color-primary) text-white rounded-lg hover:opacity-90"
           >
-            Add
+            {t("profile.languages.add")}
           </button>
         </div>
       )}
@@ -113,7 +115,7 @@ function UserLanguages({
           ))
         ) : (
           <p className="text-sm text-(--color-text-muted) font-normal italic">
-            No languages added yet.
+            {t("profile.languages.noLanguages")}
           </p>
         )}
       </div>

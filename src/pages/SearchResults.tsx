@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import { fetchCategories } from "../API/CategoriesAPI";
 import { fetchGigs, type Gig } from "../API/gigs/getGigs";
 import { getAccounts, type Profile } from "../API/ProfileAPI";
@@ -17,6 +17,7 @@ type CategoryResult = {
 
 function SearchResults() {
   const { t, direction } = useLanguage();
+  const navigate = useNavigate();
   const [searchParams] = useSearchParams();
   const query = (searchParams.get("q") ?? "").trim();
   const requestRef = useRef(0);
@@ -125,6 +126,31 @@ function SearchResults() {
     [categories.length, accounts.length, posts.length, gigs.length],
   );
 
+  const renderAvatarFallback = (label: string) => (
+    <div className="flex h-11 w-11 items-center justify-center rounded-full bg-(--color-bg) text-sm font-semibold text-(--color-text-muted)">
+      {label.charAt(0).toUpperCase() || "?"}
+    </div>
+  );
+
+  const renderGigImageFallback = () => (
+    <div className="flex h-20 w-20 items-center justify-center rounded-lg bg-(--color-bg) text-xs text-(--color-text-muted)">
+      {t("searchResults.gigs")}
+    </div>
+  );
+
+  const openRoute = (to: string) => {
+    // Clear search results before navigating
+    setAccounts([]);
+    setPosts([]);
+    setGigs([]);
+    setDebouncedQuery("");
+    setLoading(false);
+    setError(null);
+    
+    navigate(to);
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  };
+
   return (
     <section className="bg-(--color-bg) min-h-screen px-4 py-6 md:px-8" dir={direction}>
       <div className="max-w-6xl mx-auto flex flex-col gap-6">
@@ -172,10 +198,24 @@ function SearchResults() {
             </h2>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
               {categories.map((category) => (
-                <Link
+                <article
                   key={category.id}
-                  to={`/browse-gigs?category_id=${category.id}&category=${encodeURIComponent(category.name)}`}
-                  className="rounded-xl border border-(--color-border) p-4 hover:border-(--color-primary) transition-colors"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    openRoute(
+                      `/browse-gigs?category_id=${category.id}&category=${encodeURIComponent(category.name)}`,
+                    )
+                  }
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openRoute(
+                        `/browse-gigs?category_id=${category.id}&category=${encodeURIComponent(category.name)}`,
+                      );
+                    }
+                  }}
+                  className="rounded-xl border border-(--color-border) p-4 hover:border-(--color-primary) transition-colors cursor-pointer"
                 >
                   <p className="text-base font-semibold text-(--color-text)">
                     {category.name}
@@ -186,7 +226,7 @@ function SearchResults() {
                   <p className="text-xs text-(--color-primary) mt-2 font-medium">
                     {category.gig_count} {t("searchResults.gigs")}
                   </p>
-                </Link>
+                </article>
               ))}
             </div>
           </article>
@@ -199,22 +239,38 @@ function SearchResults() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {accounts.map((account) => (
-                <Link
+                <article
                   key={account.id}
-                  to={
-                    account.username
-                      ? `/profile/${account.username}`
-                      : `/user/${account.user_id}`
+                  role="button"
+                  tabIndex={0}
+                  onClick={() =>
+                    openRoute(
+                      account.username
+                        ? `/profile/${account.username}`
+                        : `/user/${account.user_id}`,
+                    )
                   }
-                  className="rounded-xl border border-(--color-border) p-4 hover:border-(--color-primary) transition-colors flex items-center gap-3"
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openRoute(
+                        account.username
+                          ? `/profile/${account.username}`
+                          : `/user/${account.user_id}`,
+                      );
+                    }
+                  }}
+                  className="rounded-xl border border-(--color-border) p-4 hover:border-(--color-primary) transition-colors flex items-center gap-3 cursor-pointer"
                 >
-                  <img
-                    src={getAvatarUrl(
-                      account.avatar_url || account.user?.image,
-                    )}
-                    alt={account.user?.name || account.username}
-                    className="w-11 h-11 rounded-full object-cover bg-(--color-bg)"
-                  />
+                  {getAvatarUrl(account.avatar_url || account.user?.image) ? (
+                    <img
+                      src={getAvatarUrl(account.avatar_url || account.user?.image)}
+                      alt={account.user?.name || account.username}
+                      className="w-11 h-11 rounded-full object-cover bg-(--color-bg)"
+                    />
+                  ) : (
+                    renderAvatarFallback(account.user?.name || account.username || "?")
+                  )}
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-(--color-text) truncate">
                       {account.user?.name || account.username}
@@ -228,7 +284,7 @@ function SearchResults() {
                       </p>
                     )}
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
           </article>
@@ -241,10 +297,18 @@ function SearchResults() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {posts.map((post) => (
-                <Link
+                <article
                   key={post.id}
-                  to={`/posts/${post.id}`}
-                  className="rounded-xl border border-(--color-border) p-4 hover:border-(--color-primary) transition-colors"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openRoute(`/posts/${post.id}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openRoute(`/posts/${post.id}`);
+                    }
+                  }}
+                  className="rounded-xl border border-(--color-border) p-4 hover:border-(--color-primary) transition-colors cursor-pointer"
                 >
                   <p className="text-sm font-semibold text-(--color-text) line-clamp-2">
                     {post.title}
@@ -255,7 +319,7 @@ function SearchResults() {
                   <p className="text-xs text-(--color-text-muted) mt-2">
                     {post.user?.name || t("searchResults.unknownAuthor")}
                   </p>
-                </Link>
+                </article>
               ))}
             </div>
           </article>
@@ -268,16 +332,28 @@ function SearchResults() {
             </h2>
             <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
               {gigs.map((gig) => (
-                <Link
+                <article
                   key={gig.id}
-                  to={`/gig/${gig.id}`}
-                  className="rounded-xl border border-(--color-border) p-3 hover:border-(--color-primary) transition-colors flex gap-3"
+                  role="button"
+                  tabIndex={0}
+                  onClick={() => openRoute(`/gig/${gig.id}`)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter" || event.key === " ") {
+                      event.preventDefault();
+                      openRoute(`/gig/${gig.id}`);
+                    }
+                  }}
+                  className="rounded-xl border border-(--color-border) p-3 hover:border-(--color-primary) transition-colors flex gap-3 cursor-pointer"
                 >
-                  <img
-                    src={getImageUrl(gig.image_url)}
-                    alt={gig.title}
-                    className="w-20 h-20 rounded-lg object-cover bg-(--color-bg)"
-                  />
+                  {getImageUrl(gig.image_url) ? (
+                    <img
+                      src={getImageUrl(gig.image_url)}
+                      alt={gig.title}
+                      className="w-20 h-20 rounded-lg object-cover bg-(--color-bg)"
+                    />
+                  ) : (
+                    renderGigImageFallback()
+                  )}
                   <div className="min-w-0">
                     <p className="text-sm font-semibold text-(--color-text) line-clamp-2">
                       {gig.title}
@@ -292,7 +368,7 @@ function SearchResults() {
                       ${gig.price}
                     </p>
                   </div>
-                </Link>
+                </article>
               ))}
             </div>
           </article>

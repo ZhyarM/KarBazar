@@ -215,7 +215,14 @@ class PostSeeder extends Seeder
 
         // All clients follow some freelancers
         foreach ($clients as $client) {
-            $toFollow = $freelancers->random(min($freelancers->count(), rand(2, $freelancers->count())));
+            $freelancerCount = $freelancers->count();
+            if ($freelancerCount === 0) {
+                continue;
+            }
+
+            $minFollow = min(2, $freelancerCount);
+            $followCount = rand($minFollow, $freelancerCount);
+            $toFollow = $freelancers->random($followCount);
             foreach ($toFollow as $freelancer) {
                 $created = Follow::firstOrCreate([
                     'follower_id' => $client->id,
@@ -228,7 +235,13 @@ class PostSeeder extends Seeder
         // Freelancers follow each other
         foreach ($freelancers as $freelancer) {
             $others = $freelancers->where('id', '!=', $freelancer->id);
-            $toFollow = $others->random(min($others->count(), rand(1, 3)));
+            $othersCount = $others->count();
+            if ($othersCount === 0) {
+                continue;
+            }
+
+            $followCount = rand(1, min(3, $othersCount));
+            $toFollow = $others->random($followCount);
             foreach ($toFollow as $other) {
                 $created = Follow::firstOrCreate([
                     'follower_id' => $freelancer->id,

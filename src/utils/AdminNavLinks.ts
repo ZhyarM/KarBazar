@@ -1,6 +1,6 @@
-type NavLinkItem = { label: string; to: string };
+type AdminNavLinkItem = { label: string; to: string };
 
-const adminNavLinks: NavLinkItem[] = [
+const adminNavLinks: AdminNavLinkItem[] = [
   { label: "Overview", to: "/admin" },
   { label: "Revenue Analytics", to: "/admin/revenue" },
   { label: "Order Analytics", to: "/admin/orders" },

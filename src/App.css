@@ -2,6 +2,24 @@
 @import url(assets/svg-light.svg);
 @import url(assets/svg-dark.svg);
 
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-height: 100%;
+  margin: 0;
+  padding: 0;
+}
+
+body {
+  background-color: var(--color-bg);
+  overflow-x: hidden;
+}
+
 html.dir-transition,
 html.dir-transition body,
 html.dir-transition body * {

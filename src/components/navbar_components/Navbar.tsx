@@ -1,4 +1,4 @@
-import { NavLink, Link, useNavigate } from "react-router-dom";
+import { NavLink, Link, useNavigate, useLocation } from "react-router-dom";
 import { useTheme } from "../../context/ThemeContext.tsx";
 import Button from "../btns/Button.tsx";
 import SearchBar from "./SearchBar.tsx";
@@ -12,68 +12,40 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import NavLinks from "../../utils/NavLinks.tsx";
 import { useCollapse } from "../../context/SideBarContextCollapse.tsx";
-import { useEffect, useState } from "react";
 import ProfileDropdown from "./profileIcon.tsx";
 import moon from "../../assets/moon.png";
 import theme from "../../assets/theme.png";
-import me, { type AuthResponse } from "../../API/me.tsx";
-import { getUnreadCount } from "../../API/NotificationsAPI.ts";
-import { isAuthenticated } from "../../API/apiClient.ts";
 import { isSellerRole } from "../../utils/roles";
 import { useLanguage } from "../../context/LanguageContext.tsx";
-
-const getUser = async () => {
-  const user = await me();
-
-  if (user) {
-    return user;
-  } else {
-    return null;
-  }
-};
+import { useUserData } from "../../context/UserDataContext.tsx";
+import { useSearch } from "../../context/SearchContext.tsx";
+import { useEffect, useRef } from "react";
 
 function Navbar() {
   const { toggleTheme, isBgLight } = useTheme();
   const { toggleCollapse } = useCollapse();
   const { language, toggleLanguage, direction, t } = useLanguage();
+  const { user, unreadCount } = useUserData();
+  const { clearSearch } = useSearch();
   const navigate = useNavigate();
-  const [user, setUser] = useState<AuthResponse | null>(null);
-  const [unreadCount, setUnreadCount] = useState(0);
+  const location = useLocation();
+  const previousPathRef = useRef(location.pathname);
   const isRTL = direction === "rtl";
-
-  useEffect(() => {
-    const fetchUser = async () => {
-      if (!isAuthenticated()) {
-        setUser(null);
-        return;
-      }
-
-      const user = await getUser();
-      setUser(user);
-
-      if (user) {
-        try {
-          const count = await getUnreadCount();
-          setUnreadCount(count);
-        } catch (error) {
-          console.error("Failed to get unread count:", error);
-        }
-      }
-    };
-
-    fetchUser();
-
-    // Poll for notifications every 30 seconds if logged in
-    const interval = setInterval(() => {
-      if (isAuthenticated()) {
-        getUnreadCount().then(setUnreadCount).catch(console.error);
-      }
-    }, 30000);
-
-    return () => clearInterval(interval);
-  }, []);
+  const isLoggedIn = Boolean(user?.data);
 
   const isSeller = isSellerRole(user?.data?.role);
+
+  // Clear search only when leaving /search to another page
+  useEffect(() => {
+    const previousPath = previousPathRef.current;
+    const currentPath = location.pathname;
+
+    if (previousPath === "/search" && currentPath !== "/search") {
+      clearSearch();
+    }
+
+    previousPathRef.current = currentPath;
+  }, [location.pathname, clearSearch]);
 
   return (
     <>
@@ -167,7 +139,7 @@ function Navbar() {
             )}
           </button>
 
-          {!isAuthenticated() ? (
+          {!isLoggedIn ? (
             <>
               <Link to="/sign-in">
                 <Button
@@ -188,18 +160,30 @@ function Navbar() {
           ) : (
             <>
               {/* Messages */}
-              <Link
+              <NavLink
                 to="/messages"
-                className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
+                className={({ isActive }) =>
+                  `relative p-2 rounded-full transition-all ${
+                    isActive
+                      ? "bg-(--color-surface) text-(--color-primary)"
+                      : "text-(--color-text-muted) hover:bg-(--color-surface) hover:text-(--color-primary)"
+                  }`
+                }
                 title={t("nav.messages")}
               >
                 <FontAwesomeIcon icon={faEnvelope} className="text-lg" />
-              </Link>
+              </NavLink>
 
               {/* Notifications */}
-              <Link
+              <NavLink
                 to="/notifications"
-                className="relative p-2 hover:bg-(--color-surface) rounded-full transition-all text-(--color-text-muted) hover:text-(--color-primary)"
+                className={({ isActive }) =>
+                  `relative p-2 rounded-full transition-all ${
+                    isActive
+                      ? "bg-(--color-surface) text-(--color-primary)"
+                      : "text-(--color-text-muted) hover:bg-(--color-surface) hover:text-(--color-primary)"
+                  }`
+                }
                 title={t("nav.notifications")}
               >
                 <FontAwesomeIcon icon={faBell} className="text-lg" />
@@ -210,7 +194,7 @@ function Navbar() {
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}
-              </Link>
+              </NavLink>
 
               {/* Profile dropdown with all other actions */}
               <ProfileDropdown user={user} isFreelancer={isSeller} />

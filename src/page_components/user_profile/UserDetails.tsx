@@ -11,8 +11,10 @@ import {
   getImageUrl,
   getGalleryImages,
 } from "../../utils/imageUrl";
+import { useLanguage } from "../../context/LanguageContext.tsx";
 
 function UserDetails() {
+  const { t } = useLanguage();
   const { id } = useParams<{ id?: string }>();
   const gigId = id;
   const navigate = useNavigate();
@@ -71,7 +73,7 @@ function UserDetails() {
           <Suspense
             fallback={
               <div className="flex justify-center text-(--color-text)">
-                Loading FAQs...
+                {t("gigDetail.loadingFaqs")}
               </div>
             }
           >
@@ -83,7 +85,7 @@ function UserDetails() {
           <div className="flex flex-col gap-4">
             <div>
               <h3 className="text-lg font-bold text-(--color-text) mb-2">
-                About this gig
+                {t("gigDetail.aboutThisGig")}
               </h3>
               <p className="text-(--color-text) text-base leading-relaxed whitespace-pre-line">
                 {gig.data.description}
@@ -92,7 +94,7 @@ function UserDetails() {
             {gig.data.requirements && (
               <div>
                 <h3 className="text-lg font-bold text-(--color-text) mb-2">
-                  Requirements
+                  {t("gigDetail.requirements")}
                 </h3>
                 <p className="text-(--color-text) text-base leading-relaxed">
                   {gig.data.requirements}
@@ -139,9 +141,11 @@ function UserDetails() {
         {/* Left Column - Main Content */}
         <section className="flex-1 flex flex-col gap-6 min-w-0">
           {/* Title */}
-          <h1 className="text-2xl md:text-3xl font-bold text-(--color-text) leading-tight">
-            {gig.data.title}
-          </h1>
+          <div className="flex flex-wrap items-center justify-start gap-x-3 gap-y-2">
+            <h1 className="text-2xl md:text-3xl font-bold text-(--color-text) leading-tight">
+              {gig.data.title}
+            </h1>
+          </div>
 
           {/* Seller Info & Stats Row */}
           <div className="flex flex-wrap items-center gap-4">
@@ -217,6 +221,7 @@ function UserDetails() {
                   src={selectedGalleryImg}
                   alt={gig.data.title}
                   className="w-full max-h-[420px] object-contain"
+                  decoding="async"
                 />
               </div>
             )}
@@ -240,11 +245,17 @@ function UserDetails() {
                           : "border-(--color-border) hover:border-(--color-primary)/50"
                       }`}
                     >
-                      <img
-                        src={getImageUrl(gig.data.image_url) || ""}
-                        alt="Main"
-                        className="w-full h-full object-cover"
-                      />
+                      {getImageUrl(gig.data.image_url) ? (
+                        <img
+                          src={getImageUrl(gig.data.image_url) || undefined}
+                          alt="Main"
+                          className="w-full h-full object-cover"
+                          loading="lazy"
+                          decoding="async"
+                        />
+                      ) : (
+                        <div className="w-full h-full bg-(--color-bg-muted)" />
+                      )}
                     </button>
                   )}
                   {getGalleryImages(gig.data.gallery).map((img, idx) => (
@@ -261,6 +272,8 @@ function UserDetails() {
                         src={img}
                         alt={`Gallery ${idx + 1}`}
                         className="w-full h-full object-cover"
+                        loading="lazy"
+                        decoding="async"
                       />
                     </button>
                   ))}
@@ -287,19 +300,26 @@ function UserDetails() {
           {/* Tabs: Description / Reviews / FAQ */}
           <div className="flex flex-col gap-4">
             <div className="flex bg-(--color-bg-muted) rounded-lg p-1 max-w-sm">
-              {["description", "reviews", "faq"].map((tab) => (
-                <button
-                  key={tab}
-                  onClick={() => setActiveTab(tab)}
-                  className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
-                    activeTab === tab
-                      ? "bg-(--color-surface) text-(--color-primary) shadow-sm"
-                      : "text-(--color-text-muted) hover:text-(--color-text)"
-                  }`}
-                >
-                  {tab.charAt(0).toUpperCase() + tab.slice(1)}
-                </button>
-              ))}
+              {["description", "reviews", "faq"].map((tab) => {
+                const tabLabels: Record<string, string> = {
+                  description: t("gigDetail.tab.description"),
+                  reviews: t("gigDetail.tab.reviews"),
+                  faq: t("gigDetail.tab.faq"),
+                };
+                return (
+                  <button
+                    key={tab}
+                    onClick={() => setActiveTab(tab)}
+                    className={`flex-1 py-2 px-4 rounded-md text-sm font-medium transition-all ${
+                      activeTab === tab
+                        ? "bg-(--color-surface) text-(--color-primary) shadow-sm"
+                        : "text-(--color-text-muted) hover:text-(--color-text)"
+                    }`}
+                  >
+                    {tabLabels[tab]}
+                  </button>
+                );
+              })}
             </div>
 
             <div className="border border-(--color-border) rounded-lg px-6 py-5 bg-(--color-surface) shadow-sm">
@@ -315,6 +335,7 @@ function UserDetails() {
               gigId={gig.data.id}
               gigTitle={gig.data.title}
               gigPackages={gig.data.packages}
+              gigDiscounts={gig.data.active_package_discounts}
               gigRating={gig.data.rating}
               gigReviewCount={gig.data.review_count}
               gigOrderCount={gig.data.order_count}

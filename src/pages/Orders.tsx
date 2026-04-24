@@ -62,7 +62,7 @@ function Orders() {
       setSelectedOrder(null);
     } catch (error) {
       console.error("Failed to deliver order:", error);
-      alert("Failed to deliver order. Please try again.");
+      alert(t("orders.deliverFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -75,7 +75,7 @@ function Orders() {
       await loadOrders();
     } catch (error) {
       console.error("Failed to accept delivery:", error);
-      alert("Failed to accept delivery. Please try again.");
+      alert(t("orders.acceptFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -93,7 +93,7 @@ function Orders() {
       setSelectedOrder(null);
     } catch (error) {
       console.error("Failed to request revision:", error);
-      alert("Failed to request revision. Please try again.");
+      alert(t("orders.revisionFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -106,7 +106,7 @@ function Orders() {
       await loadOrders();
     } catch (error) {
       console.error("Failed to start order:", error);
-      alert("Failed to start order. Please try again.");
+      alert(t("orders.startFailed"));
     } finally {
       setActionLoading(false);
     }
@@ -275,6 +275,8 @@ function Orders() {
             {filteredOrders.map((order) => {
               const isBuyer = order.buyer_id === currentUser.id;
               const otherParty = isBuyer ? order.seller : order.buyer;
+              const orderTotal =
+                order.price > 0 ? order.price : order.gig.price;
 
               return (
                 <div
@@ -303,11 +305,13 @@ function Orders() {
                         </div>
                         <div className="text-right">
                           <p className="text-2xl font-bold text-green-500">
-                            Free
+                            ${orderTotal}
                           </p>
-                          <p className="text-sm text-(--color-text-muted) capitalize">
-                            {order.package_type}
-                          </p>
+                          {order.package_type && (
+                            <p className="text-sm text-(--color-text-muted) capitalize">
+                              {order.package_type}
+                            </p>
+                          )}
                         </div>
                       </div>
 
@@ -321,7 +325,8 @@ function Orders() {
                           </span>
                         </div>
                         <div>
-                          {t("orders.delivery")}: {order.delivery_time} days
+                          {t("orders.delivery")}: {order.delivery_time}{" "}
+                          {t("orders.days")}
                         </div>
                         <div>
                           {t("orders.ordered")}:{" "}

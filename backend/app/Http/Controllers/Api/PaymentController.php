@@ -104,7 +104,7 @@ class PaymentController extends Controller
                     'type' => 'payment',
                     'title' => 'Payment Received',
                     'message' => 'You received $' . $order->price . ' for order #' . $order->id,
-                    'link' => '/orders/' . $order->id,
+                    'link' => '/order/' . $order->id,
                 ]);
 
                 return response()->json([
@@ -147,10 +147,10 @@ class PaymentController extends Controller
         switch ($event->type) {
             case 'payment_intent.succeeded':
                 $paymentIntent = $event->data->object;
-                
+
                 // Find order by payment intent ID
                 $order = Order::where('payment_intent_id', $paymentIntent->id)->first();
-                
+
                 if ($order) {
                     $order->update([
                         'payment_status' => 'paid',
@@ -161,9 +161,9 @@ class PaymentController extends Controller
 
             case 'payment_intent.payment_failed':
                 $paymentIntent = $event->data->object;
-                
+
                 $order = Order::where('payment_intent_id', $paymentIntent->id)->first();
-                
+
                 if ($order) {
                     $order->update([
                         'payment_status' => 'failed',
